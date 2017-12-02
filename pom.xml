@@ -28,7 +28,7 @@
     <module>product</module>
     <module>usercenter</module>
     <module>seller</module>
-    <module>shop</module>
+    <module>store</module>
     <module>inventory</module>
     <module>advertisement</module>
     <module>carts</module>
