@@ -7,7 +7,14 @@ package io.spm.parknshop.common.exception;
  */
 public final class ErrorConstants {
 
-  public static final int INVALID_PARAM = 4000;
+  /**
+   * From original HTTP response status code.
+   */
+  public static final int BAD_REQUEST = 400;
+  public static final int NO_AUTH = 401;
+  public static final int FORBIDDEN = 403;
+  public static final int NOT_FOUND = 404;
+  public static final int SERVER_ERROR = 500;
 
   private ErrorConstants() {}
 }

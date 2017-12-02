@@ -12,7 +12,7 @@ import static io.spm.parknshop.common.exception.ErrorConstants.*;
 public final class ExceptionUtils {
 
   public static ServiceException invalidParam(String paramName) {
-    return new ServiceException(INVALID_PARAM, String.format("Invalid parameter: %s", paramName));
+    return new ServiceException(BAD_REQUEST, String.format("Invalid parameter: %s", paramName));
   }
 
   private ExceptionUtils() {}
