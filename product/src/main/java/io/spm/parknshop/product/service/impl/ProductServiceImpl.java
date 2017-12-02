@@ -6,14 +6,13 @@ import io.spm.parknshop.product.repository.ProductRepository;
 import io.spm.parknshop.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.spm.parknshop.common.async.RxAsyncWrapper.*;
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 @Service
@@ -23,20 +22,34 @@ public class ProductServiceImpl implements ProductService {
   private ProductRepository productRepository;
 
   @Override
-  public Single<Optional<Product>> getById(final Long id) {
-    if (Objects.isNull(id) || id <= 0) {
-      return Single.error(ExceptionUtils.invalidParam("id"));
+  public Mono<Long> addOrModifyProduct(Product product) {
+    if (Objects.isNull(product)) {
+      return Mono.error(ExceptionUtils.invalidParam("product"));
     }
-    return async(() -> productRepository.getById(id));
+    if (Objects.isNull(product.getId())) {
+      // Add goes here.
+    } else {
+
+    }
+    return null;
+  }
+
+
+  @Override
+  public Mono<Optional<Product>> getById(final Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return async(() -> productRepository.findById(id));
   }
 
   @Override
-  public Observable<Product> getByStoreId(Long storeId) {
+  public Flux<Product> getByStoreId(Long storeId) {
     return null;
   }
 
   @Override
-  public Completable remove(Long id) {
+  public Mono<Void> remove(Long id) {
     return null;
   }
 }

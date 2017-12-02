@@ -1,9 +1,8 @@
 package io.spm.parknshop.product.service;
 
 import io.spm.parknshop.product.domain.Product;
-import rx.Completable;
-import rx.Observable;
-import rx.Single;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -14,9 +13,11 @@ import java.util.Optional;
  */
 public interface ProductService {
 
-  Single<Optional<Product>> getById(Long id);
+  Mono<Long> addOrModifyProduct(Product product);
 
-  Observable<Product> getByStoreId(Long storeId);
+  Mono<Optional<Product>> getById(Long id);
 
-  Completable remove(Long id);
+  Flux<Product> getByStoreId(Long storeId);
+
+  Mono<Void> remove(Long id);
 }

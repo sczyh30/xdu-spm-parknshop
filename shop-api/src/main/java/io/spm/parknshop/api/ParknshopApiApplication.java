@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author Eric Zhao 14130140389
  * @date 2017/12/1
  */
-@ComponentScan
+@ComponentScan(basePackages = {"io.spm.parknshop"})
 @SpringBootApplication
 public class ParknshopApiApplication {
 

@@ -1,6 +1,7 @@
 package io.spm.parknshop.product.repository;
 
 import io.spm.parknshop.product.domain.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
@@ -9,7 +10,7 @@ import java.util.Optional;
  *
  * @author Eric Zhao
  */
-public interface ProductRepository {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  Optional<Product> getById(long id);
+  Optional<Product> findById(long id);
 }
