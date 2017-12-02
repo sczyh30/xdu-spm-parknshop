@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test case for {@link DateUtils} class.
  *
- * @author Eric Zhao 14130140389
+ * @author Eric Zhao
  */
 class DateUtilsTest {
 
