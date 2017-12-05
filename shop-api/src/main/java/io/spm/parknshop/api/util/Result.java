@@ -21,6 +21,10 @@ public class Result<R> {
     return new Result<>(true, SUCCESS, r);
   }
 
+  public static <T> Result<T> successIfPresent(T r) {
+    return r != null ? success(r) : notFound();
+  }
+
   public static <T> Result<T> notFound() {
     return Result.failure(ErrorConstants.NOT_FOUND, "Not found");
   }
@@ -33,8 +37,8 @@ public class Result<R> {
     return new Result<>(false, statusCode, null, result);
   }
 
-  public static <T> Result<T> failure(int statusCode, Exception ex) {
-    return new Result<>(false, statusCode, ex.getMessage(), null);
+  public static <T> Result<T> failure(int statusCode, Throwable throwable) {
+    return new Result<>(false, statusCode, throwable.getMessage(), null);
   }
 
   public Result(boolean success, int statusCode) {
