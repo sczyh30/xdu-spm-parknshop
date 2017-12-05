@@ -15,5 +15,9 @@ public final class ExceptionUtils {
     return new ServiceException(BAD_REQUEST, String.format("Invalid parameter: %s", paramName));
   }
 
+  public static ServiceException idNotMatch() {
+    return new ServiceException(ID_NOT_MATCH, "Entity id does not match");
+  }
+
   private ExceptionUtils() {}
 }

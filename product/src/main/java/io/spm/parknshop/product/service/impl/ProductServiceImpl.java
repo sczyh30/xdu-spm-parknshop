@@ -22,18 +22,29 @@ public class ProductServiceImpl implements ProductService {
   private ProductRepository productRepository;
 
   @Override
-  public Mono<Long> addOrModifyProduct(Product product) {
-    if (Objects.isNull(product)) {
+  public Mono<Product> add(Product product) {
+    if (!isValidNewProduct(product)) {
       return Mono.error(ExceptionUtils.invalidParam("product"));
     }
-    if (Objects.isNull(product.getId())) {
-      // Add goes here.
-    } else {
-
+    if (Objects.nonNull(product.getId())) {
+      return Mono.error(ExceptionUtils.invalidParam("productId should not be provided"));
     }
-    return null;
+    return async(() -> productRepository.save(product));
   }
 
+  @Override
+  public Mono<Product> modify(Long productId, Product product) {
+    if (Objects.isNull(productId) || productId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("productId"));
+    }
+    if (!isValidProduct(product)) {
+      return Mono.error(ExceptionUtils.invalidParam("product"));
+    }
+    if (!productId.equals(product.getId())) {
+      return Mono.error(ExceptionUtils.idNotMatch());
+    }
+    return async(() -> productRepository.save(product));
+  }
 
   @Override
   public Mono<Optional<Product>> getById(final Long id) {
@@ -53,7 +64,29 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Mono<Void> remove(Long id) {
-    return null;
+  public Mono<Long> remove(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> productRepository.deleteById(id));
+  }
+
+  private boolean isValidNewProduct(final Product product) {
+    return Optional.ofNullable(product)
+      .map(e -> product.getCatalogId())
+      .map(e -> product.getName())
+      .map(e -> product.getStoreId())
+      .map(e -> product.getDescription())
+      .isPresent();
+  }
+
+  private boolean isValidProduct(final Product product) {
+    return Optional.ofNullable(product)
+      .map(e -> product.getId())
+      .map(e -> product.getCatalogId())
+      .map(e -> product.getName())
+      .map(e -> product.getStoreId())
+      .map(e -> product.getDescription())
+      .isPresent();
   }
 }

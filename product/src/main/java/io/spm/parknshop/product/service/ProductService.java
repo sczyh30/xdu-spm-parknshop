@@ -13,11 +13,13 @@ import java.util.Optional;
  */
 public interface ProductService {
 
-  Mono<Long> addOrModifyProduct(Product product);
+  Mono<Product> add(Product product);
+
+  Mono<Product> modify(Long productId, Product product);
 
   Mono<Optional<Product>> getById(Long id);
 
   Flux<Product> getByStoreId(Long storeId);
 
-  Mono<Void> remove(Long id);
+  Mono<Long> remove(Long id);
 }

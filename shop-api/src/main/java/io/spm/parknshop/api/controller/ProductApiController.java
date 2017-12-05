@@ -19,7 +19,7 @@ public class ProductApiController {
   private ProductService productService;
 
   @GetMapping("/product/{id}")
-  private Mono<Product> apiGetById(@PathVariable("id") Long id) {
+  public Mono<Product> apiGetById(@PathVariable("id") Long id) {
     return productService.getById(id)
       .filter(Optional::isPresent)
       .map(Optional::get);
