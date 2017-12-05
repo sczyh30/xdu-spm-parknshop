@@ -45,7 +45,11 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Flux<Product> getByStoreId(Long storeId) {
-    return null;
+    if (Objects.isNull(storeId) || storeId <= 0) {
+      return Flux.error(ExceptionUtils.invalidParam("storeId"));
+    }
+
+    return asyncIterable(() -> productRepository.getByStoreId(storeId));
   }
 
   @Override
