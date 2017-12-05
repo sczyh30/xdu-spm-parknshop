@@ -42,14 +42,13 @@ public class ApiAsyncResultProcessor {
       return processAsyncResult(pjp.proceed());
     } catch (Throwable ex) {
       logger.error("Unexpected error in handler function {}", asyncMethod.getName(), ex);
-      return Mono.just(Result.failure(INTERNAL_UNKNOWN_ERROR, "unknown_error"));
+      return newUnknownError(asyncMethod.getReturnType());
     }
   }
 
   private Object processAsyncResult(Object asyncResult) {
     // TODO: Current we cannot modify the return type in terms of dynamic proxy pattern. Need a more flexible mechanism.
     Class<?> asyncClass = asyncResult.getClass();
-    System.out.println(asyncClass.getCanonicalName());
     // Dispatch the type async result and apply for processors.
     if (Mono.class.isAssignableFrom(asyncClass)) {
       return processReactorMono((Mono<?>) asyncResult);
@@ -122,5 +121,19 @@ public class ApiAsyncResultProcessor {
       return Single.just(Result.failure(((ServiceException) ex).getErrorCode(), ex));
     }
     return Single.just(Result.failure(INTERNAL_UNKNOWN_ERROR, "unknown_error"));
+  }
+
+  private <R> Object newUnknownError(Class<?> asyncClass) {
+    Result<R> failedResult = Result.failure(INTERNAL_UNKNOWN_ERROR, "unknown_error");
+    if (Mono.class.isAssignableFrom(asyncClass) || Flux.class.isAssignableFrom(asyncClass)) {
+      return Mono.just(failedResult);
+    } else if (Single.class.isAssignableFrom(asyncClass)) {
+      return Single.just(failedResult);
+    } else if (Observable.class.isAssignableFrom(asyncClass)) {
+      return RxReactiveStreams.toPublisher(Single.just(failedResult));
+    } else {
+      // Can't recognize the type of result, return wrapped Mono by default.
+      return Mono.just(failedResult);
+    }
   }
 }
