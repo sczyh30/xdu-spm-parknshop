@@ -16,6 +16,8 @@ public final class ErrorConstants {
   public static final int NOT_FOUND = 404;
   public static final int SERVER_ERROR = 500;
 
+  public static final int USER_ALREADY_EXISTS = 4110;
+
   public static final int ID_NOT_MATCH = 4001;
 
   public static final int INTERNAL_UNKNOWN_ERROR = 4444;

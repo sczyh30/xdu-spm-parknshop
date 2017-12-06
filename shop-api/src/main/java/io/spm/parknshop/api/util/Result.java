@@ -29,6 +29,10 @@ public class Result<R> {
     return Result.failure(ErrorConstants.NOT_FOUND, "Not found");
   }
 
+  public static <T> Result<T> unauthorized() {
+    return Result.failure(ErrorConstants.NO_AUTH, "Authentication failed");
+  }
+
   public static <T> Result<T> failure(int statusCode, String message) {
     return new Result<>(false, statusCode, message, null);
   }
