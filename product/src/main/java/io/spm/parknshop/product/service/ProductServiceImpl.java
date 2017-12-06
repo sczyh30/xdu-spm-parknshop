@@ -1,9 +1,8 @@
-package io.spm.parknshop.product.service.impl;
+package io.spm.parknshop.product.service;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.repository.ProductRepository;
-import io.spm.parknshop.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

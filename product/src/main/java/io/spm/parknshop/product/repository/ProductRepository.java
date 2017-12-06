@@ -17,8 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
   List<Product> getByStoreId(long id);
 
-  @Query(value = "UPDATE product SET is_deleted = 1 WHERE id = ?1", nativeQuery = true)
+  /*@Query(value = "UPDATE product SET is_deleted = 1 WHERE id = ?1", nativeQuery = true)
   @Modifying
   @Override
-  void deleteById(Long id);
+  void deleteById(Long id);*/
 }
