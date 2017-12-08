@@ -3,6 +3,8 @@ package io.spm.parknshop.user.service;
 import io.spm.parknshop.user.domain.User;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 /**
  * Interface of user service.
  *
@@ -15,4 +17,6 @@ public interface UserService {
   Mono<Boolean> login(String username, String password);
 
   Mono<User> modifyDetail(Long id, User user);
+
+  Mono<Optional<User>> getUserById(Long id);
 }

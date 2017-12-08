@@ -2,6 +2,7 @@ package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.service.ProductService;
+import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -43,4 +46,22 @@ public class StoreApiController {
   public Mono<Long> apiRemoveProductFromStore(@PathVariable("id") Long id, @PathVariable("productId") Long productId) {
     return productService.remove(productId);
   }
+
+  @GetMapping("/store/{id}")
+  public Mono<Store> apiGetStore(@PathVariable("id") Long id) {
+    return storeService.getById(id)
+        .filter(Optional::isPresent)
+        .map(Optional::get);
+  }
+
+  @PutMapping("/store/{id}")
+  public Mono<Store> apiModifyStore(@PathVariable("id") Long id, @RequestBody Store store) {
+    return storeService.modify(id, store);
+  }
+
+  @DeleteMapping("/store/{id}")
+  public Mono<Long> apiRemoveStore(@PathVariable("id") Long id, @PathVariable("productId") Long productId) {
+    return productService.remove(productId);
+  }
+
 }

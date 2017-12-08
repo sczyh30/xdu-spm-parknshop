@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.async;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 /**
@@ -33,9 +33,17 @@ public class UserServiceImpl implements UserService {
     if (Objects.nonNull(user.getId())) {
       return Mono.error(ExceptionUtils.invalidParam("user ID should not be provided"));
     }
-    return getIdByUsername(user.getUsername())
-      .flatMap(e -> Mono.<User>error(new ServiceException(USER_ALREADY_EXISTS, "User already exists: " + user.getUsername())))
-      .switchIfEmpty(async(() -> userRepository.save(user)));
+    return checkDuplicateInfo(user)
+        .switchIfEmpty(async(() -> userRepository.save(user)));
+  }
+
+  private Mono<User> checkDuplicateInfo(/*@NonNull*/ User user) {
+    return async(() -> userRepository.getIdByUsername(user.getUsername()))
+        .flatMap(e -> Mono.<User>error(new ServiceException(USER_ALREADY_EXISTS, "User already exists: " + user.getUsername())))
+        .switchIfEmpty(async(() -> userRepository.getIdByEmail(user.getEmail())).map(e -> new User()))
+        .flatMap(e -> Mono.<User>error(new ServiceException(USER_INFO_DUPLICATE, "User info duplicate: " + user.getEmail())))
+        .switchIfEmpty(async(() -> userRepository.getIdByTelephone(user.getTelephone())).map(e -> new User()))
+        .flatMap(e -> Mono.<User>error(new ServiceException(USER_INFO_DUPLICATE, "User info duplicate: " + user.getTelephone())));
   }
 
   private Mono<Long> getIdByUsername(String username) {
@@ -51,20 +59,36 @@ public class UserServiceImpl implements UserService {
       return Mono.error(ExceptionUtils.invalidParam("username/password"));
     }
     return async(() -> userRepository.getByUsername(username))
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .map(e -> verifyCredential(e, username, password))
-      .switchIfEmpty(Mono.just(false));
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .map(e -> verifyCredential(e, username, password))
+        .switchIfEmpty(Mono.just(false));
   }
-  
+
   private boolean verifyCredential(/*@NonNull*/ User user, /*@NonNull*/ String username, /*@NonNull*/ String password) {
     return username.equals(user.getUsername()) && AuthCenter.encryptDefault(password).equals(user.getPassword());
   }
 
   @Override
   public Mono<User> modifyDetail(Long id, User user) {
-    // TODO: implement it.
-    return null;
+    if (!isValidUser(user)) {
+      return Mono.error(ExceptionUtils.invalidParam("user"));
+    }
+    if (Objects.nonNull(user.getId())) {
+      return Mono.error(ExceptionUtils.invalidParam("user ID should not be provided"));
+    }
+    if (!id.equals(user.getId())) {
+      return Mono.error(ExceptionUtils.idNotMatch());
+    }
+    return async(() -> userRepository.save(user));
+  }
+
+  @Override
+  public Mono<Optional<User>> getUserById(Long id) {
+    if (!Objects.nonNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return async(() -> userRepository.findById(id));
   }
 
   private boolean isValidUser(User user) {

@@ -1,10 +1,13 @@
 package io.spm.parknshop.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * User entity.
@@ -12,15 +15,16 @@ import java.util.Date;
  * @author Eric Zhao
  */
 @Entity
+@JsonIgnoreProperties(value = {"password"}, allowSetters = true)
 public class User {
   @Id
+  @GeneratedValue(strategy = IDENTITY)
   private Long id;
 
   private Date gmtCreate;
   private Date gmtModified;
 
   private String username;
-  @JsonIgnore
   private String password;
 
   private String email;

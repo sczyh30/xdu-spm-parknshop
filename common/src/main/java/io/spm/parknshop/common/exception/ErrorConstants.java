@@ -17,6 +17,7 @@ public final class ErrorConstants {
   public static final int SERVER_ERROR = 500;
 
   public static final int USER_ALREADY_EXISTS = 4110;
+  public static final int USER_INFO_DUPLICATE = 4111;
 
   public static final int ID_NOT_MATCH = 4001;
 
