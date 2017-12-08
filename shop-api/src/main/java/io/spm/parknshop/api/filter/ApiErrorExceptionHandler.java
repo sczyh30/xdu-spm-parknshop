@@ -39,7 +39,7 @@ public class ApiErrorExceptionHandler extends AbstractErrorWebExceptionHandler {
 
   @Override
   protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
-    return RouterFunctions.route(RequestPredicates.contentType(MediaType.APPLICATION_JSON_UTF8), request -> handleException(request, errorAttributes));
+    return RouterFunctions.route(RequestPredicates.path("/api/**"), request -> handleException(request, errorAttributes));
   }
 
   private Mono<ServerResponse> handleException(ServerRequest request, ErrorAttributes errorAttributes) {
@@ -65,8 +65,13 @@ public class ApiErrorExceptionHandler extends AbstractErrorWebExceptionHandler {
   private <R> Result<R> toApiResult(Throwable ex) {
     if (ex instanceof ServiceException) {
       return Result.failure(((ServiceException) ex).getErrorCode(), ex);
-    } else if (ex instanceof org.springframework.web.server.ServerWebInputException) {
-      return Result.failure(((ServerWebInputException) ex).getStatus().value(), "Invalid input");
+    } else if (ex instanceof ServerWebInputException) {
+      return Result.failure(ErrorConstants.BAD_REQUEST, "Invalid input");
+    }  else if (ex instanceof ResponseStatusException) {
+      if (((ResponseStatusException) ex).getStatus().equals(HttpStatus.NOT_FOUND)) {
+        return Result.notFound();
+      }
+      return Result.failure(((ResponseStatusException) ex).getStatus().value(), "Unknown error");
     } else {
       return Result.failure(ErrorConstants.SERVER_ERROR, ex);
     }
