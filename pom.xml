@@ -25,6 +25,7 @@
 
   <modules>
     <module>common</module>
+    <module>catalog</module>
     <module>product</module>
     <module>usercenter</module>
     <module>seller</module>
