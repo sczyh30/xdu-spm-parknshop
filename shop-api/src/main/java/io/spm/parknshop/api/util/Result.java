@@ -1,6 +1,7 @@
 package io.spm.parknshop.api.util;
 
 import io.spm.parknshop.common.exception.ErrorConstants;
+import io.spm.parknshop.common.exception.ServiceException;
 
 /**
  * Common result for a REST API.
@@ -33,8 +34,16 @@ public class Result<R> {
     return Result.failure(ErrorConstants.NO_AUTH, "Authentication failed");
   }
 
+  public static <T> Result<T> unknownError() {
+    return Result.failure(ErrorConstants.INTERNAL_UNKNOWN_ERROR, "unknown_error");
+  }
+
   public static <T> Result<T> failure(int statusCode, String message) {
     return new Result<>(false, statusCode, message, null);
+  }
+
+  public static <T> Result<T> failure(ServiceException ex) {
+    return new Result<>(false, ex.getErrorCode(), ex.getMessage(), null);
   }
 
   public static <T> Result<T> failureWithResult(int statusCode, T result) {

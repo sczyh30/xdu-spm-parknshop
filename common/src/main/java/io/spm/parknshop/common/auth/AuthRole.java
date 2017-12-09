@@ -1,19 +1,20 @@
 package io.spm.parknshop.common.auth;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Annotation for role authentication.
+ * Authentication roles.
  *
  * @author Eric Zhao
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface AuthRole {
-  String value();
+public enum AuthRole {
+  CUSTOMER(0), SELLER(1), ADMIN(11);
+
+  private int role;
+
+  AuthRole(int role) {
+    this.role = role;
+  }
+
+  public int getRole() {
+    return role;
+  }
 }

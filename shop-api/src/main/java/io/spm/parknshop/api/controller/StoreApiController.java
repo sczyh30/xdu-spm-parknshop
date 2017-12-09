@@ -38,7 +38,7 @@ public class StoreApiController {
   }
 
   @PutMapping("/store/{id}/modify_product/{productId}")
-  public Mono<Product> apiModifyProduct(@PathVariable("id") Long id, @RequestBody Product product) {
+  public Mono<Product> apiModifyProduct(@PathVariable("id") Long id, @PathVariable("productId") Long productId, @RequestBody Product product) {
     return productService.add(product);
   }
 
@@ -63,5 +63,4 @@ public class StoreApiController {
   public Mono<Long> apiRemoveStore(@PathVariable("id") Long id, @PathVariable("productId") Long productId) {
     return productService.remove(productId);
   }
-
 }

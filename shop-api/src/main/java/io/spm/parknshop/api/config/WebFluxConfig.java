@@ -1,7 +1,7 @@
 package io.spm.parknshop.api.config;
 
 import io.spm.parknshop.api.filter.ApiErrorExceptionHandler;
-import io.spm.parknshop.api.filter.JwtTokenFilter;
+import io.spm.parknshop.api.filter.JwtAuthenticationWebFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.ErrorAttributes;
@@ -48,7 +48,7 @@ public class WebFluxConfig {
   }
 
   @Bean
-  public JwtTokenFilter jwtTokenFilter() {
-    return new JwtTokenFilter(viewResolvers, serverCodecConfigurer);
+  public JwtAuthenticationWebFilter jwtTokenFilter() {
+    return new JwtAuthenticationWebFilter(viewResolvers, serverCodecConfigurer);
   }
 }

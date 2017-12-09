@@ -110,9 +110,9 @@ public class ApiAsyncResultProcessor {
   private <R> Mono<Result<R>> handleReactorServiceFallback(Throwable ex) {
     logError(ex);
     if (ex instanceof ServiceException) {
-      return Mono.just(Result.failure(((ServiceException) ex).getErrorCode(), ex));
+      return Mono.just(Result.failure(((ServiceException) ex)));
     }
-    return Mono.just(Result.failure(INTERNAL_UNKNOWN_ERROR, "unknown_error"));
+    return Mono.just(Result.unknownError());
   }
 
   private <R> Single<Result<R>> handleRxServiceFallback(Throwable ex) {
@@ -120,11 +120,11 @@ public class ApiAsyncResultProcessor {
     if (ex instanceof ServiceException) {
       return Single.just(Result.failure(((ServiceException) ex).getErrorCode(), ex));
     }
-    return Single.just(Result.failure(INTERNAL_UNKNOWN_ERROR, "unknown_error"));
+    return Single.just(Result.unknownError());
   }
 
   private <R> Object newUnknownError(Class<?> asyncClass) {
-    Result<R> failedResult = Result.failure(INTERNAL_UNKNOWN_ERROR, "unknown_error");
+    Result<R> failedResult = Result.unknownError();
     if (Mono.class.isAssignableFrom(asyncClass) || Flux.class.isAssignableFrom(asyncClass)) {
       return Mono.just(failedResult);
     } else if (Single.class.isAssignableFrom(asyncClass)) {

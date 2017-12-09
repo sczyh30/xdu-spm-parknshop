@@ -1,4 +1,4 @@
-package io.spm.parknshop.api.filter;
+package io.spm.parknshop.api.common;
 
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;

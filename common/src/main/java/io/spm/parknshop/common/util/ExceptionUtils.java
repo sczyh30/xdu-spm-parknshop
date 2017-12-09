@@ -15,6 +15,18 @@ public final class ExceptionUtils {
     return new ServiceException(BAD_REQUEST, String.format("Invalid parameter: %s", paramName));
   }
 
+  public static ServiceException loginIncorrect() {
+    return new ServiceException(USER_LOGIN_INCORRECT, "Incorrect username or password");
+  }
+
+  public static ServiceException invalidToken() {
+    return new ServiceException(USER_INVALID_TOKEN, "Invalid principal");
+  }
+
+  public static ServiceException authNoPermission() {
+    return new ServiceException(NO_AUTH, "No permission for this operation");
+  }
+
   public static ServiceException idNotMatch() {
     return new ServiceException(ID_NOT_MATCH, "Entity id does not match");
   }

@@ -16,7 +16,7 @@ public interface UserService {
 
   Mono<User> register(User user);
 
-  Mono<Boolean> login(String username, String password);
+  Mono<String> login(String username, String password);
 
   Mono<User> modifyDetail(Long id, User user);
 
@@ -27,7 +27,4 @@ public interface UserService {
   Mono<Long> setBlacklist(Long id);
 
   Mono<Long> removeFromBlacklist(Long id);
-
-
-
 }
