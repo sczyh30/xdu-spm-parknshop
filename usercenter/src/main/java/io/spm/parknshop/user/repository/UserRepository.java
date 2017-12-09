@@ -22,14 +22,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query(value = "SELECT id FROM user WHERE telephone = ?1", nativeQuery = true)
   Long getIdByTelephone(String telephone);
 
-  @Query(value = "SELECT * FROM user WHERE user.username LIKE  CONCAT('%',:keyword,'%')", nativeQuery = true)
+  @Query(value = "SELECT * FROM user WHERE user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
   List<User> searchUserByKeyword(@Param("keyword") String keyword);
 
-  @Query(value = "SELECT * FROM user WHERE user.user_type=1 AND user.username LIKE  CONCAT('%',:keyword,'%')", nativeQuery = true)
+  @Query(value = "SELECT * FROM user WHERE user.user_type=1 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
   List<User> searchSellerByKeyword(@Param("keyword") String keyword);
 
-  @Query(value = "UPDATE user SET user_status=?1 WHERE id=?2", nativeQuery = true)
+  @Query(value = "UPDATE user SET user_status=?1, gmt_modified=CURRENT_TIMESTAMP WHERE id=?2", nativeQuery = true)
   @Modifying
   @Transactional
   void modifyStatus(int status, long id);
+
+  @Query(value = "UPDATE user SET password=?1, gmt_modified=CURRENT_TIMESTAMP WHERE id=?2", nativeQuery = true)
+  @Modifying
+  @Transactional
+  void modifyPassword(String encrypted, long id);
 }

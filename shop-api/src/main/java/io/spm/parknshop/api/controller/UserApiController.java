@@ -1,5 +1,6 @@
 package io.spm.parknshop.api.controller;
 
+import io.spm.parknshop.user.domain.PrincipalModifyDO;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,14 @@ public class UserApiController {
     return userService.login(user.getUsername(), user.getPassword());
   }
 
-  @PutMapping("/user/{id}")
+  @PostMapping("/user/{id}/modify_detail")
   public Mono<User> apiModifyUser(@PathVariable("id") Long id, @RequestBody User user) {
     return userService.modifyDetail(id, user);
+  }
+
+  @PostMapping("/user/{id}/modify_password")
+  public /*Mono<Void>*/ Mono<?> apiModifyUser(@PathVariable("id") Long id, @RequestBody PrincipalModifyDO user) {
+    return userService.modifyPassword(id, user);
   }
 
   @GetMapping("/user/{id}")

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
     if (!productId.equals(product.getId())) {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
-    return async(() -> productRepository.save(product));
+    return async(() -> productRepository.save(product.setGmtModified(new Date())));
   }
 
   @Override

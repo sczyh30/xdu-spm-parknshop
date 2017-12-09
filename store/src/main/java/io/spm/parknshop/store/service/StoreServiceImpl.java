@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class StoreServiceImpl implements StoreService {
     if (!id.equals(store.getId())) {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
-    return async(() -> storeRepository.save(store));
+    return async(() -> storeRepository.save(store.setGmtModified(new Date())));
   }
 
   @Override
@@ -79,8 +80,6 @@ public class StoreServiceImpl implements StoreService {
     }
     return asyncIterable(() -> storeRepository.searchStoreByKeyword(keyword));
   }
-
-
 
   private static boolean isValidNewStore(Store store){
     return Optional.ofNullable(store)

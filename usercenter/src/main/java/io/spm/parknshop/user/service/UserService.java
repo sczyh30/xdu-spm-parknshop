@@ -1,5 +1,6 @@
 package io.spm.parknshop.user.service;
 
+import io.spm.parknshop.user.domain.PrincipalModifyDO;
 import io.spm.parknshop.user.domain.User;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,8 @@ public interface UserService {
   Mono<String> login(String username, String password);
 
   Mono<User> modifyDetail(Long id, User user);
+
+  Mono<Void> modifyPassword(Long id, PrincipalModifyDO user);
 
   Mono<Optional<User>> getUserById(Long id);
 

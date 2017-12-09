@@ -4,6 +4,7 @@ import io.spm.parknshop.common.auth.AuthCenter;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
+import io.spm.parknshop.user.domain.PrincipalModifyDO;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.domain.UserStatus;
 import io.spm.parknshop.user.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -85,6 +87,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Mono<User> modifyDetail(Long id, User user) {
+    // TODO: Exclude username and password modify!
     if (!isValidUser(user)) {
       return Mono.error(ExceptionUtils.invalidParam("user"));
     }
@@ -94,7 +97,30 @@ public class UserServiceImpl implements UserService {
     if (!id.equals(user.getId())) {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
-    return async(() -> userRepository.save(user));
+    return async(() -> userRepository.save(user.setGmtModified(new Date())));
+  }
+
+  @Override
+  public Mono<Void> modifyPassword(Long id, PrincipalModifyDO user) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    if (Objects.isNull(user) || Objects.isNull(user.getId()) || Objects.isNull(user.getNewPassword()) || Objects.isNull(user.getOldPassword())) {
+      return Mono.error(ExceptionUtils.invalidParam("user"));
+    }
+    if (!id.equals(user.getId())) {
+      return Mono.error(ExceptionUtils.idNotMatch());
+    }
+    return async(() -> userRepository.findById(id))
+      .flatMap(e -> e.map(Mono::just).orElseGet(() -> Mono.error(new ServiceException(USER_NOT_EXISTS, "User does not exist"))))
+      .map(u -> verifyCredential(u, u.getUsername(), user.getOldPassword()))
+      .flatMap(ok -> {
+        if (ok) {
+          return asyncExecute(() -> userRepository.modifyPassword(AuthCenter.encryptDefault(user.getNewPassword()), user.getId()));
+        } else {
+          return Mono.error(new ServiceException(USER_MODIFY_OLD_PASSWORD_NOT_MATCH, "Incorrect old password"));
+        }
+      });
   }
 
   @Override
