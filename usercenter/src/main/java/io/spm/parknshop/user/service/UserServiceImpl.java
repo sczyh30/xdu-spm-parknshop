@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
     return async(() -> userRepository.findById(id))
-      .flatMap(e -> e.map(Mono::just).orElseGet(() -> Mono.error(new ServiceException(USER_NOT_EXISTS, "User does not exist"))))
+      .flatMap(e -> e.map(Mono::just).orElseGet(() -> Mono.error(new ServiceException(USER_NOT_EXIST, "User does not exist"))))
       .map(u -> verifyCredential(u, u.getUsername(), user.getOldPassword()))
       .flatMap(ok -> {
         if (ok) {

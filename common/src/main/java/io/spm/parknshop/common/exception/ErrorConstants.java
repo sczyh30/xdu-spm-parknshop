@@ -16,8 +16,12 @@ public final class ErrorConstants {
   public static final int NOT_FOUND = 404;
   public static final int SERVER_ERROR = 500;
 
+  public static final int USER_NOT_EXIST = 4041;
+  public static final int PRODUCT_NOT_EXIST = 40421;
+  public static final int PRODUCT_NOT_EXIST_IN_CART = 40422;
+
   public static final int USER_ALREADY_EXISTS = 4110;
-  public static final int USER_NOT_EXISTS = 4114;
+
   public static final int USER_MODIFY_OLD_PASSWORD_NOT_MATCH = 4115;
   public static final int USER_INFO_DUPLICATE = 4111;
 

@@ -12,7 +12,6 @@ import java.util.Date;
  *
  * @author four
  */
-
 @Entity
 @JsonIgnoreProperties(value = {"password"}, allowSetters = true)
 public class Admin {
@@ -31,48 +30,54 @@ public class Admin {
     return id;
   }
 
-  public void setId(String id) {
+  public Admin setId(String id) {
     this.id = id;
+    return this;
   }
 
   public String getUsername() {
     return username;
   }
 
-  public void setUsername(String username) {
+  public Admin setUsername(String username) {
     this.username = username;
+    return this;
   }
 
   public String getPassword() {
     return password;
   }
 
-  public void setPassword(String password) {
+  public Admin setPassword(String password) {
     this.password = password;
+    return this;
   }
 
   public String getEmail() {
     return email;
   }
 
-  public void setEmail(String email) {
+  public Admin setEmail(String email) {
     this.email = email;
+    return this;
   }
 
   public Date getGmtCreate() {
     return gmtCreate;
   }
 
-  public void setGmtCreate(Date gmtCreate) {
+  public Admin setGmtCreate(Date gmtCreate) {
     this.gmtCreate = gmtCreate;
+    return this;
   }
 
   public Date getGmtModified() {
     return gmtModified;
   }
 
-  public void setGmtModified(Date gmtModified) {
+  public Admin setGmtModified(Date gmtModified) {
     this.gmtModified = gmtModified;
+    return this;
   }
 
   @Override

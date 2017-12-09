@@ -1,6 +1,6 @@
 package io.spm.parknshop.cart.config;
 
-import io.spm.parknshop.cart.domain.CartProductDO;
+import io.spm.parknshop.cart.domain.SimpleCartProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,11 +29,11 @@ public class RedisConfig {
   }
 
   @Bean
-  public ReactiveRedisTemplate<String, CartProductDO> cartReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory){
-    RedisSerializationContext<String, CartProductDO> serializationContext = RedisSerializationContext
-      .<String, CartProductDO>newSerializationContext(new StringRedisSerializer())
+  public ReactiveRedisTemplate<String, SimpleCartProduct> cartReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory){
+    RedisSerializationContext<String, SimpleCartProduct> serializationContext = RedisSerializationContext
+      .<String, SimpleCartProduct>newSerializationContext(new StringRedisSerializer())
       .hashKey(new StringRedisSerializer())
-      .hashValue(new Jackson2JsonRedisSerializer<>(CartProductDO.class))
+      .hashValue(new Jackson2JsonRedisSerializer<>(SimpleCartProduct.class))
       .build();
     return new ReactiveRedisTemplate<>(connectionFactory, serializationContext);
   }
