@@ -17,16 +17,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import javax.annotation.PreDestroy;
 
 @EnableRedisRepositories("io.spm.parknshop.cart")
-@Configuration
+@Configuration("cartRedisConfig")
 public class RedisConfig {
 
   @Autowired
   private RedisConnectionFactory factory;
-
-  @Bean
-  public ReactiveRedisConnectionFactory redisConnectionFactory() {
-    return new LettuceConnectionFactory();
-  }
 
   @Bean
   public ReactiveRedisTemplate<String, SimpleCartProduct> cartReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory){
