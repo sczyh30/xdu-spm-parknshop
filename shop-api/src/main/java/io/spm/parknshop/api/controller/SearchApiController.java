@@ -1,7 +1,7 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
-import io.spm.parknshop.io.spm.parknshop.service.SellerService;
+import io.spm.parknshop.seller.service.SellerService;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.service.UserService;

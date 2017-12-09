@@ -1,4 +1,4 @@
-package io.spm.parknshop.io.spm.parknshop.service;
+package io.spm.parknshop.seller.service;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.store.domain.Store;
