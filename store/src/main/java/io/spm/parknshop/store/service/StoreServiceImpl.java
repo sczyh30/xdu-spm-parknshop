@@ -64,6 +64,24 @@ public class StoreServiceImpl implements StoreService {
     return async(() -> storeRepository.getBySellerId(sellerId));
   }
 
+  @Override
+  public Mono<Long> remove(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> storeRepository.deleteById(id));
+  }
+
+  @Override
+  public Flux<Store> searchStoreByKeyword(String keyword) {
+    if(Objects.isNull(keyword) || "".equals(keyword)) {
+      return Flux.error(ExceptionUtils.invalidParam("keyword"));
+    }
+    return asyncIterable(() -> storeRepository.searchStoreByKeyword(keyword));
+  }
+
+
+
   private static boolean isValidNewStore(Store store){
     return Optional.ofNullable(store)
         .map(e -> store.getEmail())
@@ -81,13 +99,5 @@ public class StoreServiceImpl implements StoreService {
         .map(e -> store.getName())
         .map(e -> store.getTelephone())
         .isPresent();
-  }
-
-  @Override
-  public Mono<Long> remove(Long id) {
-    if (Objects.isNull(id) || id <= 0) {
-      return Mono.error(ExceptionUtils.invalidParam("id"));
-    }
-    return asyncExecute(() -> storeRepository.deleteById(id));
   }
 }

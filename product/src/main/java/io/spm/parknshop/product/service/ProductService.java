@@ -1,6 +1,7 @@
 package io.spm.parknshop.product.service;
 
 import io.spm.parknshop.product.domain.Product;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,4 +23,6 @@ public interface ProductService {
   Flux<Product> getByStoreId(Long storeId);
 
   Mono<Long> remove(Long id);
+
+  Publisher<Product> searchProductByKeyword(String keyword);
 }

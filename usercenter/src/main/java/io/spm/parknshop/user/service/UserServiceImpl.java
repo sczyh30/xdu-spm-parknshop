@@ -8,12 +8,13 @@ import io.spm.parknshop.user.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.async;
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 /**
@@ -85,10 +86,34 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Mono<Optional<User>> getUserById(Long id) {
-    if (!Objects.nonNull(id) || id <= 0) {
+    if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
     return async(() -> userRepository.findById(id));
+  }
+
+  @Override
+  public Flux<User> searchUserByKeyword(String keyword) {
+    if (StringUtils.isEmpty(keyword)) {
+      return Flux.error(ExceptionUtils.invalidParam("keyword"));
+    }
+    return asyncIterable(() -> userRepository.searchUserByKeyword(keyword));
+  }
+
+  @Override
+  public Mono<Long> setBlacklist(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> userRepository.modifyStatus(2, id));
+  }
+
+  @Override
+  public Mono<Long> removeFromBlacklist(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> userRepository.modifyStatus(0, id));
   }
 
   private boolean isValidUser(User user) {

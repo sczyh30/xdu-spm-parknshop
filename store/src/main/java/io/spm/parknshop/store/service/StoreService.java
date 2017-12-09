@@ -1,6 +1,7 @@
 package io.spm.parknshop.store.service;
 
 import io.spm.parknshop.store.domain.Store;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -16,4 +17,6 @@ public interface StoreService {
   Mono<Optional<Store>> getBySellerId(Long sellerId);
 
   Mono<Long> remove(Long id);
+
+  Flux<Store> searchStoreByKeyword(String keyword);
 }

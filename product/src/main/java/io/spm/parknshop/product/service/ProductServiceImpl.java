@@ -3,6 +3,7 @@ package io.spm.parknshop.product.service;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.repository.ProductRepository;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -12,7 +13,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
-import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -68,6 +68,14 @@ public class ProductServiceImpl implements ProductService {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
     return asyncExecute(() -> productRepository.deleteById(id));
+  }
+
+  @Override
+  public Flux<Product> searchProductByKeyword(String keyword) {
+    if(Objects.isNull(keyword) || "".equals(keyword)) {
+      return Flux.error(ExceptionUtils.invalidParam("keyword"));
+    }
+    return asyncIterable(() -> productRepository.searchByKeyword(keyword));
   }
 
   private boolean isValidNewProduct(final Product product) {
