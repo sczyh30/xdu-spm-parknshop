@@ -2,7 +2,6 @@ package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
-import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
