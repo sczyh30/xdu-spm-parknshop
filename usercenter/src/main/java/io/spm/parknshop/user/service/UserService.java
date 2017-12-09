@@ -1,7 +1,6 @@
 package io.spm.parknshop.user.service;
 
 import io.spm.parknshop.user.domain.User;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,7 +23,7 @@ public interface UserService {
 
   Flux<User> searchUserByKeyword(String keyword);
 
-  Mono<Long> setBlacklist(Long id);
+  Mono<Void> setBlacklist(Long id);
 
-  Mono<Long> removeFromBlacklist(Long id);
+  Mono<Void> removeFromBlacklist(Long id);
 }

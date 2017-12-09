@@ -65,7 +65,7 @@ public class StoreServiceImpl implements StoreService {
   }
 
   @Override
-  public Mono<Long> remove(Long id) {
+  public Mono<Void> remove(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }

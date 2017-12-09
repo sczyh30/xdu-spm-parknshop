@@ -22,7 +22,7 @@ public interface ProductService {
 
   Flux<Product> getByStoreId(Long storeId);
 
-  Mono<Long> remove(Long id);
+  Mono<Void> remove(Long id);
 
   Publisher<Product> searchProductByKeyword(String keyword);
 }

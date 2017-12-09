@@ -25,13 +25,12 @@ public class AdminApiController {
   }
 
   @PostMapping(value = "/admin/manage/user/{id}/set_blacklist")
-  public Mono<Long> apiSetUserBlacklist(@PathVariable("id") Long id) {
+  public Mono<?> apiSetUserBlacklist(@PathVariable("id") Long id) {
     return userService.setBlacklist(id);
   }
 
   @PostMapping(value = "/admin/manage/user/{id}/rm_blacklist")
-  public Mono<Long> apiRemoveUserBlacklist(@PathVariable("id") Long id) {
+  public Mono<?> apiRemoveUserBlacklist(@PathVariable("id") Long id) {
     return userService.removeFromBlacklist(id);
   }
-
 }

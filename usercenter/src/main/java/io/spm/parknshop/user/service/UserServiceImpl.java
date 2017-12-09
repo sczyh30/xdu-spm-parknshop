@@ -53,13 +53,6 @@ public class UserServiceImpl implements UserService {
       .flatMap(e -> Mono.<User>error(new ServiceException(USER_INFO_DUPLICATE, "User info duplicate: " + user.getTelephone())));
   }
 
-  private Mono<Long> getIdByUsername(String username) {
-    if (StringUtils.isEmpty(username)) {
-      return Mono.error(ExceptionUtils.invalidParam("username"));
-    }
-    return async(() -> userRepository.getIdByUsername(username));
-  }
-
   @Override
   public Mono<String> login(final String username, final String password) {
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
@@ -79,9 +72,6 @@ public class UserServiceImpl implements UserService {
   }
 
   private boolean verifyCredential(/*@NonNull*/ User user, /*@NonNull*/ String username, /*@NonNull*/ String password) {
-    System.out.println(password);
-    System.out.println(user.getPassword());
-    System.out.println(AuthCenter.decryptMatches(password, user.getPassword()));
     return username.equals(user.getUsername()) && AuthCenter.decryptMatches(password, user.getPassword());
   }
 
@@ -124,7 +114,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Mono<Long> setBlacklist(Long id) {
+  public Mono<Void> setBlacklist(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
@@ -132,7 +122,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Mono<Long> removeFromBlacklist(Long id) {
+  public Mono<Void> removeFromBlacklist(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }

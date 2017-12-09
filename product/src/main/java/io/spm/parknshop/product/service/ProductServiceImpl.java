@@ -3,7 +3,6 @@ package io.spm.parknshop.product.service;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.repository.ProductRepository;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -26,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
       return Mono.error(ExceptionUtils.invalidParam("product"));
     }
     if (Objects.nonNull(product.getId())) {
-      return Mono.error(ExceptionUtils.invalidParam("productId should not be provided"));
+      return Mono.error(ExceptionUtils.invalidParam("product ID should not be provided"));
     }
     return async(() -> productRepository.save(product));
   }
@@ -63,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Mono<Long> remove(Long id) {
+  public Mono<Void> remove(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
