@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
   private Mono<String> generateToken(/*@NonNull*/ User user, boolean ok) {
     if (ok) {
-      return JWTUtils.generateToken(user.getUsername(), user.getId().toString(), user.getUserType());
+      return JWTUtils.generateToken(user.getUsername(), user.getId(), user.getUserType());
     } else {
       return Mono.error(ExceptionUtils.loginIncorrect());
     }

@@ -1,9 +1,10 @@
 package io.spm.parknshop.admin.domain;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 
@@ -17,20 +18,22 @@ import java.util.Date;
 public class Admin {
 
   @Id
-  private String id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  private Date gmtCreate;
+  private Date gmtModified;
 
   private String username;
   private String password;
 
   private String email;
-  private Date gmtCreate;
-  private Date gmtModified;
 
-  public String getId() {
+  public Long getId() {
     return id;
   }
 
-  public Admin setId(String id) {
+  public Admin setId(Long id) {
     this.id = id;
     return this;
   }

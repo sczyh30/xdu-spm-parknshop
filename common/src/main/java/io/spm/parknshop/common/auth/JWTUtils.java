@@ -1,7 +1,6 @@
 package io.spm.parknshop.common.auth;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -24,7 +23,7 @@ public final class JWTUtils {
 
   private static final String ISSUER = "sczyh30";
 
-  public static Mono<String> generateToken(String username, String id, int role) {
+  public static Mono<String> generateToken(String username, Long id, int role) {
     try {
       Algorithm algorithm = Algorithm.HMAC256(SECRET);
       String token = JWT.create()

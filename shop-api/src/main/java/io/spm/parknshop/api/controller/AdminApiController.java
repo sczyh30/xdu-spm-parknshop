@@ -19,8 +19,13 @@ public class AdminApiController {
   @Autowired
   private UserService userService;
 
+  @PostMapping("/admin/add_admin")
+  public Mono<Admin> apiAddAdmin(@RequestBody Admin admin) {
+    return adminService.addAdmin(admin);
+  }
+
   @PostMapping(value = "/admin/login")
-  public Mono<Boolean> apiAdminLogin(@RequestBody Admin admin) {
+  public Mono<?> apiAdminLogin(@RequestBody Admin admin) {
     return adminService.login(admin.getUsername(), admin.getPassword());
   }
 

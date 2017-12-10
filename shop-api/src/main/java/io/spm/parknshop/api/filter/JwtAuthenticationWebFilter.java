@@ -67,7 +67,8 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
   }
 
   private boolean testWithoutAuthentication(/*@NonNull*/ String path) {
-    if (path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/product")) {
+    if (path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register")
+      || path.startsWith("/api/v1/product") || path.startsWith("/api/v1/admin/login")) {
       return true;
     }
     return false;

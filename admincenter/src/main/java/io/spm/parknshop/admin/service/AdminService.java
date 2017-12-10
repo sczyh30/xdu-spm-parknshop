@@ -8,11 +8,9 @@ import reactor.core.publisher.Mono;
  */
 public interface AdminService {
 
-  Mono<Boolean> login(String username, String password);
+  Mono<String> login(String username, String password);
 
-  Mono<Admin> modifyDetail(String id, Admin admin);
+  Mono<Admin> modifyDetail(Long id, Admin admin);
 
   Mono<Admin> addAdmin(Admin admin);
-
-
 }
