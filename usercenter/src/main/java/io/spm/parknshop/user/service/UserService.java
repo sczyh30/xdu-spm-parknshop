@@ -29,4 +29,6 @@ public interface UserService {
   Mono<Void> setBlacklist(Long id);
 
   Mono<Void> removeFromBlacklist(Long id);
+
+  Mono<Long> deleteUser(Long id);
 }

@@ -2,7 +2,10 @@ package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
+import io.spm.parknshop.seller.domain.StoreApplyDO;
+import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.user.service.UserService;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -37,5 +40,35 @@ public class AdminApiController {
   @PostMapping(value = "/admin/manage/user/{id}/rm_blacklist")
   public Mono<?> apiRemoveUserBlacklist(@PathVariable("id") Long id) {
     return userService.removeFromBlacklist(id);
+  }
+
+  @GetMapping("/admin/apply_list")
+  public Publisher<StoreApplyDO> apiGetApplyList() {
+    return adminService.getApplyList();
+  }
+
+  @PostMapping("/admin/approve_apply/{sellerid}")
+  public Mono<Store> apiApproveApply(@PathVariable("sellerid") Long sellerid) {
+    return adminService.approveApply(sellerid);
+  }
+
+  @PostMapping("/admin/reject_apply/{sellerid}")
+  public Mono<Long> apiRejectApply(@PathVariable("sellerid") Long sellerid) {
+    return adminService.rejectApply(sellerid);
+  }
+
+  @DeleteMapping("/admin/manage/user/{id}")
+  public Mono<Long> apiDeleteUser(@PathVariable("id") Long id) {
+    return userService.deleteUser(id);
+  }
+
+  @GetMapping("/admin/commission")
+  public Mono<Double> getCommission() {
+    return adminService.getCommission();
+  }
+
+  @PostMapping("/admin/set_commission")
+  public Mono<?> setCommission(@RequestBody String commission) {
+    return adminService.setCommission(Double.valueOf(commission));
   }
 }

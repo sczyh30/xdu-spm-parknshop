@@ -3,27 +3,39 @@ package io.spm.parknshop.admin.service;
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.repository.AdminRepository;
+import io.spm.parknshop.admin.repository.CommissionRepository;
 import io.spm.parknshop.common.auth.AuthCenter;
 import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
+import io.spm.parknshop.seller.domain.StoreApplyDO;
+import io.spm.parknshop.seller.repository.StoreApplyRepository;
+import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.store.service.StoreService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 import java.util.Optional;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.async;
-import static io.spm.parknshop.common.exception.ErrorConstants.USER_ALREADY_EXISTS;
+import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
   @Autowired
   private AdminRepository adminRepository;
+  @Autowired
+  private StoreApplyRepository storeApplyRepository;
+  @Autowired
+  private StoreService storeService;
+  @Autowired
+  private CommissionRepository commissionRepository;
 
   @Override
   public Mono<String> login(String username, String password) {
@@ -80,6 +92,44 @@ public class AdminServiceImpl implements AdminService {
     } else {
       return Mono.error(ExceptionUtils.loginIncorrect());
     }
+  }
+  @Override
+  public Flux<StoreApplyDO> getApplyList() {
+    return storeApplyRepository.getApplyStoreList();
+  }
+
+  @Override
+  public Mono<Store> approveApply(Long id) {
+    return storeApplyRepository.getPendingStoreBySellerId(id)
+        .flatMap(e ->approveOne(e.getStore()))
+        .switchIfEmpty(Mono.error(new ServiceException(STORE_APPLY_NOT_EXIST,"no apply record")));
+  }
+
+  @Override
+  public Mono<Long> rejectApply(Long id) {
+    return storeApplyRepository.getPendingStoreBySellerId(id)
+        .flatMap(e -> storeApplyRepository.deleteOneApply(id))
+        .switchIfEmpty(Mono.error(new ServiceException(STORE_APPLY_NOT_EXIST,"no apply record")));
+  }
+
+  @Override
+  public Mono<Boolean> setCommission(Double commission) {
+    if (commission >= 100 || commission <= 0) {
+     return Mono.error(new ServiceException(COMMISION_IS_ERROR, "commission is error"));
+    }
+    return commissionRepository.setCommission(commission);
+  }
+
+  @Override
+  public Mono<Double> getCommission() {
+    return commissionRepository.getCommission();
+  }
+
+
+  private Mono<Store> approveOne(Store store) {
+    return storeApplyRepository.deleteOneApply(store.getSellerId())
+        .flatMap(e -> storeService.addStore(store))
+        .switchIfEmpty(Mono.error(new ServiceException(STORE_ALREADY_OPEN,"this user already have a store")));
   }
 
   private Mono<String> getIdByUsername(String username) {

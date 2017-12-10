@@ -32,5 +32,12 @@ public final class ErrorConstants {
 
   public static final int INTERNAL_UNKNOWN_ERROR = 4444;
 
+  public static final int STORE_APPLY_IN_PROGRESS = 7311;
+  public static final int STORE_ALREADY_OPEN = 7312;
+
+  public static final int STORE_APPLY_NOT_EXIST = 7313;
+
+  public static final int COMMISION_IS_ERROR = 8001;
+
   private ErrorConstants() {}
 }

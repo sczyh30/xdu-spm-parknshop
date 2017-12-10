@@ -155,6 +155,15 @@ public class UserServiceImpl implements UserService {
     return asyncExecute(() -> userRepository.modifyStatus(UserStatus.NORMAL, id));
   }
 
+  @Override
+  public Mono<Long> deleteUser(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    userRepository.deleteById(id);
+    return Mono.just(0L);
+  }
+
   private boolean isValidUser(User user) {
     return Objects.nonNull(user) && Objects.nonNull(user.getUsername()) && Objects.nonNull(user.getPassword());
   }
