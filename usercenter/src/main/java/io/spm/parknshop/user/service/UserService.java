@@ -32,4 +32,6 @@ public interface UserService {
   Mono<Long> removeFromBlacklist(Long id);
 
   Mono<Long> deleteUser(Long id);
+
+  Flux<User> getAllUsers();
 }

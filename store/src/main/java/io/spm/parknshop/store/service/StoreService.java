@@ -21,4 +21,8 @@ public interface StoreService {
   Flux<Store> searchStoreByKeyword(String keyword);
 
   Flux<Store> getAll();
+
+  Mono<Long> setBlacklist(Long id);
+
+  Mono<Long> recoverFromBlacklist(Long id);
 }

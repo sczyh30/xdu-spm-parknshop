@@ -162,8 +162,12 @@ public class UserServiceImpl implements UserService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    userRepository.deleteById(id);
-    return Mono.just(0L);
+    return asyncExecute(() -> userRepository.deleteById(id));
+  }
+
+  @Override
+  public Flux<User> getAllUsers() {
+    return asyncIterable(() -> userRepository.findAll());
   }
 
   private boolean isValidUser(User user) {

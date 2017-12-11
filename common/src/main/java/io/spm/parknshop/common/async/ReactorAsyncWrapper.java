@@ -35,7 +35,7 @@ public final class ReactorAsyncWrapper {
   }
 
   public static Mono<Long> asyncExecute(Runnable f) {
-    return Mono.<Void>fromRunnable(f).subscribeOn(scheduler).map(v -> 0L);
+    return Mono.fromCallable(() -> {f.run();return 0L;}).subscribeOn(scheduler);
   }
 
   public static <R> Flux<R> asyncIterable(Callable<Iterable<R>> f) {

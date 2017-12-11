@@ -1,5 +1,6 @@
 package io.spm.parknshop.seller.service;
 
+import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
@@ -9,7 +10,6 @@ import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.asyncIterable;
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 @Service
@@ -54,6 +54,11 @@ public class SellerServiceImpl implements SellerService {
         );
   }
 
+  @Override
+  public Flux<User> getAllSellers() {
+    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.SELLER));
+  }
+
   private Mono<?> checkApplyParams(Long sellerId, Store store) {
     return Mono.just(0); // TODO
   }
@@ -76,6 +81,4 @@ public class SellerServiceImpl implements SellerService {
         .setApplyTime(new Date())
         .setStore(store);
   }
-
-
 }

@@ -14,4 +14,6 @@ public interface SellerService {
   Flux<User> searchSellerByKeyword(String keyword);
 
   Mono<String> applyStore(Long userId, Store store);
+
+  Flux<User> getAllSellers();
 }

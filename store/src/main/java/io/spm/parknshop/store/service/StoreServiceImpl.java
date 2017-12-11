@@ -2,6 +2,7 @@ package io.spm.parknshop.store.service;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.store.domain.StoreStatus;
 import io.spm.parknshop.store.repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,6 +86,22 @@ public class StoreServiceImpl implements StoreService {
   @Override
   public Flux<Store> getAll() {
     return asyncIterable(() -> storeRepository.findAll());
+  }
+
+  @Override
+  public Mono<Long> setBlacklist(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> storeRepository.modifyStatus(StoreStatus.BLACK_LIST, id));
+  }
+
+  @Override
+  public Mono<Long> recoverFromBlacklist(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> storeRepository.modifyStatus(StoreStatus.NORMAL, id));
   }
 
   private static boolean isValidNewStore(Store store){
