@@ -23,7 +23,7 @@ class RoleAuthenticationDecider {
     switch (principal.getRole()) {
       case AuthRoles.CUSTOMER:
       case AuthRoles.SELLER:
-        if (path.startsWith("/api/v1/admin/")) {
+        if (path.startsWith("/api/v1/admin/") || path.startsWith("/api/v1/user/register")) {
           return Mono.error(ExceptionUtils.authNoPermission());
         } else {
           return Mono.just(0L);

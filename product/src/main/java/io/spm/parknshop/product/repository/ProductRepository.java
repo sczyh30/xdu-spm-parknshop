@@ -14,13 +14,10 @@ import java.util.List;
  */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-  List<Product> getByStoreId(long id);
+  List<Product> getByStoreId(long storeId);
 
-  @Query (value = "SELECT * FROM product where product.name LIKE  CONCAT('%',:keyword,'%')", nativeQuery = true)
-  List<Product> searchByKeyword(@Param("keyword")String keyword);
+  List<Product> getByCatalogId(long catalogId);
 
-  /*@Query(value = "UPDATE product SET is_deleted = 1 WHERE id = ?1", nativeQuery = true)
-  @Modifying
-  @Override
-  void deleteById(Long id);*/
+  @Query(value = "SELECT * FROM product WHERE product.name LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
+  List<Product> searchByKeyword(@Param("keyword") String keyword);
 }

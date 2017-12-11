@@ -25,8 +25,9 @@ public class Store {
   private Long sellerId;
   private String name;
 
-  private String email;
+  private String briefDescription;
   private String telephone;
+  private String email;
 
   private int status;
 
@@ -84,6 +85,15 @@ public class Store {
     return this;
   }
 
+  public String getBriefDescription() {
+    return briefDescription;
+  }
+
+  public Store setBriefDescription(String briefDescription) {
+    this.briefDescription = briefDescription;
+    return this;
+  }
+
   public String getTelephone() {
     return telephone;
   }
@@ -110,7 +120,7 @@ public class Store {
       ", gmtModified=" + gmtModified +
       ", sellerId=" + sellerId +
       ", name='" + name + '\'' +
-      ", email='" + email + '\'' +
+      ", briefDescription='" + briefDescription + '\'' +
       ", telephone='" + telephone + '\'' +
       ", status=" + status +
       '}';

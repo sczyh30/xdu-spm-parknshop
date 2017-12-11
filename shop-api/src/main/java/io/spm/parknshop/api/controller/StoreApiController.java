@@ -1,6 +1,7 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.product.domain.Product;
+import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
@@ -28,7 +29,7 @@ public class StoreApiController {
   private StoreService storeService;
 
   @GetMapping("/store/{id}/products")
-  public /*Flux*/ Publisher<Product> apiGetProductsById(@PathVariable("id") Long id) {
+  public /*Flux*/ Publisher<ProductVO> apiGetProductsById(@PathVariable("id") Long id) {
     return productService.getByStoreId(id);
   }
 
@@ -39,11 +40,11 @@ public class StoreApiController {
 
   @PutMapping("/store/{id}/modify_product/{productId}")
   public Mono<Product> apiModifyProduct(@PathVariable("id") Long id, @PathVariable("productId") Long productId, @RequestBody Product product) {
-    return productService.add(product);
+    return productService.modify(productId, product);
   }
 
   @DeleteMapping("/store/{id}/delete_product/{productId}")
-  public Mono<?> apiRemoveProductFromStore(@PathVariable("id") Long id, @PathVariable("productId") Long productId) {
+  public Mono<Long> apiRemoveProductFromStore(@PathVariable("id") Long id, @PathVariable("productId") Long productId) {
     return productService.remove(productId);
   }
 
@@ -54,7 +55,14 @@ public class StoreApiController {
         .map(Optional::get);
   }
 
-  @PutMapping("/store/{id}")
+  @GetMapping("/store/by_seller/{sellerId}")
+  public Mono<Store> apiGetStoreBySeller(@PathVariable("sellerId") Long sellerId) {
+    return storeService.getBySellerId(sellerId)
+      .filter(Optional::isPresent)
+      .map(Optional::get);
+  }
+
+  @PostMapping("/store/{id}")
   public Mono<Store> apiModifyStore(@PathVariable("id") Long id, @RequestBody Store store) {
     return storeService.modify(id, store);
   }

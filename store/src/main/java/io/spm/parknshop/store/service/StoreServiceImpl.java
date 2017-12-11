@@ -45,6 +45,7 @@ public class StoreServiceImpl implements StoreService {
     if (!id.equals(store.getId())) {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
+    //TODO: modify status security problem!
     return async(() -> storeRepository.save(store.setGmtModified(new Date())));
   }
 
@@ -66,7 +67,7 @@ public class StoreServiceImpl implements StoreService {
   }
 
   @Override
-  public Mono<Void> remove(Long id) {
+  public Mono<Long> remove(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
@@ -81,9 +82,14 @@ public class StoreServiceImpl implements StoreService {
     return asyncIterable(() -> storeRepository.searchStoreByKeyword(keyword));
   }
 
+  @Override
+  public Flux<Store> getAll() {
+    return asyncIterable(() -> storeRepository.findAll());
+  }
+
   private static boolean isValidNewStore(Store store){
     return Optional.ofNullable(store)
-        .map(e -> store.getEmail())
+        .map(e -> store.getBriefDescription())
         .map(e -> store.getSellerId())
         .map(e -> store.getName())
         .map(e -> store.getTelephone())
@@ -93,7 +99,7 @@ public class StoreServiceImpl implements StoreService {
   private  static boolean isValidStore(Store store){
     return Optional.ofNullable(store)
         .map(e -> store.getId())
-        .map(e -> store.getEmail())
+        .map(e -> store.getBriefDescription())
         .map(e -> store.getSellerId())
         .map(e -> store.getName())
         .map(e -> store.getTelephone())

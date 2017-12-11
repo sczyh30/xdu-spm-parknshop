@@ -1,6 +1,7 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.PrincipalModifyDO;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.service.UserService;
@@ -18,7 +19,7 @@ public class UserApiController {
   private UserService userService;
 
   @PostMapping("/user/login")
-  public /*Mono<String>*/ Mono<?> apiUserLogin(@RequestBody User user) {
+  public Mono<LoginVO> apiUserLogin(@RequestBody User user) {
     return userService.login(user.getUsername(), user.getPassword());
   }
 

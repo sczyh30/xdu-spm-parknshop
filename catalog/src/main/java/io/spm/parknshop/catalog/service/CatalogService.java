@@ -19,5 +19,5 @@ public interface CatalogService {
 
   Mono<Catalog> modify(Long id, Catalog catalog);
 
-  Mono<Void> remove(Long id);
+  Mono<Long> remove(Long id);
 }

@@ -27,7 +27,7 @@ public class Result<R> {
   }
 
   public static <T> Result<T> notFound() {
-    return Result.failure(ErrorConstants.NOT_FOUND, "Not found");
+    return Result.failure(ErrorConstants.NOT_EXIST, "Not found");
   }
 
   public static <T> Result<T> unauthorized() {

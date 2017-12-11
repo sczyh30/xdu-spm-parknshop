@@ -1,8 +1,7 @@
 package io.spm.parknshop.api.controller;
 
-import io.spm.parknshop.product.domain.Product;
+import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.service.ProductService;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -17,10 +16,9 @@ public class ProductApiController {
   private ProductService productService;
 
   @GetMapping("/product/{id}")
-  public Mono<Product> apiGetById(@PathVariable("id") Long id) {
-    return productService.getById(id)
+  public Mono<ProductVO> apiGetById(@PathVariable("id") Long id) {
+    return productService.getProductVO(id)
       .filter(Optional::isPresent)
       .map(Optional::get);
   }
-
 }

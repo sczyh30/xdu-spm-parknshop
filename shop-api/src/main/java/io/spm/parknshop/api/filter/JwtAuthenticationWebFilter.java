@@ -3,7 +3,10 @@ package io.spm.parknshop.api.filter;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.spm.parknshop.api.common.WritableResponseSupport;
 import io.spm.parknshop.api.util.Result;
+import io.spm.parknshop.api.util.ResultUtils;
 import io.spm.parknshop.common.auth.AuthPrincipal;
+import io.spm.parknshop.common.auth.AuthRole;
+import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ErrorConstants;
 import io.spm.parknshop.common.exception.ServiceException;
@@ -62,23 +65,15 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
     return extractFromHeader(exchange.getRequest().getHeaders())
       .flatMap(this::verifyAndExtractPrincipal)
       .flatMap(principal -> verifyRole(principal, exchange, path))
-      .flatMap(v -> chain.filter(exchange))
-      .onErrorResume(ex -> handleException(ex, exchange));
-  }
-
-  private boolean testWithoutAuthentication(/*@NonNull*/ String path) {
-    if (path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register")
-      || path.startsWith("/api/v1/product") || path.startsWith("/api/v1/admin/login")) {
-      return true;
-    }
-    return false;
+      .onErrorResume(ex -> handleAuthException(ex, exchange).map(e -> 0L))
+      .flatMap(v -> chain.filter(exchange));
   }
 
   private boolean isAuthException(ServiceException ex) {
     return ex.getErrorCode() == ErrorConstants.NO_AUTH || ex.getErrorCode() == ErrorConstants.USER_INVALID_TOKEN;
   }
 
-  private Mono<Void> handleException(Throwable ex, ServerWebExchange exchange) {
+  private Mono<Void> handleAuthException(Throwable ex, ServerWebExchange exchange) {
     logger.error("Authentication failed", ex);
     if (ex instanceof ServiceException) {
       if (isAuthException((ServiceException) ex)) {
@@ -88,8 +83,9 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
           .flatMap(response -> writeTo(response, exchange));
       }
     }
-    return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON_UTF8)
-      .body(BodyInserters.fromObject(Result.unknownError()))
+    Result<?> result = ResultUtils.toApiResult(ex);
+    return ServerResponse.status(ResultUtils.getStatus(result)).contentType(MediaType.APPLICATION_JSON_UTF8)
+      .body(BodyInserters.fromObject(result))
       .flatMap(response -> writeTo(response, exchange));
   }
 
@@ -119,5 +115,13 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
 
   private boolean isApiRoute(String path) {
     return !StringUtils.isEmpty(path) && path.startsWith("/api/");
+  }
+
+  private boolean testWithoutAuthentication(/*@NonNull*/ String path) {
+    if (path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search")
+      || path.startsWith("/api/v1/product") || path.startsWith("/api/v1/catalog") || path.startsWith("/api/v1/index") || path.startsWith("/api/v1/admin/login")) {
+      return true;
+    }
+    return false;
   }
 }

@@ -4,6 +4,7 @@ import io.spm.parknshop.common.auth.AuthCenter;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
+import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.PrincipalModifyDO;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.domain.UserStatus;
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Mono<String> login(final String username, final String password) {
+  public Mono<LoginVO> login(final String username, final String password) {
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
       return Mono.error(ExceptionUtils.invalidParam("username/password"));
     }
@@ -64,7 +65,8 @@ public class UserServiceImpl implements UserService {
       .flatMap(this::extractUser)
       .flatMap(user ->
         Mono.just(verifyCredential(user, username, password))
-          .flatMap(ok -> generateToken(user, ok)))
+          .flatMap(ok -> generateToken(user, ok))
+          .map(token -> new LoginVO(token, username, user.getId())))
       .switchIfEmpty(Mono.error(ExceptionUtils.loginIncorrect()));
   }
 
@@ -101,7 +103,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Mono<Void> modifyPassword(Long id, PrincipalModifyDO user) {
+  public Mono<Long> modifyPassword(Long id, PrincipalModifyDO user) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
@@ -140,7 +142,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Mono<Void> setBlacklist(Long id) {
+  public Mono<Long> setBlacklist(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
@@ -148,7 +150,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Mono<Void> removeFromBlacklist(Long id) {
+  public Mono<Long> removeFromBlacklist(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }

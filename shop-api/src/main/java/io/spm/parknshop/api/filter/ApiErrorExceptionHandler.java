@@ -1,6 +1,7 @@
 package io.spm.parknshop.api.filter;
 
 import io.spm.parknshop.api.util.Result;
+import io.spm.parknshop.api.util.ResultUtils;
 import io.spm.parknshop.common.exception.ErrorConstants;
 import io.spm.parknshop.common.exception.ServiceException;
 import org.slf4j.Logger;
@@ -45,36 +46,14 @@ public class ApiErrorExceptionHandler extends AbstractErrorWebExceptionHandler {
   private Mono<ServerResponse> handleException(ServerRequest request, ErrorAttributes errorAttributes) {
     return Mono.just(errorAttributes.getError(request))
       .doOnNext(this::logError)
-      .map(this::toApiResult)
+      .map(ResultUtils::toApiResult)
       .flatMap(this::createResponse);
   }
 
-  private <R> HttpStatus getStatus(Result<R> result) {
-    if (result.getStatusCode() == ErrorConstants.NO_AUTH) {
-      return HttpStatus.UNAUTHORIZED;
-    }
-    return HttpStatus.OK;
-  }
-
   private <R> Mono<ServerResponse> createResponse(Result<R> result) {
-    return ServerResponse.status(getStatus(result))
+    return ServerResponse.status(ResultUtils.getStatus(result))
       .contentType(MediaType.APPLICATION_JSON_UTF8)
       .body(fromObject(result));
-  }
-
-  private <R> Result<R> toApiResult(Throwable ex) {
-    if (ex instanceof ServiceException) {
-      return Result.failure(((ServiceException) ex).getErrorCode(), ex);
-    } else if (ex instanceof ServerWebInputException) {
-      return Result.failure(ErrorConstants.BAD_REQUEST, "Invalid input");
-    }  else if (ex instanceof ResponseStatusException) {
-      if (((ResponseStatusException) ex).getStatus().equals(HttpStatus.NOT_FOUND)) {
-        return Result.notFound();
-      }
-      return Result.failure(((ResponseStatusException) ex).getStatus().value(), "Unknown error");
-    } else {
-      return Result.failure(ErrorConstants.SERVER_ERROR, ex);
-    }
   }
 
   private void logError(Throwable ex) {

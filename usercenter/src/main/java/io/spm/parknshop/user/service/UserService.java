@@ -1,5 +1,6 @@
 package io.spm.parknshop.user.service;
 
+import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.PrincipalModifyDO;
 import io.spm.parknshop.user.domain.User;
 import reactor.core.publisher.Flux;
@@ -16,19 +17,19 @@ public interface UserService {
 
   Mono<User> register(User user);
 
-  Mono<String> login(String username, String password);
+  Mono<LoginVO> login(String username, String password);
 
   Mono<User> modifyDetail(Long id, User user);
 
-  Mono<Void> modifyPassword(Long id, PrincipalModifyDO user);
+  Mono<Long> modifyPassword(Long id, PrincipalModifyDO user);
 
   Mono<Optional<User>> getUserById(Long id);
 
   Flux<User> searchUserByKeyword(String keyword);
 
-  Mono<Void> setBlacklist(Long id);
+  Mono<Long> setBlacklist(Long id);
 
-  Mono<Void> removeFromBlacklist(Long id);
+  Mono<Long> removeFromBlacklist(Long id);
 
   Mono<Long> deleteUser(Long id);
 }

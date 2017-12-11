@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.user.domain.LoginVO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -12,7 +13,7 @@ import reactor.core.publisher.Mono;
  */
 public interface AdminService {
 
-  Mono<String> login(String username, String password);
+  Mono<LoginVO> login(String username, String password);
 
   Mono<Admin> modifyDetail(Long id, Admin admin);
 

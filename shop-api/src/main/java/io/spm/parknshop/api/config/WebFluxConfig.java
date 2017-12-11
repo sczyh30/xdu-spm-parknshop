@@ -9,8 +9,12 @@ import org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebExcepti
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 import java.util.Collections;
@@ -18,7 +22,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebFlux
-public class WebFluxConfig {
+public class WebFluxConfig implements WebFluxConfigurer {
 
   private final ResourceProperties resourceProperties;
 
@@ -50,5 +54,15 @@ public class WebFluxConfig {
   @Bean
   public JwtAuthenticationWebFilter jwtTokenFilter() {
     return new JwtAuthenticationWebFilter(viewResolvers, serverCodecConfigurer);
+  }
+
+  @Bean
+  @Order(-3)
+  public CorsWebFilter corsFilter() {
+    return new CorsWebFilter(exchange -> {
+      CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+      configuration.addAllowedMethod("*");
+      return configuration;
+    });
   }
 }

@@ -16,7 +16,9 @@ public interface StoreService {
 
   Mono<Optional<Store>> getBySellerId(Long sellerId);
 
-  Mono<Void> remove(Long id);
+  Mono<Long> remove(Long id);
 
   Flux<Store> searchStoreByKeyword(String keyword);
+
+  Flux<Store> getAll();
 }

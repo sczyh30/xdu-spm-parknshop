@@ -13,6 +13,7 @@ import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.seller.repository.StoreApplyRepository;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
+import io.spm.parknshop.user.domain.LoginVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class AdminServiceImpl implements AdminService {
   private CommissionRepository commissionRepository;
 
   @Override
-  public Mono<String> login(String username, String password) {
+  public Mono<LoginVO> login(String username, String password) {
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
       return Mono.error(ExceptionUtils.invalidParam("username/password"));
     }
@@ -46,7 +47,8 @@ public class AdminServiceImpl implements AdminService {
       .flatMap(this::extractAdmin)
       .flatMap(admin ->
         Mono.just(verifyCredential(admin, username, password))
-          .flatMap(ok -> generateToken(admin, ok)))
+          .flatMap(ok -> generateToken(admin, ok))
+          .map(token -> new LoginVO(token, username, admin.getId())))
       .switchIfEmpty(Mono.error(ExceptionUtils.loginIncorrect()));
   }
 
