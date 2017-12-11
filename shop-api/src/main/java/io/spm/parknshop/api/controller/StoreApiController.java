@@ -68,7 +68,7 @@ public class StoreApiController {
   }
 
   @DeleteMapping("/store/{id}")
-  public Mono<?> apiRemoveStore(@PathVariable("id") Long id, @PathVariable("productId") Long productId) {
-    return productService.remove(productId);
+  public Mono<?> apiRemoveStore(@PathVariable("id") Long id) {
+    return productService.remove(id);
   }
 }
