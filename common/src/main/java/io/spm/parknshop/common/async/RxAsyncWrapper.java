@@ -1,5 +1,6 @@
 package io.spm.parknshop.common.async;
 
+import rx.Completable;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Single;
@@ -25,6 +26,11 @@ public final class RxAsyncWrapper {
    */
   public static <R> Single<R> async(Callable<R> f) {
     return Single.fromCallable(f).subscribeOn(scheduler);
+  }
+
+  public static Completable asyncExecute(Runnable f) {
+    Callable<Void> fakeCallable = () -> { f.run(); return null; };
+    return Single.fromCallable(fakeCallable).subscribeOn(scheduler).toCompletable();
   }
 
   public static <R> Observable<R> asyncIterable(Callable<Iterable<R>> f) {

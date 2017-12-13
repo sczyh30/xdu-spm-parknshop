@@ -1,8 +1,11 @@
 package io.spm.parknshop.product.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * @author Eric Zhao
@@ -11,6 +14,7 @@ import java.util.Date;
 public class Product {
 
   @Id
+  @GeneratedValue(strategy = IDENTITY)
   private Long id;
   private String name;
 

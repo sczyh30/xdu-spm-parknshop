@@ -16,5 +16,29 @@ public final class ErrorConstants {
   public static final int NOT_FOUND = 404;
   public static final int SERVER_ERROR = 500;
 
+  public static final int NOT_EXIST = 4040;
+  public static final int USER_NOT_EXIST = 4041;
+  public static final int PRODUCT_NOT_EXIST = 40421;
+  public static final int PRODUCT_NOT_EXIST_IN_CART = 40422;
+
+  public static final int USER_ALREADY_EXISTS = 4110;
+
+  public static final int USER_MODIFY_OLD_PASSWORD_NOT_MATCH = 4115;
+  public static final int USER_INFO_DUPLICATE = 4111;
+
+  public static final int ID_NOT_MATCH = 4001;
+
+  public static final int USER_LOGIN_INCORRECT = 4011;
+  public static final int USER_INVALID_TOKEN = 4012;
+
+  public static final int INTERNAL_UNKNOWN_ERROR = 4444;
+
+  public static final int STORE_APPLY_IN_PROGRESS = 7311;
+  public static final int STORE_ALREADY_OPEN = 7312;
+
+  public static final int STORE_APPLY_NOT_EXIST = 7313;
+
+  public static final int COMMISION_IS_ERROR = 8001;
+
   private ErrorConstants() {}
 }

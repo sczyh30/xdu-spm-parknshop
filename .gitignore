@@ -4,7 +4,8 @@
 .idea
 *.iml
 out
-gen### Maven template
+gen
+### Maven template
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -29,3 +30,6 @@ Icon
 
 # Thumbnails
 ._*
+
+# For test
+img
