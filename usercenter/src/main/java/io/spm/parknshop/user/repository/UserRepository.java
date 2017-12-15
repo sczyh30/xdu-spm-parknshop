@@ -11,7 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-  Optional<User> getByUsername(String username);
+
+  @Query(value = "SELECT * FROM user WHERE username = ?1 AND user_type = 0", nativeQuery = true)
+  Optional<User> getCustomerByUsername(String username);
+
+  @Query(value = "SELECT * FROM user WHERE username = ?1 AND user_type = 1", nativeQuery = true)
+  Optional<User> getSellerByUsername(String username);
 
   List<User> getAllByUserType(int status);
 
@@ -24,10 +29,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query(value = "SELECT id FROM user WHERE telephone = ?1", nativeQuery = true)
   Long getIdByTelephone(String telephone);
 
-  @Query(value = "SELECT * FROM user WHERE user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
-  List<User> searchUserByKeyword(@Param("keyword") String keyword);
+  @Query(value = "SELECT * FROM user WHERE user.user_type = 0 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
+  List<User> searchCustomerByKeyword(@Param("keyword") String keyword);
 
-  @Query(value = "SELECT * FROM user WHERE user.user_type=1 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
+  @Query(value = "SELECT * FROM user WHERE user.user_type = 1 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
   List<User> searchSellerByKeyword(@Param("keyword") String keyword);
 
   @Query(value = "UPDATE user SET user_status=?1, gmt_modified=CURRENT_TIMESTAMP WHERE id=?2", nativeQuery = true)

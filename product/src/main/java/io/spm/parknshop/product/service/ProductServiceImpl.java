@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Flux<ProductVO> getVOByCatalogId(Long catalogId) {
+  public Flux<ProductVO> getVOByCategoryId(Long catalogId) {
     if (Objects.isNull(catalogId) || catalogId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("catalogId"));
     }

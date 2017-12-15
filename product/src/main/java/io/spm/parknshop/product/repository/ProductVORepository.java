@@ -1,6 +1,6 @@
 package io.spm.parknshop.product.repository;
 
-import io.spm.parknshop.catalog.domain.Catalog;
+import io.spm.parknshop.catalog.domain.Category;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.domain.ProductVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +58,12 @@ public class ProductVORepository {
       .setName(rs.getString("name"))
       .setPrice(rs.getDouble("price"))
       .setPicUri(rs.getString("pic_uri"));
-    Catalog catalog = new Catalog().setId(rs.getLong("catalog_id"))
+    Category category = new Category().setId(rs.getLong("catalog_id"))
       .setName(rs.getString("catalog_name"));
     String storeName = rs.getString("store_name");
     int inventory = rs.getInt("inventory");
     return new ProductVO().setProduct(product)
-      .setCatalog(catalog).setInventory(inventory).setStoreName(storeName);
+      .setCategory(category).setInventory(inventory).setStoreName(storeName);
   };
 
   private ResultSetExtractor<Optional<ProductVO>> resultSetExtractor = rs -> {
@@ -76,12 +76,12 @@ public class ProductVORepository {
         .setName(rs.getString("name"))
         .setPrice(rs.getDouble("price"))
         .setPicUri(rs.getString("pic_uri"));
-      Catalog catalog = new Catalog().setId(rs.getLong("catalog_id"))
+      Category category = new Category().setId(rs.getLong("catalog_id"))
         .setName(rs.getString("catalog_name"));
       String storeName = rs.getString("store_name");
       int inventory = rs.getInt("inventory");
       return Optional.of(new ProductVO().setProduct(product)
-        .setCatalog(catalog).setInventory(inventory).setStoreName(storeName));
+        .setCategory(category).setInventory(inventory).setStoreName(storeName));
     } else {
       return Optional.empty();
     }

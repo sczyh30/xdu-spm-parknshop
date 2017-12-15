@@ -27,7 +27,7 @@
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
-      <artifactId>catalog</artifactId>
+      <artifactId>category</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>

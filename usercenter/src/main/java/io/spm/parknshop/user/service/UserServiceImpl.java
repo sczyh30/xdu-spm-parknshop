@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
       return Mono.error(ExceptionUtils.invalidParam("username/password"));
     }
-    return async(() -> userRepository.getByUsername(username))
+    return async(() -> userRepository.getCustomerByUsername(username))
       .flatMap(this::extractUser)
       .flatMap(user ->
         Mono.just(verifyCredential(user, username, password))
@@ -134,11 +134,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Flux<User> searchUserByKeyword(String keyword) {
+  public Flux<User> searchCustomerByKeyword(String keyword) {
     if (StringUtils.isEmpty(keyword)) {
       return Flux.error(ExceptionUtils.invalidParam("keyword"));
     }
-    return asyncIterable(() -> userRepository.searchUserByKeyword(keyword));
+    return asyncIterable(() -> userRepository.searchCustomerByKeyword(keyword));
   }
 
   @Override

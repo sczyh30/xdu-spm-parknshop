@@ -3,7 +3,7 @@ package io.spm.parknshop.api.controller;
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
-import io.spm.parknshop.seller.service.SellerService;
+import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.domain.LoginVO;
@@ -28,7 +28,7 @@ public class AdminApiController {
   @Autowired
   private UserService userService;
   @Autowired
-  private SellerService sellerService;
+  private SellerUserService sellerUserService;
 
   @PostMapping("/admin/add_admin")
   public Mono<Admin> apiAddAdmin(@RequestBody Admin admin) {
@@ -97,7 +97,7 @@ public class AdminApiController {
 
   @GetMapping("/admin/sellers/all")
   public Publisher<User> apiGetAllUsers() {
-    return sellerService.getAllSellers();
+    return sellerUserService.getAllSellers();
   }
 
   @PostMapping("/admin/set_commission")

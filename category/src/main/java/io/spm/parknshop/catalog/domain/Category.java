@@ -8,7 +8,7 @@ import javax.persistence.Id;
  * @author Eric Zhao
  */
 @Entity
-public class Catalog {
+public class Category {
 
   @Id
   @GeneratedValue
@@ -19,7 +19,7 @@ public class Catalog {
     return id;
   }
 
-  public Catalog setId(Long id) {
+  public Category setId(Long id) {
     this.id = id;
     return this;
   }
@@ -28,14 +28,14 @@ public class Catalog {
     return name;
   }
 
-  public Catalog setName(String name) {
+  public Category setName(String name) {
     this.name = name;
     return this;
   }
 
   @Override
   public String toString() {
-    return "Catalog{" +
+    return "Category{" +
       "id=" + id +
       ", name='" + name + '\'' +
       '}';

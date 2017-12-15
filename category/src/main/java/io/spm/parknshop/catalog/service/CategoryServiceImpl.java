@@ -1,6 +1,6 @@
 package io.spm.parknshop.catalog.service;
 
-import io.spm.parknshop.catalog.domain.Catalog;
+import io.spm.parknshop.catalog.domain.Category;
 import io.spm.parknshop.catalog.repository.CatalogRepository;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +14,13 @@ import java.util.Optional;
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 
 @Service
-public class CatalogServiceImpl implements CatalogService {
+public class CategoryServiceImpl implements CategoryService {
 
   @Autowired
   private CatalogRepository catalogRepository;
 
   @Override
-  public Mono<Optional<Catalog>> getById(Long id) {
+  public Mono<Optional<Category>> getById(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
@@ -28,30 +28,30 @@ public class CatalogServiceImpl implements CatalogService {
   }
 
   @Override
-  public Flux<Catalog> getAll() {
+  public Flux<Category> getAll() {
     return asyncIterable(() -> catalogRepository.findAll());
   }
 
   @Override
-  public Mono<Catalog> add(Catalog catalog) {
-    if (Objects.isNull(catalog) || Objects.isNull(catalog.getName())) {
-      return Mono.error(ExceptionUtils.invalidParam("catalog"));
+  public Mono<Category> add(Category category) {
+    if (Objects.isNull(category) || Objects.isNull(category.getName())) {
+      return Mono.error(ExceptionUtils.invalidParam("category"));
     }
-    if (Objects.nonNull(catalog.getId())) {
-      return Mono.error(ExceptionUtils.invalidParam("catalog ID should not be provided"));
+    if (Objects.nonNull(category.getId())) {
+      return Mono.error(ExceptionUtils.invalidParam("category ID should not be provided"));
     }
-    return async(() -> catalogRepository.save(catalog));
+    return async(() -> catalogRepository.save(category));
   }
 
   @Override
-  public Mono<Catalog> modify(Long id, Catalog catalog) {
-    if (Objects.isNull(catalog) || Objects.isNull(catalog.getName()) || Objects.isNull(catalog.getId())) {
-      return Mono.error(ExceptionUtils.invalidParam("catalog"));
+  public Mono<Category> modify(Long id, Category category) {
+    if (Objects.isNull(category) || Objects.isNull(category.getName()) || Objects.isNull(category.getId())) {
+      return Mono.error(ExceptionUtils.invalidParam("category"));
     }
-    if (!id.equals(catalog.getId())) {
+    if (!id.equals(category.getId())) {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
-    return async(() -> catalogRepository.save(catalog));
+    return async(() -> catalogRepository.save(category));
   }
 
   @Override

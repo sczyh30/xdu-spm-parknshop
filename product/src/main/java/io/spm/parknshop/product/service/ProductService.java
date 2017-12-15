@@ -24,7 +24,7 @@ public interface ProductService {
 
   Flux<Product> getByCatalogId(Long catalogId);
 
-  Flux<ProductVO> getVOByCatalogId(Long catalogId);
+  Flux<ProductVO> getVOByCategoryId(Long catalogId);
 
   Flux<ProductVO> getRecentProducts(int number);
 

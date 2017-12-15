@@ -1,8 +1,8 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
-import io.spm.parknshop.seller.service.SellerService;
 import io.spm.parknshop.product.service.ProductService;
+import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 /**
- * Search Controller
+ * Search controller.
  *
  * @author four
  */
@@ -23,7 +23,7 @@ public class SearchApiController {
   @Autowired
   private UserService userService;
   @Autowired
-  private SellerService sellerService;
+  private SellerUserService sellerService;
   @Autowired
   private ProductService productService;
   @Autowired
@@ -35,7 +35,7 @@ public class SearchApiController {
       return Flux.error(ExceptionUtils.invalidParam("type"));
     }
     if ("user".equals(type)) {
-      return userService.searchUserByKeyword(keyword);
+      return userService.searchCustomerByKeyword(keyword);
     }
     if ("seller".equals(type)) {
       return sellerService.searchSellerByKeyword(keyword);

@@ -1,17 +1,14 @@
-package io.spm.parknshop.seller.service;
+package io.spm.parknshop.seller.service.impl;
 
-import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.seller.repository.StoreApplyRepository;
+import io.spm.parknshop.seller.service.SellerService;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
-import io.spm.parknshop.user.domain.User;
-import io.spm.parknshop.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
@@ -22,24 +19,20 @@ import java.util.UUID;
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
+/**
+ * Biz service implementation of {@link SellerService}.
+ *
+ * @author Eric Zhao
+ * @author four
+ */
 @Service
 public class SellerServiceImpl implements SellerService {
 
-  @Autowired
-  private UserRepository userRepository;
   @Autowired
   private StoreApplyRepository storeApplyRepository;
 
   @Autowired
   private StoreService storeService;
-
-  @Override
-  public Flux<User> searchSellerByKeyword(String keyword) {
-    if (Objects.isNull(keyword) || "".equals(keyword)) {
-      return Flux.error(ExceptionUtils.invalidParam("keyword"));
-    }
-    return asyncIterable(() -> userRepository.searchSellerByKeyword(keyword));
-  }
 
   @Override
   public Mono<String> applyStore(Long sellerId, Store store) {
@@ -54,13 +47,11 @@ public class SellerServiceImpl implements SellerService {
         );
   }
 
-  @Override
-  public Flux<User> getAllSellers() {
-    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.SELLER));
-  }
-
-  private Mono<?> checkApplyParams(Long sellerId, Store store) {
-    return Mono.just(0); // TODO
+  private Mono<Long> checkApplyParams(Long sellerId, Store store) {
+    if (Objects.isNull(sellerId) || sellerId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("sellerId"));
+    }
+    return Mono.just(sellerId);
   }
 
   private Mono<StoreApplyDO> checkPendingApply(Long sellerId) {

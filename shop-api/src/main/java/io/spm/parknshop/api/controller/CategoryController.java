@@ -1,7 +1,7 @@
 package io.spm.parknshop.api.controller;
 
-import io.spm.parknshop.catalog.domain.Catalog;
-import io.spm.parknshop.catalog.service.CatalogService;
+import io.spm.parknshop.catalog.domain.Category;
+import io.spm.parknshop.catalog.service.CategoryService;
 import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.service.ProductService;
 import org.reactivestreams.Publisher;
@@ -24,34 +24,36 @@ public class CategoryController {
   @Autowired
   private ProductService productService;
   @Autowired
-  private CatalogService catalogService;
+  private CategoryService categoryService;
 
   @GetMapping("/catalog/{id}/products")
-  public Mono<?> apiGetProductsByCatalog(@PathVariable("id") Long id) {
-    return catalogService.getById(id)
+  public Mono<Map<String, ?>> apiGetProductsByCategory(@PathVariable("id") Long id) {
+    return categoryService.getById(id)
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .flatMap(catalog -> productService.getVOByCatalogId(id)
+      .flatMap(catalog -> productService.getVOByCategoryId(id)
         .collectList()
-        .map(products -> wrapCatalogProduct(catalog, products))
+        .map(products -> wrapCategoryProduct(catalog, products))
       );
   }
 
-  private Map<String, Object> wrapCatalogProduct(Catalog catalog, List<ProductVO> products) {
+  private Map<String, Object> wrapCategoryProduct(Category category, List<ProductVO> products) {
     Map<String, Object> map = new HashMap<>(4);
-    map.put("catalog", catalog);
+    map.put("catalog", category);
     map.put("products", products);
     return map;
   }
 
   @GetMapping("/catalog/{id}")
-  public Mono<Catalog> apiGetCatalog(@PathVariable("id") Long id) {
-    return catalogService.getById(id)
+  public Mono<Category> apiGetCategory(@PathVariable("id") Long id) {
+    return categoryService.getById(id)
       .filter(Optional::isPresent)
       .map(Optional::get);
   }
+
   @GetMapping("/categories/all")
-  public Publisher<Catalog> apiGetAll() {
-    return catalogService.getAll();
+  public Publisher<Category> apiGetAll() {
+    return categoryService.getAll();
   }
+
 }
