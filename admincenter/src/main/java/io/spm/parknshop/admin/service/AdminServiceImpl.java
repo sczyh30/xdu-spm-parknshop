@@ -117,7 +117,7 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public Mono<Boolean> setCommission(Double commission) {
     if (commission >= 100 || commission <= 0) {
-     return Mono.error(new ServiceException(COMMISION_IS_ERROR, "commission is error"));
+     return Mono.error(new ServiceException(COMMISSION_IS_ERROR, "commission is error"));
     }
     return commissionRepository.setCommission(commission);
   }

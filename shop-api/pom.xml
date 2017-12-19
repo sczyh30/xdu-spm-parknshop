@@ -22,6 +22,12 @@
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>common-auth</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>usercenter</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
@@ -52,6 +58,21 @@
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>buy</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>tradecenter</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>payment</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>order</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
@@ -63,6 +84,21 @@
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>seller</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>advertisement</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>history</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.xdu.0x5f3759df</groupId>
+      <artifactId>favorite</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
 
