@@ -1,6 +1,7 @@
 package io.spm.parknshop.cart.service;
 
 import io.spm.parknshop.cart.domain.CartEvent;
+import io.spm.parknshop.cart.domain.CartEventType;
 import io.spm.parknshop.cart.domain.CartProduct;
 import io.spm.parknshop.cart.domain.CartUnit;
 import io.spm.parknshop.cart.domain.SimpleCartProduct;
@@ -38,8 +39,37 @@ public class CartServiceImpl implements CartService {
   private InventoryService inventoryService;
 
   @Override
-  public Mono<ShoppingCart> addCart(Long userId, CartEvent cartEvent) {
+  public Mono<ShoppingCart> updateCart(Long userId, CartEvent cartEvent) {
+    if (Objects.isNull(cartEvent)) {
+      return Mono.error(ExceptionUtils.invalidParam("cart operation"));
+    }
+    switch (cartEvent.getEventType()) {
+      case CartEventType.ADD_CART:
+        return addCart(userId, cartEvent);
+      case CartEventType.DECREASE_CART:
+        return decreaseCart(userId, cartEvent);
+      case CartEventType.REMOVE:
+        return removeFromCart(userId, cartEvent);
+      case CartEventType.CHECK:
+        return markCheckProduct(userId, cartEvent);
+      default:
+        return Mono.error(ExceptionUtils.invalidParam("cart operation (unknown operation type)"));
+    }
+  }
+
+  private Mono<ShoppingCart> markCheckProduct(Long userId, CartEvent cartEvent) {
+    return cartEventShouldBe(cartEvent, CartEventType.CHECK)
+      .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
+        .map(e -> e.setChecked(!e.isChecked()))
+        .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST_IN_CART, "Product is not in your cart")))
+        .flatMap(e -> cartRepository.putCartProduct(userId, e))
+        .flatMap(e -> getCartForUser(userId))
+      );
+  }
+
+  private Mono<ShoppingCart> addCart(Long userId, CartEvent cartEvent) {
     return checkParams(userId, cartEvent)
+      .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.ADD_CART))
       .flatMap(v -> checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount()))
       .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.plusAmount(cartEvent.getAmount()))
@@ -49,9 +79,16 @@ public class CartServiceImpl implements CartService {
       );
   }
 
-  @Override
-  public Mono<ShoppingCart> deleteCart(Long userId, CartEvent cartEvent) {
+  private Mono<ShoppingCart> removeFromCart(Long userId, CartEvent cartEvent) {
+    return cartEventShouldBe(cartEvent, CartEventType.REMOVE)
+      .flatMap(v -> checkProductExists(cartEvent.getProductId()))
+      .flatMap(v -> cartRepository.deleteCartProduct(userId, cartEvent.getProductId()))
+      .flatMap(v -> getCartForUser(userId));
+  }
+
+  private Mono<ShoppingCart> decreaseCart(Long userId, CartEvent cartEvent) {
     return checkParams(userId, cartEvent)
+      .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.DECREASE_CART))
       .flatMap(v -> checkProductExists(cartEvent.getProductId()))
       .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.decreaseAmount(cartEvent.getAmount()))
@@ -81,9 +118,11 @@ public class CartServiceImpl implements CartService {
   private CartUnit buildCartUnit(List<CartProduct> products, long storeId) {
     String storeName = products.get(0).getProduct().getStoreName();
     double totalPrice = products.stream()
+      .filter(CartProduct::isChecked)
       .mapToDouble(e -> e.getProduct().getProduct().getPrice() * e.getAmount())
       .sum();
     int amount = products.stream()
+      .filter(CartProduct::isChecked)
       .mapToInt(CartProduct::getAmount)
       .sum();
     return new CartUnit().setProducts(products)
@@ -98,6 +137,7 @@ public class CartServiceImpl implements CartService {
       .map(product -> new CartProduct().setProductId(simpleProduct.getId())
         .setAmount(simpleProduct.getAmount())
         .setProduct(product)
+        .setChecked(simpleProduct.isChecked())
       );
   }
 
@@ -153,6 +193,13 @@ public class CartServiceImpl implements CartService {
       .map(Mono::just)
       .orElse(Mono.error(ExceptionUtils.invalidParam("cart operation")))
       .flatMap(v -> checkAmount(cartEvent));
+  }
+
+  private Mono<?> cartEventShouldBe(CartEvent event, int type) {
+    if (event.getEventType() != type) {
+      return Mono.error(ExceptionUtils.invalidParam("cart event type mismatch"));
+    }
+    return Mono.just(type);
   }
 
   private Mono<?> checkAmount(/*@NonNull*/ CartEvent cartEvent) {

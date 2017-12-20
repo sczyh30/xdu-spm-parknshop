@@ -12,7 +12,6 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.PreDestroy;
 
 @Configuration("cartRedisConfig")
 public class RedisConfig {
@@ -33,10 +32,5 @@ public class RedisConfig {
   @Bean
   public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory){
     return new StringRedisTemplate(connectionFactory);
-  }
-
-  @PreDestroy
-  public void flushTestDb() {
-    factory.getConnection().flushDb();
   }
 }

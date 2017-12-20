@@ -13,6 +13,7 @@ public class CartProduct {
 
   private ProductVO product;
   private Integer amount;
+  private boolean checked;
 
   public Long getProductId() {
     return productId;
@@ -41,12 +42,22 @@ public class CartProduct {
     return this;
   }
 
+  public boolean isChecked() {
+    return checked;
+  }
+
+  public CartProduct setChecked(boolean checked) {
+    this.checked = checked;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "CartProduct{" +
       "productId=" + productId +
       ", product=" + product +
       ", amount=" + amount +
+      ", checked=" + checked +
       '}';
   }
 }

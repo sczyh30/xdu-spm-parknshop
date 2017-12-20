@@ -5,6 +5,8 @@ public class SimpleCartProduct {
   private Long id;
   private Integer amount;
 
+  private boolean checked;
+
   public SimpleCartProduct() {}
 
   public SimpleCartProduct(Long id, Integer amount) {
@@ -45,11 +47,21 @@ public class SimpleCartProduct {
     return this.setAmount(target);
   }
 
+  public boolean isChecked() {
+    return checked;
+  }
+
+  public SimpleCartProduct setChecked(boolean checked) {
+    this.checked = checked;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "SimpleCartProduct{" +
       "id=" + id +
       ", amount=" + amount +
+      ", checked=" + checked +
       '}';
   }
 }

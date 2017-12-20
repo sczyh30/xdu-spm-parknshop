@@ -7,9 +7,7 @@ import reactor.core.publisher.Mono;
 
 public interface CartService {
 
-  Mono<ShoppingCart> addCart(Long userId, CartEvent cartEvent);
-
-  Mono<ShoppingCart> deleteCart(Long userId, CartEvent cartEvent);
+  Mono<ShoppingCart> updateCart(Long userId, CartEvent cartEvent);
 
   Mono<ShoppingCart> getCartForUser(Long userId);
 }
