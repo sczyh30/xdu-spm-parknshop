@@ -45,6 +45,8 @@
     <module>order</module>
     <module>favorite</module>
     <module>history</module>
+    <module>delivery</module>
+    <module>ratecenter</module>
 
     <module>shop-api</module>
   </modules>
