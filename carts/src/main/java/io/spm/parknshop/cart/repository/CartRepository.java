@@ -4,6 +4,7 @@ import io.spm.parknshop.cart.domain.SimpleCartProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
@@ -25,6 +26,11 @@ public class CartRepository {
   public Mono<SimpleCartProduct> getCartProduct(/*@NonNull*/ Long userId, /*@NonNull*/ Long productId) {
     return template.<String, SimpleCartProduct>opsForHash()
         .get(getCartKey(userId), getProductKey(productId));
+  }
+
+  public Flux<SimpleCartProduct> getCart(/*@NonNull*/ Long userId) {
+    return template.<String, SimpleCartProduct>opsForHash()
+      .values(getCartKey(userId));
   }
 
   private String getProductKey(Long productId) {

@@ -41,6 +41,8 @@ public final class ErrorConstants {
 
   public static final int COMMISSION_IS_ERROR = 8001;
 
+  public static final int PRODUCT_NO_INVENTORY = 4610;
+
   public static final int AD_UNKNOWN_TYPE = 8100;
 
   private ErrorConstants() {}

@@ -1,5 +1,6 @@
 package io.spm.parknshop.cart.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,16 +8,13 @@ import java.util.List;
  */
 public class ShoppingCart {
 
-  private List<CartProduct> products;
+  private final List<CartUnit> cart = new ArrayList<>();
+
+  private int totalAmount;
   private double totalPrice;
 
-  public List<CartProduct> getProducts() {
-    return products;
-  }
-
-  public ShoppingCart setProducts(List<CartProduct> products) {
-    this.products = products;
-    return this;
+  public List<CartUnit> getCart() {
+    return cart;
   }
 
   public double getTotalPrice() {
@@ -28,10 +26,20 @@ public class ShoppingCart {
     return this;
   }
 
+  public int getTotalAmount() {
+    return totalAmount;
+  }
+
+  public ShoppingCart setTotalAmount(int totalAmount) {
+    this.totalAmount = totalAmount;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "ShoppingCart{" +
-      "products=" + products +
+      "cart=" + cart +
+      ", totalAmount=" + totalAmount +
       ", totalPrice=" + totalPrice +
       '}';
   }
