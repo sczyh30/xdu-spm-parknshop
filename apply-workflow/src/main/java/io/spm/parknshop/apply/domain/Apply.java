@@ -1,12 +1,18 @@
 package io.spm.parknshop.apply.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Date;
 
 /**
  * @author Eric Zhao
  */
+@Entity
 public class Apply {
 
+  @Id
+  @GeneratedValue
   private Long id;
 
   private Date gmtCreate;

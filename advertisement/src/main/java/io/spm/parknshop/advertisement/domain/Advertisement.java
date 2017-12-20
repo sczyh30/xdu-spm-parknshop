@@ -1,12 +1,18 @@
 package io.spm.parknshop.advertisement.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Date;
 
 /**
  * @author Eric Zhao
  */
+@Entity
 public class Advertisement {
 
+  @Id
+  @GeneratedValue
   private Long id;
 
   private Date gmtCreate;
