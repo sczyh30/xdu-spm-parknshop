@@ -30,12 +30,14 @@ public class SearchApiController {
   private StoreService storeService;
 
   @GetMapping("/search")
-  public Publisher<?> apiSearch(@RequestParam("type") String type, @RequestParam("keyword") String keyword) {
+  public Publisher<?> apiSearch(@RequestParam("type") String type, @RequestParam("keyword") String keyword,
+                                @RequestParam(defaultValue = "1", value="page") Integer page,
+                                @RequestParam(defaultValue = "20", value="size") Integer size) {
     if (StringUtils.isEmpty(type)) {
       return Flux.error(ExceptionUtils.invalidParam("type"));
     }
     if ("user".equals(type)) {
-      return userService.searchCustomerByKeyword(keyword);
+      return userService.searchCustomerByKeyword(keyword, page, size);
     }
     if ("seller".equals(type)) {
       return sellerService.searchSellerByKeyword(keyword);

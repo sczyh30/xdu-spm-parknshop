@@ -10,8 +10,10 @@ import java.util.List;
  */
 public interface ApplyMetadataRepository extends JpaRepository<Apply, Long> {
 
-  List<Apply> getByUserId(long userId);
+  List<Apply> getByProposerId(long proposerId);
 
   List<Apply> getByApplyType(int type);
+
+  Apply getById(Long id);
 
 }

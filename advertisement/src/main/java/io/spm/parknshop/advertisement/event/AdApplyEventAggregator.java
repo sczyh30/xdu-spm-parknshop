@@ -1,6 +1,7 @@
 package io.spm.parknshop.advertisement.event;
 
 import io.spm.parknshop.apply.domain.ApplyEvent;
+import io.spm.parknshop.apply.domain.ApplyStatus;
 import io.spm.parknshop.apply.event.StateMachine;
 import io.spm.parknshop.apply.event.WorkflowEventAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,6 @@ public class AdApplyEventAggregator implements WorkflowEventAggregator<Integer> 
   @Override
   public Mono<Integer> aggregate(Flux<ApplyEvent> eventStream) {
     return eventStream.map(ApplyEvent::getApplyEventType)
-      .reduce(NEW_APPLY, stateMachine::transform);
+      .reduce(ApplyStatus.NEW_APPLY, stateMachine::transform);
   }
 }

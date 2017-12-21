@@ -2,6 +2,8 @@ package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
+import io.spm.parknshop.apply.domain.ApplyResult;
+import io.spm.parknshop.apply.service.ApplyOperationService;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
@@ -29,6 +31,8 @@ public class AdminApiController {
   private UserService userService;
   @Autowired
   private SellerUserService sellerUserService;
+  @Autowired
+  private ApplyOperationService applyOperationService;
 
   @PostMapping("/admin/add_admin")
   public Mono<Admin> apiAddAdmin(@RequestBody Admin admin) {
@@ -103,5 +107,12 @@ public class AdminApiController {
   @PostMapping("/admin/set_commission")
   public Mono<?> setCommission(@RequestBody String commission) {
     return adminService.setCommission(Double.valueOf(commission));
+}
+
+  @PostMapping("/admin/manage/apply/reject/{applyId}")
+  public Mono<?> apiRejectAd(@PathVariable("applyId") Long applyId,
+                             @RequestBody ApplyResult applyResult) {
+    //TODO get processorId
+    return applyOperationService.reject(applyId, "1", applyResult);
   }
 }

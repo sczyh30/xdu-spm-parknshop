@@ -22,6 +22,7 @@ public class AdApplyEventNotifier implements WorkflowEventNotifier<String> {
       case SUBMIT_APPLY:
         return doNotifyNewApply(apply);
       case APPROVE_APPLY:
+
       case REJECT_APPLY:
       case WITHDRAW_APPLY:
       default:
@@ -30,6 +31,8 @@ public class AdApplyEventNotifier implements WorkflowEventNotifier<String> {
   }
 
   private Mono<String> doNotifyNewApply(Apply apply) {
-    return Mono.empty();
+
+
+    return Mono.just("1");
   }
 }

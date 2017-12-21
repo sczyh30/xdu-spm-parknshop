@@ -3,24 +3,30 @@ package io.spm.parknshop.apply.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * @author Eric Zhao
  */
 @Entity
+@Table(name="apply_metadata")
 public class Apply {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = IDENTITY)
   private Long id;
 
   private Date gmtCreate;
   private Date gmtModified;
 
-  private Long userId;
+  private String proposerId;
 
   private int applyType;
+
+  private int status;
 
   private String applyData;
 
@@ -51,12 +57,12 @@ public class Apply {
     return this;
   }
 
-  public Long getUserId() {
-    return userId;
+  public String getProposerId() {
+    return proposerId;
   }
 
-  public Apply setUserId(Long userId) {
-    this.userId = userId;
+  public Apply setProposerId(String proposerId) {
+    this.proposerId = proposerId;
     return this;
   }
 
@@ -75,6 +81,15 @@ public class Apply {
 
   public Apply setApplyData(String applyData) {
     this.applyData = applyData;
+    return this;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
+  public Apply setStatus(int status) {
+    this.status = status;
     return this;
   }
 }

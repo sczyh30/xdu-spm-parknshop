@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
  */
 public interface ApplyService<T, R> {
 
-  Mono<R> applyFor(Long proposerId, T entity);
+  Mono<R> applyFor(String proposerId, T entity);
+
 
 }

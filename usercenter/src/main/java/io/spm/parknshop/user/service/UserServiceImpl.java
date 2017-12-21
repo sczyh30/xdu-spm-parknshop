@@ -11,6 +11,8 @@ import io.spm.parknshop.user.domain.UserStatus;
 import io.spm.parknshop.user.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -134,12 +136,15 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Flux<User> searchCustomerByKeyword(String keyword) {
+  public Flux<User> searchCustomerByKeyword(String keyword, Integer page, Integer size) {
     if (StringUtils.isEmpty(keyword)) {
       return Flux.error(ExceptionUtils.invalidParam("keyword"));
     }
-    return asyncIterable(() -> userRepository.searchCustomerByKeyword(keyword));
+    //
+    Pageable pageable = PageRequest.of(page-1, size);
+    return asyncIterable(() -> userRepository.searchCustomerByKeyword(keyword,pageable));
   }
+
 
   @Override
   public Mono<Long> setBlacklist(Long id) {

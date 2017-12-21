@@ -8,7 +8,7 @@ import java.util.Date;
 public class AdvertisementDO {
 
   private int adType;
-  private Long adOwner;
+  private String adOwner;
   private Long adTarget;
 
   private String description;
@@ -26,11 +26,11 @@ public class AdvertisementDO {
     return this;
   }
 
-  public Long getAdOwner() {
+  public String getAdOwner() {
     return adOwner;
   }
 
-  public AdvertisementDO setAdOwner(Long adOwner) {
+  public AdvertisementDO setAdOwner(String adOwner) {
     this.adOwner = adOwner;
     return this;
   }
@@ -78,5 +78,18 @@ public class AdvertisementDO {
   public AdvertisementDO setEndDate(Date endDate) {
     this.endDate = endDate;
     return this;
+  }
+
+  @Override
+  public String toString() {
+    return "AdvertisementDO{" +
+        "adType=" + adType +
+        ", adOwner=" + adOwner +
+        ", adTarget=" + adTarget +
+        ", description='" + description + '\'' +
+        ", adUrl='" + adUrl + '\'' +
+        ", startDate=" + startDate +
+        ", endDate=" + endDate +
+        '}';
   }
 }

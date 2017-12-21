@@ -1,9 +1,12 @@
 package io.spm.parknshop.user.repository;
 
 import io.spm.parknshop.user.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +32,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query(value = "SELECT id FROM user WHERE telephone = ?1", nativeQuery = true)
   Long getIdByTelephone(String telephone);
 
-  @Query(value = "SELECT * FROM user WHERE user.user_type = 0 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
-  List<User> searchCustomerByKeyword(@Param("keyword") String keyword);
+  @Query(value = "SELECT * FROM user WHERE user.user_type = 0 AND user.username LIKE CONCAT('%',:keyword,'%') \n#pageable \n",
+      countQuery = "SELECT count(*) FROM user WHERE user.user_type = 0 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
+  Page<User> searchCustomerByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
   @Query(value = "SELECT * FROM user WHERE user.user_type = 1 AND user.username LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
   List<User> searchSellerByKeyword(@Param("keyword") String keyword);

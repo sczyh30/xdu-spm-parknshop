@@ -3,20 +3,23 @@ package io.spm.parknshop.apply.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * @author Eric Zhao
  */
 @Entity
+@Table(name="apply_event")
 public class ApplyEvent {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = IDENTITY)
   private Long id;
 
   private Date gmtCreate;
-  private Date gmtModified;
 
   private Long applyId;
   private int applyEventType;
@@ -40,15 +43,6 @@ public class ApplyEvent {
 
   public ApplyEvent setGmtCreate(Date gmtCreate) {
     this.gmtCreate = gmtCreate;
-    return this;
-  }
-
-  public Date getGmtModified() {
-    return gmtModified;
-  }
-
-  public ApplyEvent setGmtModified(Date gmtModified) {
-    this.gmtModified = gmtModified;
     return this;
   }
 

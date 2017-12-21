@@ -19,7 +19,7 @@ public class Advertisement {
   private Date gmtModified;
 
   private int adType;
-  private Long adOwner;
+  private String adOwner;
   private Long adTarget;
 
   private String description;
@@ -67,11 +67,11 @@ public class Advertisement {
     return this;
   }
 
-  public Long getAdOwner() {
+  public String getAdOwner() {
     return adOwner;
   }
 
-  public Advertisement setAdOwner(Long adOwner) {
+  public Advertisement setAdOwner(String adOwner) {
     this.adOwner = adOwner;
     return this;
   }
