@@ -5,6 +5,8 @@ import io.spm.parknshop.delivery.domain.DeliveryTemplate;
 import java.util.List;
 
 /**
+ * Represents a group of products and relevant delivery template in a certain shop.
+ *
  * @author Eric Zhao
  */
 public class OrderStoreGroupUnit {

@@ -3,7 +3,7 @@ package io.spm.parknshop.buy.domain;
 import java.util.List;
 
 /**
- * Order preview for display when confirming order.
+ * Order preview for display when confirming order (rendering submit order page).
  *
  * @author Eric Zhao
  */

@@ -1,6 +1,8 @@
 package io.spm.parknshop.buy.domain;
 
 /**
+ * Passed when submitting confirm order request.
+ *
  * @author Eric Zhao
  */
 public class ConfirmOrderDO {

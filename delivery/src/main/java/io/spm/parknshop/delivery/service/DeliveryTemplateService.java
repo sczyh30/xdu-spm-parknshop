@@ -11,6 +11,13 @@ import java.util.Optional;
  */
 public interface DeliveryTemplateService {
 
+  /**
+   * Get delivery templates by store. The implementation must provide a default template
+   * if the template for the store is absent.
+   *
+   * @param storeId store ID
+   * @return delivery templates
+   */
   Flux<DeliveryTemplate> getTemplateByStoreId(Long storeId);
 
   Mono<Optional<DeliveryTemplate>> getById(Long id);

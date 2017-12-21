@@ -18,6 +18,7 @@ public final class ErrorConstants {
 
   public static final int NOT_EXIST = 4040;
   public static final int USER_NOT_EXIST = 4041;
+  public static final int USER_DELIVERY_ADDRESS_NOT_EXIST = 40413;
   public static final int PRODUCT_NOT_EXIST = 40421;
   public static final int PRODUCT_NOT_EXIST_IN_CART = 40422;
   public static final int STORE_NOT_EXIST = 4043;
