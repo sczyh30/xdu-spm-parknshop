@@ -2,7 +2,11 @@ package io.spm.parknshop.product.domain;
 
 import io.spm.parknshop.catalog.domain.Category;
 
+/**
+ * @author Eric Zhao
+ */
 public class ProductVO {
+
   private Product product;
   private Category category;
 
