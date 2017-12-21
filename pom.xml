@@ -39,6 +39,7 @@
     <module>advertisement</module>
     <module>carts</module>
     <module>buy</module>
+    <module>trade-common</module>
     <module>tradecenter</module>
     <module>payment</module>
     <module>admincenter</module>

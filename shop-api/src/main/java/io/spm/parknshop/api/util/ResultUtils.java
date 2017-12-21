@@ -22,7 +22,7 @@ public final class ResultUtils {
 
   public static <R> Result<R> toApiResult(Throwable ex) {
     if (ex instanceof ServiceException) {
-      return Result.failure(((ServiceException) ex).getErrorCode(), ex);
+      return Result.failureWithResult(((ServiceException) ex).getErrorCode(), ex, (R) ((ServiceException) ex).getAttach());
     } else if (ex instanceof ServerWebInputException) {
       return Result.failure(ErrorConstants.BAD_REQUEST, "Invalid input");
     }  else if (ex instanceof ResponseStatusException) {

@@ -54,6 +54,10 @@ public class Result<R> {
     return new Result<>(false, statusCode, throwable.getMessage(), null);
   }
 
+  public static <T> Result<T> failureWithResult(int statusCode, Throwable throwable, T result) {
+    return new Result<>(false, statusCode, throwable.getMessage(), result);
+  }
+
   public Result(boolean success, int statusCode) {
     this.success = success;
     this.statusCode = statusCode;

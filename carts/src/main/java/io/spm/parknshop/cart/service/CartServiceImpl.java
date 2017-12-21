@@ -39,6 +39,17 @@ public class CartServiceImpl implements CartService {
   private InventoryService inventoryService;
 
   @Override
+  public Mono<Boolean> clearCartCheckout(Long userId) {
+    return checkUserId(userId)
+      .flatMapMany(v -> cartRepository.getCart(userId))
+      .filter(e -> !e.isChecked())
+      .collectList()
+      .flatMap(list -> cartRepository.clearCart(userId)
+        .flatMap(v -> cartRepository.putCart(userId, list))
+      );
+  }
+
+  @Override
   public Mono<ShoppingCart> updateCart(Long userId, CartEvent cartEvent) {
     if (Objects.isNull(cartEvent)) {
       return Mono.error(ExceptionUtils.invalidParam("cart operation"));
@@ -155,7 +166,7 @@ public class CartServiceImpl implements CartService {
       .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST, "Product does not exist")))
       .flatMap(amount -> {
         if (amount < n) {
-          return Mono.error(new ServiceException(ErrorConstants.PRODUCT_NO_INVENTORY, "Product out of stock"));
+          return Mono.error(new ServiceException(ErrorConstants.PRODUCT_NO_INVENTORY, String.format("Inventory of product %d is insufficient", productId)));
         } else {
           return Mono.just(amount);
         }

@@ -29,7 +29,7 @@ public class InventoryService {
   public Mono<Integer> modifyInventory(Long id, Inventory inventory) {
     return checkInventory(id, inventory)
       .flatMap(v -> async(() -> inventoryRepository.save(inventory.setGmtModified(new Date())))
-      .map(e -> inventory.getAmount())
+        .map(e -> inventory.getAmount())
       );
   }
 

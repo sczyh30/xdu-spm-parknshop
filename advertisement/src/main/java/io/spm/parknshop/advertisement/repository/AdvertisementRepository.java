@@ -16,9 +16,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 
   List<Advertisement> getByAdTypeAndAdTarget(int type, long target);
 
-  @Query(value = "SELECT count(*) FROM advertisement WHERE start_date >= ?0 AND end_date <= ?1", nativeQuery = true)
+  @Query(value = "SELECT count(*) FROM advertisement WHERE start_date >= ?1 AND end_date <= ?2", nativeQuery = true)
   int countBetweenDateRange(Date from, Date to);
 
-  @Query(value = "SELECT count(*) FROM advertisement WHERE start_date >= ?0 AND end_date <= ?1", nativeQuery = true)
+  @Query(value = "SELECT count(*) FROM advertisement WHERE start_date >= ?1 AND end_date <= ?2", nativeQuery = true)
   List<Advertisement> getBetweenDateRange(Date from, Date to);
 }

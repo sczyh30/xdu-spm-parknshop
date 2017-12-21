@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>tradecenter</artifactId>
+  <artifactId>trade-common</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <dependencies>
@@ -21,16 +21,10 @@
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
-      <artifactId>trade-common</artifactId>
+      <artifactId>delivery</artifactId>
       <version>1.0-SNAPSHOT</version>
+      <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>io.xdu.0x5f3759df</groupId>
-      <artifactId>order</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-
   </dependencies>
 
 </project>

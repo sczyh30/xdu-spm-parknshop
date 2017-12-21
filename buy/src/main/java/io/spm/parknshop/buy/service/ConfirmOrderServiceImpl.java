@@ -1,10 +1,13 @@
 package io.spm.parknshop.buy.service;
 
 import io.spm.parknshop.buy.domain.ConfirmOrderDO;
-import io.spm.parknshop.buy.domain.ConfirmOrderResult;
-import io.spm.parknshop.buy.domain.OrderPreview;
-import io.spm.parknshop.buy.domain.OrderProductUnit;
-import io.spm.parknshop.buy.domain.OrderStoreGroupUnit;
+import io.spm.parknshop.common.functional.Tuple2;
+import io.spm.parknshop.inventory.repository.InventoryRepository;
+import io.spm.parknshop.trade.domain.ConfirmOrderMessage;
+import io.spm.parknshop.trade.domain.ConfirmOrderResult;
+import io.spm.parknshop.trade.domain.OrderPreview;
+import io.spm.parknshop.trade.domain.OrderProductUnit;
+import io.spm.parknshop.trade.domain.OrderStoreGroupUnit;
 import io.spm.parknshop.cart.domain.CartProduct;
 import io.spm.parknshop.cart.domain.CartUnit;
 import io.spm.parknshop.cart.domain.ShoppingCart;
@@ -16,8 +19,10 @@ import io.spm.parknshop.delivery.domain.DeliveryAddress;
 import io.spm.parknshop.delivery.domain.DeliveryTemplate;
 import io.spm.parknshop.delivery.service.DeliveryAddressService;
 import io.spm.parknshop.delivery.service.DeliveryTemplateService;
+import io.spm.parknshop.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,6 +32,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
+import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 /**
  * @author Eric Zhao
@@ -40,6 +48,11 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
   private DeliveryAddressService deliveryAddressService;
   @Autowired
   private DeliveryTemplateService deliveryTemplateService;
+  @Autowired
+  private TradeService tradeService;
+
+  @Autowired
+  private InventoryRepository inventoryRepository;
 
   @Override
   public Mono<OrderPreview> previewOrder(Long userId) {
@@ -111,7 +124,45 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
   public Mono<ConfirmOrderResult> confirmOrder(Long userId, ConfirmOrderDO requestDO) {
     return checkConfirmRequest(userId, requestDO)
       .flatMap(v -> checkAddressValid(requestDO.getAddressId()))
-      .map(e -> new ConfirmOrderResult()); // TODO
+      .flatMap(address -> previewOrder(userId)
+        .flatMap(orderPreview -> processInventory(orderPreview)
+          .map(v -> wrapRpcMessage(address, orderPreview))
+          .flatMap(tradeService::dispatchAndProcessOrder)
+          .flatMap(result -> clearCart(userId).map(e -> result))
+        )
+      );
+  }
+
+  private ConfirmOrderMessage wrapRpcMessage(DeliveryAddress address, OrderPreview orderPreview) {
+    return new ConfirmOrderMessage().setDeliveryAddress(address).setOrderPreview(orderPreview);
+  }
+
+  private Mono<Long> processInventory(OrderPreview orderPreview) {
+    // Check inventory.
+    List<OrderProductUnit> insufficientList = orderPreview.getStoreGroups().stream()
+      .flatMap(e -> e.getProducts().stream())
+      .filter(e -> e.getAmount() > e.getInventory())
+      .collect(Collectors.toList());
+    if (!insufficientList.isEmpty()) {
+      return Mono.error(new ServiceException(PRODUCT_NO_INVENTORY, "Insufficient product inventory", insufficientList));
+    }
+    // Inventory sufficient, pre-process the inventory (decrease).
+    List<Tuple2<Long, Integer>> inventoryTuple = orderPreview.getStoreGroups().stream()
+      .flatMap(e -> e.getProducts().stream())
+      .map(e -> Tuple2.of(e.getProductId(), e.getInventory() - e.getAmount()))
+      .collect(Collectors.toList());
+    return asyncExecute(() -> preDecreaseInventory(inventoryTuple));
+  }
+
+  @Transactional
+  protected void preDecreaseInventory(List<Tuple2<Long, Integer>> inventoryTuple) {
+    for (Tuple2<Long, Integer> tuple : inventoryTuple) {
+      inventoryRepository.saveAmount(tuple.r1, tuple.r2);
+    }
+  }
+
+  private Mono<Boolean> clearCart(/*@NonNull*/ Long userId) {
+    return cartService.clearCartCheckout(userId);
   }
 
   private Mono<DeliveryAddress> checkAddressValid(Long addressId) {

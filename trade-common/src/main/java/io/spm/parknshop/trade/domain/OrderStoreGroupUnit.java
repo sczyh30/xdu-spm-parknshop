@@ -1,4 +1,4 @@
-package io.spm.parknshop.buy.domain;
+package io.spm.parknshop.trade.domain;
 
 import io.spm.parknshop.delivery.domain.DeliveryTemplate;
 

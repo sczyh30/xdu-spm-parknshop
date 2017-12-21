@@ -9,5 +9,7 @@ public interface CartService {
 
   Mono<ShoppingCart> updateCart(Long userId, CartEvent cartEvent);
 
+  Mono<Boolean> clearCartCheckout(Long userId);
+
   Mono<ShoppingCart> getCartForUser(Long userId);
 }

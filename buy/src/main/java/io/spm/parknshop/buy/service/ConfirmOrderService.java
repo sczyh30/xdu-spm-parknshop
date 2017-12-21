@@ -1,8 +1,8 @@
 package io.spm.parknshop.buy.service;
 
 import io.spm.parknshop.buy.domain.ConfirmOrderDO;
-import io.spm.parknshop.buy.domain.ConfirmOrderResult;
-import io.spm.parknshop.buy.domain.OrderPreview;
+import io.spm.parknshop.trade.domain.ConfirmOrderResult;
+import io.spm.parknshop.trade.domain.OrderPreview;
 import reactor.core.publisher.Mono;
 
 /**

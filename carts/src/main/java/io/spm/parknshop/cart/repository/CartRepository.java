@@ -7,6 +7,11 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Repository
 public class CartRepository {
 
@@ -31,6 +36,17 @@ public class CartRepository {
   public Flux<SimpleCartProduct> getCart(/*@NonNull*/ Long userId) {
     return template.<String, SimpleCartProduct>opsForHash()
       .values(getCartKey(userId));
+  }
+
+  public Mono<Boolean> clearCart(/*@NonNull*/ Long userId) {
+    return template.opsForHash().delete(getCartKey(userId));
+  }
+
+  public Mono<Boolean> putCart(/*@NonNull*/ Long userId, List<SimpleCartProduct> products) {
+    Map<String, SimpleCartProduct> map = new HashMap<>(products.size());
+    products.forEach(e -> map.putIfAbsent(getProductKey(e.getId()), e));
+    return template.opsForHash()
+      .putAll(getCartKey(userId), map);
   }
 
   private String getProductKey(Long productId) {
