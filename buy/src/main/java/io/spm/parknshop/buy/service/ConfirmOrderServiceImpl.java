@@ -123,7 +123,7 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
   @Override
   public Mono<ConfirmOrderResult> confirmOrder(Long userId, ConfirmOrderDO requestDO) {
     return checkConfirmRequest(userId, requestDO)
-      .flatMap(v -> checkAddressValid(requestDO.getAddressId()))
+      .flatMap(v -> retrieveAndCheckAddress(requestDO.getAddressId()))
       .flatMap(address -> previewOrder(userId)
         .flatMap(orderPreview -> processInventory(orderPreview)
           .map(v -> wrapRpcMessage(address, orderPreview))
@@ -165,7 +165,7 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
     return cartService.clearCartCheckout(userId);
   }
 
-  private Mono<DeliveryAddress> checkAddressValid(Long addressId) {
+  private Mono<DeliveryAddress> retrieveAndCheckAddress(Long addressId) {
     return deliveryAddressService.getById(addressId)
       .filter(Optional::isPresent)
       .map(Optional::get)
