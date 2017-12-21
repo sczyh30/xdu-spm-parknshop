@@ -1,6 +1,6 @@
-package io.spm.parknshop.catalog.service;
+package io.spm.parknshop.category.service;
 
-import io.spm.parknshop.catalog.domain.Category;
+import io.spm.parknshop.category.domain.Category;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

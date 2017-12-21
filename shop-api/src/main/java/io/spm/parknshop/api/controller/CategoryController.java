@@ -1,7 +1,7 @@
 package io.spm.parknshop.api.controller;
 
-import io.spm.parknshop.catalog.domain.Category;
-import io.spm.parknshop.catalog.service.CategoryService;
+import io.spm.parknshop.category.domain.Category;
+import io.spm.parknshop.category.service.CategoryService;
 import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.service.ProductService;
 import org.reactivestreams.Publisher;

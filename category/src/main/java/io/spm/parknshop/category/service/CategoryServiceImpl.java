@@ -1,7 +1,7 @@
-package io.spm.parknshop.catalog.service;
+package io.spm.parknshop.category.service;
 
-import io.spm.parknshop.catalog.domain.Category;
-import io.spm.parknshop.catalog.repository.CatalogRepository;
+import io.spm.parknshop.category.domain.Category;
+import io.spm.parknshop.category.repository.CatalogRepository;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

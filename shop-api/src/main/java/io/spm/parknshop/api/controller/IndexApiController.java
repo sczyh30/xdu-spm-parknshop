@@ -1,7 +1,7 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.api.util.IndexPage;
-import io.spm.parknshop.catalog.service.CategoryService;
+import io.spm.parknshop.category.service.CategoryService;
 import io.spm.parknshop.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

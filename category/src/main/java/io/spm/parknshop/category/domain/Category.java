@@ -1,4 +1,4 @@
-package io.spm.parknshop.catalog.domain;
+package io.spm.parknshop.category.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

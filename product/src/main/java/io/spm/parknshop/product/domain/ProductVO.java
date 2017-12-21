@@ -1,6 +1,6 @@
 package io.spm.parknshop.product.domain;
 
-import io.spm.parknshop.catalog.domain.Category;
+import io.spm.parknshop.category.domain.Category;
 
 /**
  * @author Eric Zhao
