@@ -3,12 +3,14 @@ package io.spm.parknshop.advertisement.service;
 import io.spm.parknshop.advertisement.domain.AdApplyEventType;
 import io.spm.parknshop.advertisement.domain.AdType;
 import io.spm.parknshop.advertisement.domain.Advertisement;
+import io.spm.parknshop.advertisement.event.AdApplyEventAggregator;
 import io.spm.parknshop.advertisement.event.AdApplyEventNotifier;
 import io.spm.parknshop.apply.domain.*;
 import io.spm.parknshop.apply.event.StateMachine;
 import io.spm.parknshop.apply.repository.ApplyEventRepository;
 import io.spm.parknshop.apply.repository.ApplyMetadataRepository;
-import io.spm.parknshop.apply.service.ApplyOperationService;
+import io.spm.parknshop.apply.service.ApplyDataService;
+import io.spm.parknshop.apply.service.ApplyProcessService;
 import io.spm.parknshop.apply.service.ApplyService;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.functional.Tuple2;
@@ -17,6 +19,7 @@ import io.spm.parknshop.common.util.JsonUtils;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -29,9 +32,10 @@ import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 
 /**
  * @author Eric Zhao
+ * @author four
  */
-@Service
-public class AdvertisementApplyServiceImpl implements ApplyService<AdvertisementDO, String>, ApplyOperationService {
+@Service("adApplyService")
+public class AdvertisementApplyServiceImpl implements ApplyService<AdvertisementDO, String>, ApplyProcessService {
 
   @Autowired
   private ApplyMetadataRepository applyMetadataRepository;
@@ -42,11 +46,16 @@ public class AdvertisementApplyServiceImpl implements ApplyService<Advertisement
   private ProductService productService;
   @Autowired
   private StoreService storeService;
+  @Autowired
+  private ApplyDataService applyDataService;
 
   @Autowired
   private AdApplyEventNotifier eventNotifier;
+  @Autowired
+  private AdApplyEventAggregator applyEventAggregator;
 
   @Autowired
+  @Qualifier(value = "adStateMachine")
   private StateMachine stateMachine;
 
   @Override
@@ -63,12 +72,14 @@ public class AdvertisementApplyServiceImpl implements ApplyService<Advertisement
 
   private Advertisement wrapAdvertisement(AdvertisementDO advertisementDO) {
     return new Advertisement()
-        .setAdType(advertisementDO.getAdType())
-        .setAdOwner(advertisementDO.getAdOwner())
-        .setAdTarget(advertisementDO.getAdTarget())
-        .setDescription(advertisementDO.getDescription())
-        .setAdUrl(advertisementDO.getAdUrl())
-        .setAdTotalPrice(advertisementDO.getAdType() == AdType.AD_PRODUCT?1000:500);
+      .setAdType(advertisementDO.getAdType())
+      .setAdOwner(advertisementDO.getAdOwner())
+      .setAdTarget(advertisementDO.getAdTarget())
+      .setDescription(advertisementDO.getDescription())
+      .setAdUrl(advertisementDO.getAdUrl())
+      .setStartDate(advertisementDO.getStartDate())
+      .setEndDate(advertisementDO.getEndDate())
+      .setAdTotalPrice(advertisementDO.getAdType() == AdType.AD_PRODUCT ? 1000 : 500);
   }
 
   private Mono<?> checkTargetExists(Advertisement advertisement) {
@@ -83,23 +94,21 @@ public class AdvertisementApplyServiceImpl implements ApplyService<Advertisement
   }
 
   private Mono<Tuple2<Apply, ApplyEvent>> submitNewApply(String proposerId, Advertisement advertisement) {
-    Apply applyMetadata = new Apply();
-    applyMetadata.setApplyType(advertisement.getAdType())
-        .setApplyData(JsonUtils.toJson(advertisement))
-        .setProposerId(proposerId)
-        .setStatus(ApplyStatus.NEW_APPLY);
-    ApplyEvent applyEvent = new ApplyEvent();
-    applyEvent.setApplyEventType(AdApplyEventType.SUBMIT_APPLY)
-        .setProcessorId(proposerId);
-    return asyncExecute(() -> saveApply(applyMetadata, applyEvent))
-        .map(e -> Tuple2.of(applyMetadata,applyEvent));
+    Apply applyMetadata = new Apply().setApplyType(advertisement.getAdType())
+      .setApplyData(JsonUtils.toJson(advertisement))
+      .setProposerId(proposerId)
+      .setStatus(ApplyStatus.NEW_APPLY);
+    ApplyEvent applyEvent = new ApplyEvent().setApplyEventType(AdApplyEventType.SUBMIT_APPLY)
+      .setProcessorId(proposerId);
+    return async(() -> saveNewApply(applyMetadata, applyEvent));
   }
 
   @Transactional
-  public void saveApply(Apply applyMetadata, ApplyEvent applyEvent ) {
-    Apply resust = applyMetadataRepository.save(applyMetadata);
-    applyEvent.setApplyId(resust.getId());
-    applyEventRepository.save(applyEvent);
+  protected Tuple2<Apply, ApplyEvent> saveNewApply(Apply applyMetadata, ApplyEvent applyEvent) {
+    Apply apply = applyMetadataRepository.save(applyMetadata);
+    applyEvent.setApplyId(apply.getId());
+    ApplyEvent newEvent = applyEventRepository.save(applyEvent);
+    return Tuple2.of(apply, newEvent);
   }
 
   private Mono<?> checkProductExists(Long productId) {
@@ -135,34 +144,37 @@ public class AdvertisementApplyServiceImpl implements ApplyService<Advertisement
   }
 
   @Override
-  public Mono<Long> reject(Long applyId, String processorId, ApplyResult applyResult) {
-    return operation(AdApplyEventType.REJECT_APPLY, applyId, processorId, applyResult);
+  public Mono<Long> rejectApply(Long applyId, String processorId, ApplyResult applyResult) {
+    return operateApply(AdApplyEventType.REJECT_APPLY, applyId, processorId, applyResult);
   }
 
   @Override
-  public Mono<Long> approve(Long applyId, String processorId, ApplyResult applyResult) {
-    return operation(AdApplyEventType.APPROVE_APPLY, applyId, processorId,applyResult);
+  public Mono<Long> approveApply(Long applyId, String processorId, ApplyResult applyResult) {
+    return operateApply(AdApplyEventType.APPROVE_APPLY, applyId, processorId, applyResult);
   }
 
   @Override
-  public Mono<Long> cancel(Long applyId, String processorId) {
-    return operation(AdApplyEventType.WITHDRAW_APPLY, applyId, processorId,new ApplyResult());
+  public Mono<Long> cancelApply(Long applyId, String processorId) {
+    return operateApply(AdApplyEventType.WITHDRAW_APPLY, applyId, processorId, new ApplyResult());
   }
 
-  private Mono<Long> operation(int applyType, Long applyId, String processorId, ApplyResult applyResult){
-    ApplyEvent applyEvent = new ApplyEvent();
-    applyEvent.setApplyId(applyId)
-        .setApplyEventType(applyType)
-        .setProcessorId(processorId)
-        .setExtraInfo(JsonUtils.toJson(applyResult));
-    return asyncExecute(() ->saveAndUpdate(applyEvent));
+  private Mono<Long> operateApply(int event, Long applyId, String processorId, ApplyResult applyResult) {
+    if (Objects.isNull(applyId) || Objects.isNull(processorId)) {
+      return Mono.error(ExceptionUtils.invalidParam("apply"));
+    }
+    ApplyEvent applyEvent = new ApplyEvent().setApplyId(applyId)
+      .setApplyEventType(event)
+      .setProcessorId(processorId)
+      .setExtraInfo(JsonUtils.toJson(applyResult));
+    return applyEventAggregator.aggregate(applyDataService.getEventStream(applyId))
+      .map(curState -> stateMachine.transform(curState, event))
+      .flatMap(nextState -> asyncExecute(() -> saveAndUpdate(applyId, applyEvent, nextState)))
+      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "Not exist: apply " + applyId)));
   }
 
-  private void saveAndUpdate(ApplyEvent applyEvent){
-    applyEvent = applyEventRepository.save(applyEvent);
-    Apply apply = applyMetadataRepository.getById(applyEvent.getApplyId());
-    int status = stateMachine.transform(apply.getStatus(), applyEvent.getApplyEventType());
-    apply.setStatus(status);
-    applyMetadataRepository.save(apply);
+  @Transactional
+  protected void saveAndUpdate(long applyId, ApplyEvent applyEvent, int nextStatus) {
+    applyEventRepository.save(applyEvent);
+    applyMetadataRepository.updateStatus(applyId, nextStatus);
   }
 }

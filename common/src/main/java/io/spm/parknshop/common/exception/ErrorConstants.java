@@ -22,6 +22,7 @@ public final class ErrorConstants {
   public static final int PRODUCT_NOT_EXIST = 40421;
   public static final int PRODUCT_NOT_EXIST_IN_CART = 40422;
   public static final int STORE_NOT_EXIST = 4043;
+  public static final int APPLY_NOT_EXIST = 4045;
 
   public static final int USER_ALREADY_EXISTS = 4110;
 
@@ -37,7 +38,6 @@ public final class ErrorConstants {
 
   public static final int STORE_APPLY_IN_PROGRESS = 7311;
   public static final int STORE_ALREADY_OPEN = 7312;
-
   public static final int STORE_APPLY_NOT_EXIST = 7313;
 
   public static final int COMMISSION_IS_ERROR = 8001;

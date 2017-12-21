@@ -9,5 +9,4 @@ public interface ApplyService<T, R> {
 
   Mono<R> applyFor(String proposerId, T entity);
 
-
 }

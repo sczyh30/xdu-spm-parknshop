@@ -3,7 +3,7 @@ package io.spm.parknshop.api.controller;
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
 import io.spm.parknshop.apply.domain.ApplyResult;
-import io.spm.parknshop.apply.service.ApplyOperationService;
+import io.spm.parknshop.apply.service.ApplyProcessService;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
@@ -13,6 +13,7 @@ import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.service.UserService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -31,8 +32,10 @@ public class AdminApiController {
   private UserService userService;
   @Autowired
   private SellerUserService sellerUserService;
+
   @Autowired
-  private ApplyOperationService applyOperationService;
+  @Qualifier("adApplyService")
+  private ApplyProcessService applyProcessService;
 
   @PostMapping("/admin/add_admin")
   public Mono<Admin> apiAddAdmin(@RequestBody Admin admin) {
@@ -113,6 +116,6 @@ public class AdminApiController {
   public Mono<?> apiRejectAd(@PathVariable("applyId") Long applyId,
                              @RequestBody ApplyResult applyResult) {
     //TODO get processorId
-    return applyOperationService.reject(applyId, "1", applyResult);
+    return applyProcessService.rejectApply(applyId, "1", applyResult);
   }
 }
