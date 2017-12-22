@@ -168,8 +168,7 @@ public class AdvertisementApplyServiceImpl implements ApplyService<Advertisement
       .setExtraInfo(JsonUtils.toJson(applyResult));
     return applyEventAggregator.aggregate(applyDataService.getEventStream(applyId))
       .map(curState -> stateMachine.transform(curState, event))
-      .flatMap(nextState -> asyncExecute(() -> saveAndUpdate(applyId, applyEvent, nextState)))
-      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "Not exist: apply " + applyId)));
+      .flatMap(nextState -> asyncExecute(() -> saveAndUpdate(applyId, applyEvent, nextState)));
   }
 
   @Transactional
