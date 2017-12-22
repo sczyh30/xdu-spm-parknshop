@@ -3,12 +3,14 @@ package io.spm.parknshop.favorite.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * @author Eric Zhao
  */
 @Entity
+@Table(name = "favorite")
 public class FavoriteRelation {
 
   @Id

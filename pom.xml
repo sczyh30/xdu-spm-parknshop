@@ -49,6 +49,8 @@
     <module>delivery</module>
     <module>ratecenter</module>
 
+    <module>query-service</module>
+
     <module>shop-api</module>
   </modules>
 
