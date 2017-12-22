@@ -27,6 +27,7 @@ public final class ErrorConstants {
 
   // Order exception: 47xx
   public static final int ORDER_UNEXPECTED_DATA = 4701;
+  public static final int ORDER_UNEXPECTED_STATE = 4702;
 
   public static final int USER_ALREADY_EXISTS = 4110;
 

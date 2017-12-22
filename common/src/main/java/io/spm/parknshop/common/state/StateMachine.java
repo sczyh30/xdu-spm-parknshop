@@ -1,4 +1,4 @@
-package io.spm.parknshop.apply.event;
+package io.spm.parknshop.common.state;
 
 import java.util.ArrayList;
 import java.util.List;
