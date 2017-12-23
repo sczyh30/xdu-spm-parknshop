@@ -13,7 +13,9 @@ public interface FavoriteService {
 
   Flux<FavoriteRelation> getByUserId(Long userId);
 
-  Flux<FavoriteRelation> getByTargetId(Integer type, Long targetId);
+  Flux<FavoriteRelation> getByStoreId( Long targetId);
+
+  Flux<FavoriteRelation> getByProductId( Long targetId);
 
   Mono<Long> removeFromFavorite(Long id);
 }
