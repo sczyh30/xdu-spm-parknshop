@@ -5,6 +5,7 @@
 *.iml
 out
 gen
+libs
 ### Maven template
 target/
 pom.xml.tag
