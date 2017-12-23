@@ -10,7 +10,7 @@ public final class OrderEventType {
   public static final int PROCESS_ORDER_SHIPMENT = 21;
   public static final int FINISH_SHIPMENT = 22;
   public static final int FINISH_DELIVERY = 23;
-  public static final int COMFIRM_ORDER = 24;
+  public static final int CONFIRM_ORDER = 24;
   public static final int ADD_COMMENT = 26;
   public static final int CANCEL_ORDER = 4;
 

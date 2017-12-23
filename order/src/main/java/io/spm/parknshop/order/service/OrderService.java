@@ -6,6 +6,8 @@ import io.spm.parknshop.trade.domain.OrderStoreGroupUnit;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 /**
  * @author Eric Zhao
  */
@@ -15,8 +17,10 @@ public interface OrderService {
 
   Flux<OrderEvent> eventStream(Long id);
 
-  Mono<Order> createOrder( Order rawOrder, OrderStoreGroupUnit storeGroup);
+  Mono<Order> createOrder(Order rawOrder, OrderStoreGroupUnit storeGroup);
 
   Mono<Long> modifyOrderStatus(Long orderId, OrderEvent orderEvent);
+
+  Mono<Long> finishPay(List<Long> orders, Long paymentId);
 
 }

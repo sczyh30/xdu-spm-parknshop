@@ -20,7 +20,9 @@ public class PaymentRecord {
   private Date gmtModified;
 
   private Integer paymentType;
-  private Long paymentId;
+  private String paymentId;
+
+  private Double totalAmount;
 
   private Integer status;
 
@@ -60,11 +62,11 @@ public class PaymentRecord {
     return this;
   }
 
-  public Long getPaymentId() {
+  public String getPaymentId() {
     return paymentId;
   }
 
-  public PaymentRecord setPaymentId(Long paymentId) {
+  public PaymentRecord setPaymentId(String paymentId) {
     this.paymentId = paymentId;
     return this;
   }
@@ -78,6 +80,15 @@ public class PaymentRecord {
     return this;
   }
 
+  public Double getTotalAmount() {
+    return totalAmount;
+  }
+
+  public PaymentRecord setTotalAmount(Double totalAmount) {
+    this.totalAmount = totalAmount;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "PaymentRecord{" +
@@ -86,6 +97,7 @@ public class PaymentRecord {
       ", gmtModified=" + gmtModified +
       ", paymentType=" + paymentType +
       ", paymentId=" + paymentId +
+      ", totalAmount=" + totalAmount +
       ", status=" + status +
       '}';
   }

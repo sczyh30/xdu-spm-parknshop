@@ -1,6 +1,7 @@
 package io.spm.parknshop.order.service.impl;
 
 import io.spm.parknshop.common.exception.ServiceException;
+import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.common.state.StateMachine;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.order.domain.Order;
@@ -103,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
     return eventStream(orderId)
       .map(OrderEvent::getOrderEventType)
       .reduce(OrderStatus.NEW_CREATED, stateMachine::transform)
+      .map(curState -> stateMachine.transform(curState, orderEvent.getOrderEventType()))
       .flatMap(this::checkNextState)
       .flatMap(nextState -> asyncExecute(() -> modifyOrderStatusInternal(orderEvent, nextState)));
   }
@@ -119,5 +121,16 @@ public class OrderServiceImpl implements OrderService {
   protected void modifyOrderStatusInternal(OrderEvent orderEvent, int nextState) {
     orderEventRepository.save(orderEvent);
     orderRepository.updateStatus(orderEvent.getOrderId(), nextState);
+  }
+
+  @Override
+  public Mono<Long> finishPay(List<Long> orders, Long paymentId) {
+    if (Objects.isNull(paymentId) || paymentId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("paymentId"));
+    }
+    return Flux.fromIterable(orders)
+      .map(id -> Tuple2.of(id, new OrderEvent().setOrderId(id).setOrderEventType(OrderEventType.FINISH_PAY)))
+      .flatMap(e -> modifyOrderStatus(e.r1, e.r2))
+      .then(Mono.just(0L));
   }
 }

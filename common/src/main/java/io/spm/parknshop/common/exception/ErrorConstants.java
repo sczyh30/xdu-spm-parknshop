@@ -24,9 +24,15 @@ public final class ErrorConstants {
   public static final int STORE_NOT_EXIST = 4043;
   public static final int APPLY_NOT_EXIST = 4045;
   public static final int ORDER_NOT_EXIST = 4046;
+  public static final int PAYMENT_NOT_EXIST = 4047;
 
   // Cart exception: 461x
   public static final int EMPTY_CART = 4611;
+
+  // Payment exception: 4620 - 4649
+  public static final int PAYMENT_CANCELED_OR_FINISHED = 4620;
+  public static final int PAYMENT_ALREADY_STARTED = 4621;
+  public static final int UNKNOWN_PAYMENT_TYPE = 4622;
 
   // Order exception: 47xx
   public static final int ORDER_UNEXPECTED_DATA = 4701;

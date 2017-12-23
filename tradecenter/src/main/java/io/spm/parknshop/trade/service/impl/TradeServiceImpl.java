@@ -5,10 +5,9 @@ import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.payment.domain.PaymentRecord;
-import io.spm.parknshop.payment.service.PaymentRecordService;
+import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.trade.domain.ConfirmOrderMessage;
 import io.spm.parknshop.trade.domain.ConfirmOrderResult;
-import io.spm.parknshop.trade.domain.OrderPreview;
 import io.spm.parknshop.trade.domain.OrderStoreGroupUnit;
 import io.spm.parknshop.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +28,16 @@ public class TradeServiceImpl implements TradeService {
   @Autowired
   private OrderService orderService;
   @Autowired
-  private PaymentRecordService paymentRecordService;
+  private PaymentService paymentService;
 
   @Override
   public Mono<ConfirmOrderResult> dispatchAndProcessOrder(ConfirmOrderMessage confirmOrderMessage) {
     return checkRpcMessage(confirmOrderMessage)
-      .flatMap(v -> paymentRecordService.createPaymentRecord())
-      .flatMap(payment -> splitAndCreateOrders(confirmOrderMessage, payment))
-      .map(e -> new ConfirmOrderResult());
+      .flatMap(v -> paymentService.createPaymentRecord(confirmOrderMessage.getOrderPreview().getTotalPrice()))
+      .flatMap(payment -> splitAndCreateOrders(confirmOrderMessage, payment)
+        .flatMap(v -> paymentService.startPayment(payment.getId()))
+        .map(e -> new ConfirmOrderResult().setPaymentData(e))
+      );
   }
 
   private Mono<List<Order>> splitAndCreateOrders(ConfirmOrderMessage message, PaymentRecord paymentRecord) {
