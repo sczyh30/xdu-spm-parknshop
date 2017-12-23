@@ -32,9 +32,4 @@ public class RedisConfig {
   public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory){
     return new StringRedisTemplate(connectionFactory);
   }
-
-  @PreDestroy
-  public void flushTestDb() {
-    factory.getConnection().flushDb();
-  }
 }

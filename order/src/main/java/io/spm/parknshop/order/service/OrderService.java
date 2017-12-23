@@ -15,7 +15,7 @@ public interface OrderService {
 
   Flux<OrderEvent> eventStream(Long id);
 
-  Mono<Order> createOrder(Long creatorId, Order rawOrder, OrderStoreGroupUnit storeGroup);
+  Mono<Order> createOrder( Order rawOrder, OrderStoreGroupUnit storeGroup);
 
   Mono<Long> modifyOrderStatus(Long orderId, OrderEvent orderEvent);
 

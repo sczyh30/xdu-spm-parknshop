@@ -2,6 +2,7 @@ package io.spm.parknshop.favorite.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -14,7 +15,7 @@ import java.util.Date;
 public class FavoriteRelation {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Date gmtCreate;

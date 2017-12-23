@@ -65,10 +65,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public Mono<Order> createOrder(Long creatorId, Order rawOrder, OrderStoreGroupUnit storeGroup) {
-    if (Objects.isNull(creatorId) || creatorId <= 0) {
-      return Mono.error(ExceptionUtils.invalidParam("creatorId"));
-    }
+  public Mono<Order> createOrder(Order rawOrder, OrderStoreGroupUnit storeGroup) {
     if (Objects.isNull(rawOrder) || Objects.isNull(rawOrder.getPaymentId()) || Objects.nonNull(rawOrder.getId())) {
       return Mono.error(ExceptionUtils.invalidParam("Invalid order"));
     }
@@ -79,8 +76,7 @@ public class OrderServiceImpl implements OrderService {
       .map(this::toOrderProduct)
       .collect(Collectors.toList());
     OrderEvent orderEvent = new OrderEvent().setOrderEventType(OrderEventType.NEW_CREATED);
-    rawOrder.setFreightPrice(storeGroup.getTotalFreight()).setFinalTotalPrice(storeGroup.getTotalPrice())
-      .setOrderStatus(OrderStatus.NEW_CREATED);
+    rawOrder.setOrderStatus(OrderStatus.NEW_CREATED);
     return async(() -> saveOrderInternal(rawOrder, orderEvent, products));
   }
 
@@ -95,8 +91,8 @@ public class OrderServiceImpl implements OrderService {
     Date now = new Date();
     Order newOrder = orderRepository.save(order.setGmtCreate(now));
     Long orderId = newOrder.getId();
-    orderEventRepository.save(orderEvent.setId(orderId).setGmtCreate(now));
-    products.forEach(e ->e.setOrderId(orderId));
+    orderEventRepository.save(orderEvent.setOrderId(orderId).setGmtCreate(now));
+    products.forEach(e -> e.setOrderId(orderId));
     orderProductRepository.saveAll(products);
     return newOrder;
   }

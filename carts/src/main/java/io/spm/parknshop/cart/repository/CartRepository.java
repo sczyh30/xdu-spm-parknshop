@@ -43,6 +43,9 @@ public class CartRepository {
   }
 
   public Mono<Boolean> putCart(/*@NonNull*/ Long userId, List<SimpleCartProduct> products) {
+    if (products == null || products.isEmpty()) {
+      return Mono.just(true);
+    }
     Map<String, SimpleCartProduct> map = new HashMap<>(products.size());
     products.forEach(e -> map.putIfAbsent(getProductKey(e.getId()), e));
     return template.opsForHash()
