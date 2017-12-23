@@ -2,17 +2,20 @@ package io.spm.parknshop.order.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * @author Eric Zhao
  */
 @Entity
+@Table(name = "order_metadata")
 public class Order {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Date gmtCreate;

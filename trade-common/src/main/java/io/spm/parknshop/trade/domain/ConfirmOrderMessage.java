@@ -4,8 +4,18 @@ import io.spm.parknshop.delivery.domain.DeliveryAddress;
 
 public class ConfirmOrderMessage {
 
+  private Long creatorId;
   private OrderPreview orderPreview;
   private DeliveryAddress deliveryAddress;
+
+  public Long getCreatorId() {
+    return creatorId;
+  }
+
+  public ConfirmOrderMessage setCreatorId(Long creatorId) {
+    this.creatorId = creatorId;
+    return this;
+  }
 
   public OrderPreview getOrderPreview() {
     return orderPreview;

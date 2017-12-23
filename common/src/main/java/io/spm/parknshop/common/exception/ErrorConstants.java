@@ -25,8 +25,12 @@ public final class ErrorConstants {
   public static final int APPLY_NOT_EXIST = 4045;
   public static final int ORDER_NOT_EXIST = 4046;
 
+  // Cart exception: 461x
+  public static final int EMPTY_CART = 4611;
+
   // Order exception: 47xx
   public static final int ORDER_UNEXPECTED_DATA = 4701;
+  public static final int ORDER_UNEXPECTED_STATE = 4702;
 
   public static final int USER_ALREADY_EXISTS = 4110;
 

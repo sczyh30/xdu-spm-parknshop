@@ -1,14 +1,14 @@
 package io.spm.parknshop.advertisement.config;
 
 import io.spm.parknshop.advertisement.domain.AdStatus;
-import io.spm.parknshop.apply.event.StateMachine;
+import io.spm.parknshop.common.state.StateMachine;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static io.spm.parknshop.apply.domain.ApplyStatus.*;
 import static io.spm.parknshop.advertisement.domain.AdApplyEventType.*;
 
-@Configuration
+@Configuration("adConfig")
 public class Config {
 
   @Bean

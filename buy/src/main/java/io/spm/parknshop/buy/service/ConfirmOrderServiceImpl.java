@@ -23,6 +23,7 @@ import io.spm.parknshop.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -76,6 +77,7 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
     // Start aggregate.
     List<OrderStoreGroupUnit> storeGroups = cart.getCart().stream()
       .map(unit -> wrapStoreGroupUnit(unit, map))
+      .filter(e -> e.getTotalAmount() > 0)
       .collect(Collectors.toList());
     int totalAmount = storeGroups.stream()
       .mapToInt(OrderStoreGroupUnit::getTotalAmount)
@@ -125,16 +127,24 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
     return checkConfirmRequest(userId, requestDO)
       .flatMap(v -> retrieveAndCheckAddress(requestDO.getAddressId()))
       .flatMap(address -> previewOrder(userId)
-        .flatMap(orderPreview -> processInventory(orderPreview)
-          .map(v -> wrapRpcMessage(address, orderPreview))
+        .flatMap(orderPreview -> checkOrderPreview(orderPreview)
+          .map(v -> processInventory(orderPreview))
+          .map(v -> wrapRpcMessage(address, orderPreview, userId))
           .flatMap(tradeService::dispatchAndProcessOrder)
           .flatMap(result -> clearCart(userId).map(e -> result))
         )
       );
   }
 
-  private ConfirmOrderMessage wrapRpcMessage(DeliveryAddress address, OrderPreview orderPreview) {
-    return new ConfirmOrderMessage().setDeliveryAddress(address).setOrderPreview(orderPreview);
+  private Mono<OrderPreview> checkOrderPreview(OrderPreview orderPreview) {
+    if (CollectionUtils.isEmpty(orderPreview.getStoreGroups()) || orderPreview.getTotalAmount() <= 0) {
+      return Mono.error(new ServiceException(EMPTY_CART, "Your cart is empty"));
+    }
+    return Mono.just(orderPreview);
+  }
+
+  private ConfirmOrderMessage wrapRpcMessage(DeliveryAddress address, OrderPreview orderPreview, Long userId) {
+    return new ConfirmOrderMessage().setCreatorId(userId).setDeliveryAddress(address).setOrderPreview(orderPreview);
   }
 
   private Mono<Long> processInventory(OrderPreview orderPreview) {

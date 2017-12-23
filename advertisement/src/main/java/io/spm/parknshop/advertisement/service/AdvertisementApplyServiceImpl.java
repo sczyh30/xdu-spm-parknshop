@@ -6,7 +6,7 @@ import io.spm.parknshop.advertisement.domain.Advertisement;
 import io.spm.parknshop.advertisement.event.AdApplyEventAggregator;
 import io.spm.parknshop.advertisement.event.AdApplyEventNotifier;
 import io.spm.parknshop.apply.domain.*;
-import io.spm.parknshop.apply.event.StateMachine;
+import io.spm.parknshop.common.state.StateMachine;
 import io.spm.parknshop.apply.repository.ApplyEventRepository;
 import io.spm.parknshop.apply.repository.ApplyMetadataRepository;
 import io.spm.parknshop.apply.service.ApplyDataService;
