@@ -22,7 +22,7 @@ public class CartApiController {
   private CartService cartService;
 
   @PostMapping("/cart/update_cart")
-  public Mono<ShoppingCart> updateCart(ServerWebExchange exchange, @RequestBody CartEvent cartEvent) {
+  public Mono<ShoppingCart> apiUpdateCart(ServerWebExchange exchange, @RequestBody CartEvent cartEvent) {
     return cartService.updateCart(1L, cartEvent);
     /*return exchange.getPrincipal()
         .flatMap(this::extractIdFromPrincipal)
@@ -31,7 +31,7 @@ public class CartApiController {
   }
 
   @GetMapping("/cart")
-  public Mono<ShoppingCart> getCart(ServerWebExchange exchange) {
+  public Mono<ShoppingCart> apiGetCart(ServerWebExchange exchange) {
     return cartService.getCartForUser(1L);
   }
 

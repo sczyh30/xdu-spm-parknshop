@@ -1,7 +1,7 @@
 package io.spm.parknshop.category.service;
 
 import io.spm.parknshop.category.domain.Category;
-import io.spm.parknshop.category.repository.CatalogRepository;
+import io.spm.parknshop.category.repository.CategoryRepository;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,19 +17,19 @@ import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 public class CategoryServiceImpl implements CategoryService {
 
   @Autowired
-  private CatalogRepository catalogRepository;
+  private CategoryRepository categoryRepository;
 
   @Override
   public Mono<Optional<Category>> getById(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return async(() -> catalogRepository.findById(id));
+    return async(() -> categoryRepository.findById(id));
   }
 
   @Override
   public Flux<Category> getAll() {
-    return asyncIterable(() -> catalogRepository.findAll());
+    return asyncIterable(() -> categoryRepository.findAll());
   }
 
   @Override
@@ -40,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     if (Objects.nonNull(category.getId())) {
       return Mono.error(ExceptionUtils.invalidParam("category ID should not be provided"));
     }
-    return async(() -> catalogRepository.save(category));
+    return async(() -> categoryRepository.save(category));
   }
 
   @Override
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     if (!id.equals(category.getId())) {
       return Mono.error(ExceptionUtils.idNotMatch());
     }
-    return async(() -> catalogRepository.save(category));
+    return async(() -> categoryRepository.save(category));
   }
 
   @Override
@@ -59,6 +59,6 @@ public class CategoryServiceImpl implements CategoryService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return asyncExecute(() -> catalogRepository.deleteById(id));
+    return asyncExecute(() -> categoryRepository.deleteById(id));
   }
 }

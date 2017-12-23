@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/")
-public class CategoryController {
+public class CategoryApiController {
 
   @Autowired
   private ProductService productService;
@@ -27,7 +27,7 @@ public class CategoryController {
   private CategoryService categoryService;
 
   @GetMapping("/catalog/{id}/products")
-  public Mono<Map<String, ?>> apiGetProductsByCategory(@PathVariable("id") Long id) {
+  public /*Mono<Map<String, ?>>*/ Mono<?> apiGetProductsByCategory(@PathVariable("id") Long id) {
     return categoryService.getById(id)
       .filter(Optional::isPresent)
       .map(Optional::get)

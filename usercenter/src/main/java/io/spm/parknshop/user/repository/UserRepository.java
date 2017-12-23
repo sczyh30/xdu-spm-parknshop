@@ -21,6 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query(value = "SELECT * FROM user WHERE username = ?1 AND user_type = 1", nativeQuery = true)
   Optional<User> getSellerByUsername(String username);
 
+  @Query(value = "SELECT * FROM user WHERE id = ?1 AND user_type = 1", nativeQuery = true)
+  Optional<User> getSellerById(long sellerId);
+
   List<User> getAllByUserType(int status);
 
   @Query(value = "SELECT id FROM user WHERE username = ?1", nativeQuery = true)

@@ -108,7 +108,7 @@ public class AdminApiController {
   }
 
   @PostMapping("/admin/set_commission")
-  public Mono<?> setCommission(@RequestBody String commission) {
+  public Mono<?> apiSetCommission(@RequestBody String commission) {
     return adminService.setCommission(Double.valueOf(commission));
 }
 

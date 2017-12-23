@@ -20,7 +20,7 @@ public class ImageUploadApiController {
 
   @PostMapping(value = "/img/user/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
-  public Object uploadUserImg(@RequestBody Flux<Part> parts) {
+  public Object apiUploadUserImg(@RequestBody Flux<Part> parts) {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
         .flatMap(e -> saveImg(e, "user"));
@@ -28,7 +28,7 @@ public class ImageUploadApiController {
 
   @PostMapping(value = "/img/product/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
-  public Object uploadProductImg(@RequestBody Flux<Part> parts) {
+  public Object apiUploadProductImg(@RequestBody Flux<Part> parts) {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
         .flatMap(e -> saveImg(e, "product"));
@@ -36,7 +36,7 @@ public class ImageUploadApiController {
 
   @PostMapping(value = "/img/store/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
-  public Object uploadStoreImg(@RequestBody Flux<Part> parts) {
+  public Object apiUploadStoreImg(@RequestBody Flux<Part> parts) {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
         .flatMap(e -> saveImg(e, "store"));

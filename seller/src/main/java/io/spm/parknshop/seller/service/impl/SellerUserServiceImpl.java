@@ -8,12 +8,14 @@ import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.repository.UserRepository;
+import io.spm.parknshop.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
@@ -27,6 +29,9 @@ public class SellerUserServiceImpl implements SellerUserService {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private UserService userService;
+
   @Override
   public Flux<User> searchSellerByKeyword(String keyword) {
     if (StringUtils.isEmpty(keyword)) {
@@ -38,6 +43,19 @@ public class SellerUserServiceImpl implements SellerUserService {
   @Override
   public Flux<User> getAllSellers() {
     return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.SELLER));
+  }
+
+  @Override
+  public Mono<Optional<User>> getSellerById(Long sellerId) {
+    if (Objects.isNull(sellerId) || sellerId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return async(() -> userRepository.getSellerById(sellerId));
+  }
+
+  @Override
+  public Mono<User> register(User user) {
+    return userService.register(user.setUserStatus(AuthRoles.SELLER));
   }
 
   @Override
