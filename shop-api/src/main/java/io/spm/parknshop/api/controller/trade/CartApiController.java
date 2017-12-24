@@ -1,10 +1,9 @@
-package io.spm.parknshop.api.controller;
+package io.spm.parknshop.api.controller.trade;
 
+import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.cart.domain.CartEvent;
 import io.spm.parknshop.cart.domain.ShoppingCart;
 import io.spm.parknshop.cart.service.CartService;
-import io.spm.parknshop.common.util.ExceptionUtils;
-import io.spm.parknshop.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+/**
+ * @author Eric Zhao
+ */
 @RestController
 @RequestMapping("/api/v1/")
 public class CartApiController {
@@ -23,23 +25,13 @@ public class CartApiController {
 
   @PostMapping("/cart/update_cart")
   public Mono<ShoppingCart> apiUpdateCart(ServerWebExchange exchange, @RequestBody CartEvent cartEvent) {
-    return cartService.updateCart(1L, cartEvent);
-    /*return exchange.getPrincipal()
-        .flatMap(this::extractIdFromPrincipal)
-        .flatMap(id -> cartService.addCart(id, simpleCartProduct))
-        .switchIfEmpty(Mono.error(ExceptionUtils.authNoPermission()));*/
+    return AuthUtils.getUserId(exchange)
+      .flatMap(userId -> cartService.updateCart(userId, cartEvent));
   }
 
   @GetMapping("/cart")
   public Mono<ShoppingCart> apiGetCart(ServerWebExchange exchange) {
-    return cartService.getCartForUser(1L);
-  }
-
-  private Mono<Long> extractIdFromPrincipal(Object principal) {
-    if (principal instanceof User) {
-      return Mono.just(((User) principal).getId());
-    } else {
-      return Mono.error(ExceptionUtils.authNoPermission());
-    }
+    return AuthUtils.getUserId(exchange)
+      .flatMap(userId -> cartService.getCartForUser(userId));
   }
 }

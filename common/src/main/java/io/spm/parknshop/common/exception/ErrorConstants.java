@@ -47,6 +47,7 @@ public final class ErrorConstants {
 
   public static final int USER_LOGIN_INCORRECT = 4011;
   public static final int USER_INVALID_TOKEN = 4012;
+  public static final int USER_ROLE_NO_PERMISSION = 4013;
 
   public static final int INTERNAL_UNKNOWN_ERROR = 4444;
 

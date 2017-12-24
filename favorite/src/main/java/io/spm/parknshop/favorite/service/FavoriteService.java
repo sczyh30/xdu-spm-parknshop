@@ -9,13 +9,15 @@ import reactor.core.publisher.Mono;
  */
 public interface FavoriteService {
 
-  Mono<FavoriteRelation> addFavorite(FavoriteRelation favorite);
+  Mono<FavoriteRelation> addFavoriteProduct(Long userId, Long productId);
+
+  Mono<FavoriteRelation> addFavoriteStore(Long userId, Long storeId);
 
   Flux<FavoriteRelation> getByUserId(Long userId);
 
-  Flux<FavoriteRelation> getByStoreId( Long targetId);
+  Flux<FavoriteRelation> getByStoreId(Long storeId);
 
-  Flux<FavoriteRelation> getByProductId( Long targetId);
+  Flux<FavoriteRelation> getByProductId(Long productId);
 
   Mono<Long> removeFromFavorite(Long id);
 }

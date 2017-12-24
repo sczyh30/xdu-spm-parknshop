@@ -1,5 +1,6 @@
-package io.spm.parknshop.api.controller;
+package io.spm.parknshop.api.controller.trade;
 
+import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.buy.domain.ConfirmOrderDO;
 import io.spm.parknshop.buy.service.ConfirmOrderService;
 import io.spm.parknshop.trade.domain.ConfirmOrderResult;
@@ -22,11 +23,13 @@ public class BuyApiController {
 
   @GetMapping("/buy/render_order_preview")
   public Mono<OrderPreview> apiRenderOrderPreview(ServerWebExchange exchange) {
-    return confirmOrderService.previewOrder(1L);
+    return AuthUtils.getUserId(exchange)
+      .flatMap(confirmOrderService::previewOrder);
   }
 
   @PostMapping("/buy/confirm_order")
   public Mono<ConfirmOrderResult> apiConfirmOrder(ServerWebExchange exchange, @RequestBody ConfirmOrderDO confirmOrderDO) {
-    return confirmOrderService.confirmOrder(1L, confirmOrderDO);
+    return AuthUtils.getUserId(exchange)
+      .flatMap(userId -> confirmOrderService.confirmOrder(userId, confirmOrderDO));
   }
 }

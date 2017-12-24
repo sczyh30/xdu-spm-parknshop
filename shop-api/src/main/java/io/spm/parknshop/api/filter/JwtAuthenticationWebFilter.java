@@ -2,6 +2,7 @@ package io.spm.parknshop.api.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.spm.parknshop.api.common.WritableResponseSupport;
+import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.api.util.Result;
 import io.spm.parknshop.api.util.ResultUtils;
 import io.spm.parknshop.common.auth.AuthPrincipal;
@@ -90,7 +91,25 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
   }
 
   private Mono<Long> verifyRole(/*@NonNull*/ AuthPrincipal principal, ServerWebExchange exchange, String path) {
+    addInternalHeader(principal, exchange);
     return roleAuthenticationDecider.verifyRole(principal, exchange, path);
+  }
+
+  private void addInternalHeader(AuthPrincipal principal, ServerWebExchange exchange) {
+    exchange.getResponse().getHeaders().add(AuthUtils.PRINCIPAL_HEADER_INTERNAL, wrapPrincipalHeader(principal));
+  }
+
+  private String wrapPrincipalHeader(AuthPrincipal principal) {
+    switch (principal.getRole()) {
+      case AuthRoles.SELLER:
+        return AuthUtils.SELLER_PREFIX + principal.getId();
+      case AuthRoles.ADMIN:
+        return AuthUtils.ADMIN_PREFIX + principal.getId();
+      case AuthRoles.CUSTOMER:
+        return AuthUtils.USER_PREFIX + principal.getId();
+      default:
+        return "UNKNOWN";
+    }
   }
 
   private Mono<String> extractFromHeader(HttpHeaders headers) {
@@ -107,7 +126,7 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
   }
 
   private AuthPrincipal fromJwtToken(DecodedJWT decodedJWT) {
-    return new AuthPrincipal().setId(decodedJWT.getClaim("id").asString())
+    return new AuthPrincipal().setId(decodedJWT.getClaim("id").asInt().toString())
       .setUsername(decodedJWT.getClaim("username").asString())
       .setRole(decodedJWT.getClaim("role").asInt())
       .setExpireDate(decodedJWT.getExpiresAt());
