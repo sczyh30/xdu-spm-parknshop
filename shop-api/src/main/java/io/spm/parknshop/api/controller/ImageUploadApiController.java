@@ -1,5 +1,8 @@
 package io.spm.parknshop.api.controller;
 
+import io.spm.parknshop.product.service.ProductService;
+import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.http.codec.multipart.Part;
@@ -12,46 +15,55 @@ import java.io.File;
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 
 /**
- * Img upload controller
+ * Image upload controller.
+ *
+ * @author four.
  */
 @RestController
 @RequestMapping("/api/v1/")
 public class ImageUploadApiController {
 
-  @PostMapping(value = "/img/user/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Autowired
+  private ProductService productService;
+
+  @PostMapping(value = "/img/user/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
-  public Object apiUploadUserImg(@RequestBody Flux<Part> parts) {
+  public Publisher<?> apiUploadUserImg(@PathVariable("id") String id, @RequestBody Flux<Part> parts) {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
-        .flatMap(e -> saveImg(e, "user"));
+        .flatMap(e -> saveImg(e, "user", String.format("user_%s.png", id)));
   }
 
-  @PostMapping(value = "/img/product/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/img/product/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
-  public Object apiUploadProductImg(@RequestBody Flux<Part> parts) {
+  public Publisher<?> apiUploadProductImg(@PathVariable("id") String id, @RequestBody Flux<Part> parts) {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
-        .flatMap(e -> saveImg(e, "product"));
+        .flatMap(e -> saveImg(e, "product", String.format("product_%s.jpg", id)))
+        .flatMap(r -> productService.modifyPicUrl(r, Long.valueOf(id)));
   }
 
-  @PostMapping(value = "/img/store/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/img/store/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
-  public Object apiUploadStoreImg(@RequestBody Flux<Part> parts) {
+  public Publisher<?> apiUploadStoreImg(@PathVariable("id") String id, @RequestBody Flux<Part> parts) {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
-        .flatMap(e -> saveImg(e, "store"));
+        .flatMap(e -> saveImg(e, "store", String.format("store_%s.png", id)));
   }
 
-  private Mono<String> saveImg(FilePart part, String dir) {
-    //TODO Img name depends on username or productname
-    return createFile(part, dir)
+  private Mono<String> saveImg(FilePart part, String dir, String filename) {
+    return createFile(part, dir, filename)
         .flatMap(part::transferTo)
-        .map(e -> part.filename());
+        .map(v -> filename)
+        .switchIfEmpty(Mono.just(filename));
   }
 
-  private Mono<File> createFile(FilePart part, String dir) {
+  private Mono<File> createFile(FilePart part, String dir, String filename) {
     return async(() -> {
-      File file = new File("img/" + dir + "/", "b.png");
+      File file = new File("img/" + dir + "/", filename);
+      if (file.exists()) {
+        file.delete();
+      }
       File parent = file.getParentFile();
       if (!parent.exists()) {
         parent.mkdirs();

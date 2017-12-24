@@ -19,16 +19,20 @@ import reactor.core.publisher.Mono;
 public class AdminWorkflowApiController {
 
   @Autowired
-  private AdminService adminService;
-
-  @Autowired
   @Qualifier("adApplyService")
   private ApplyProcessService adApplyProcessService;
 
-  @PostMapping("/admin/manage/apply_workflow/reject/{applyId}")
-  public Mono<Long> apiRejectAd(ServerWebExchange exchange, @PathVariable("applyId") Long applyId,
+  @PostMapping("/admin/manage/apply_workflow/ad/reject/{applyId}")
+  public Mono<Long> apiRejectAdApply(ServerWebExchange exchange, @PathVariable("applyId") Long applyId,
                                 @RequestBody ApplyResult applyResult) {
     return AuthUtils.getAdminId(exchange)
       .flatMap(adminId -> adApplyProcessService.rejectApply(applyId, AuthUtils.ADMIN_PREFIX + adminId, applyResult));
+  }
+
+  @PostMapping("/admin/manage/apply_workflow/ad/approve/{applyId}")
+  public Mono<Long> apiApproveAdApply(ServerWebExchange exchange, @PathVariable("applyId") Long applyId,
+                                @RequestBody ApplyResult applyResult) {
+    return AuthUtils.getAdminId(exchange)
+      .flatMap(adminId -> adApplyProcessService.approveApply(applyId, AuthUtils.ADMIN_PREFIX + adminId, applyResult));
   }
 }

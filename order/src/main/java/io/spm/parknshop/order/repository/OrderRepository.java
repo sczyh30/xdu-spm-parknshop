@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Modifying
   void updateStatus(long id, int status);
 
-  List<Order> getByCreatorId(long creatorId);
+  List<Order> getByCreatorIdOrderByIdDesc(long creatorId);
 
   List<Order> getByCreatorIdAndOrderStatus(long creatorId, int status);
 

@@ -24,7 +24,7 @@ public class PaymentCallbackController {
   @GetMapping("/notify_callback")
   public Mono<?> payNotifyCallback(ServerWebExchange exchange,@RequestParam("trade_no") String outerPaymentId,
                                    @RequestParam("out_trade_no") String shopPayment) {
-    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/");
+    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/buy/finish_buy?tradeId=" + shopPayment);
     exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
     Long shopPaymentId = Long.valueOf(shopPayment);
     return paymentService.finishPay(shopPaymentId, outerPaymentId);

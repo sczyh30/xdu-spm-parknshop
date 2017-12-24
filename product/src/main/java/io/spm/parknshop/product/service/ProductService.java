@@ -33,4 +33,6 @@ public interface ProductService {
   Flux<ProductVO> searchProductByKeyword(String keyword);
 
   Mono<Optional<ProductVO>> getProductVO(Long id);
+
+  Mono<String> modifyPicUrl(String url, Long id);
 }

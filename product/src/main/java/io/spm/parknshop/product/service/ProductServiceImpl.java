@@ -134,6 +134,12 @@ public class ProductServiceImpl implements ProductService {
     return asyncIterable(() -> productVORepository.searchProductVOByKeyword(keyword));
   }
 
+  @Override
+  public Mono<String> modifyPicUrl(String url, Long id) {
+    return asyncExecute(() -> productRepository.modifyProductPicUrl(url, id))
+      .map(e -> url);
+  }
+
   private boolean isValidNewProduct(final Product product) {
     return Optional.ofNullable(product)
       .map(e -> product.getCatalogId())

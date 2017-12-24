@@ -5,6 +5,7 @@ import io.spm.parknshop.delivery.domain.DeliveryAddress;
 import io.spm.parknshop.delivery.service.DeliveryAddressService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 /**
  * @author Eric Zhao
@@ -30,6 +33,14 @@ public class UserDeliveryAddressApiController {
       .flatMapMany(userId -> deliveryAddressService.getByUserId(userId));
   }
 
+  @GetMapping("/delivery_address/address/{id}")
+  public Mono<DeliveryAddress> apiGetAddressByUser(ServerWebExchange exchange, @PathVariable("id") Long id) {
+    return AuthUtils.getUserId(exchange)
+      .flatMap(userId -> deliveryAddressService.getById(id))
+      .filter(Optional::isPresent)
+      .map(Optional::get);
+  }
+
   @PostMapping("/delivery_address/add_address")
   public Mono<DeliveryAddress> apiAddNewAddress(ServerWebExchange exchange, @RequestBody DeliveryAddress address) {
     return AuthUtils.getUserId(exchange)
@@ -42,5 +53,12 @@ public class UserDeliveryAddressApiController {
     // TODO: check user.
     return AuthUtils.getUserId(exchange)
       .flatMap(userId -> deliveryAddressService.updateAddress(id, address));
+  }
+
+  @DeleteMapping("/delivery_address/delete_address/{id}")
+  public Mono<Long> apiDeleteAddress(ServerWebExchange exchange, @PathVariable("id") Long id) {
+    // TODO: check user.
+    return AuthUtils.getUserId(exchange)
+      .flatMap(userId -> deliveryAddressService.deleteAddress(id));
   }
 }
