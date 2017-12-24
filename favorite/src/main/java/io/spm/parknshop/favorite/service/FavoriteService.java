@@ -19,5 +19,9 @@ public interface FavoriteService {
 
   Flux<FavoriteRelation> getByProductId(Long productId);
 
+  Mono<Boolean> checkUserLikeProduct(Long userId, Long productId);
+
   Mono<Long> removeFromFavorite(Long id);
+
+  Mono<Long> removeProductFavorite(Long userId, Long productId);
 }

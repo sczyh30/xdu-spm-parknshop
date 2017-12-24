@@ -57,6 +57,8 @@ public class CartServiceImpl implements CartService {
     switch (cartEvent.getEventType()) {
       case CartEventType.ADD_CART:
         return addCart(userId, cartEvent);
+      case CartEventType.UPDATE_AMOUNT:
+        return updateAmount(userId, cartEvent);
       case CartEventType.DECREASE_CART:
         return decreaseCart(userId, cartEvent);
       case CartEventType.REMOVE:
@@ -66,6 +68,18 @@ public class CartServiceImpl implements CartService {
       default:
         return Mono.error(ExceptionUtils.invalidParam("cart operation (unknown operation type)"));
     }
+  }
+
+  private Mono<ShoppingCart> updateAmount(Long userId, CartEvent cartEvent) {
+    return checkParams(userId, cartEvent)
+      .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.UPDATE_AMOUNT))
+      .flatMap(v -> checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount()))
+      .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
+        .map(e -> e.setAmount(cartEvent.getAmount()).setChecked(true))
+        .switchIfEmpty(newCreated(cartEvent))
+        .flatMap(e -> cartRepository.putCartProduct(userId, e))
+        .flatMap(e -> getCartForUser(userId))
+      );
   }
 
   private Mono<ShoppingCart> markCheckProduct(Long userId, CartEvent cartEvent) {

@@ -110,4 +110,16 @@ public class FavoriteServiceImpl implements FavoriteService {
     return asyncExecute(() -> favoriteRepository.deleteById(id));
   }
 
+  @Override
+  public Mono<Boolean> checkUserLikeProduct(Long userId, Long productId) {
+    // TODO: check.
+    return async(() -> favoriteRepository.checkUserFavorite(userId, FavoriteType.PRODUCT, productId))
+      .map(Optional::isPresent);
+  }
+
+  @Override
+  public Mono<Long> removeProductFavorite(Long userId, Long productId) {
+    // TODO: check.
+    return asyncExecute(() -> favoriteRepository.cancelFavorite(userId, FavoriteType.PRODUCT, productId));
+  }
 }

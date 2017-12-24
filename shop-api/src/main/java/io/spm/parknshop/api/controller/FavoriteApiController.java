@@ -33,10 +33,10 @@ public class FavoriteApiController {
       .flatMap(userId -> favoriteService.addFavoriteStore(userId, storeId));
   }
 
-  @PostMapping("/favorite/cancel_favorite/{id}")
-  public Mono<Long> apiCancelFavorite(ServerWebExchange exchange, @PathVariable("id") Long id) {
+  @PostMapping("/favorite/cancel_product_favorite/{productId}")
+  public Mono<Long> apiCancelFavorite(ServerWebExchange exchange, @PathVariable("productId") Long productId) {
     return AuthUtils.getUserId(exchange)
-      .flatMap(userId -> favoriteService.removeFromFavorite(id));
+      .flatMap(userId -> favoriteService.removeProductFavorite(userId, productId));
   }
 
 }

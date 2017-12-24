@@ -61,7 +61,12 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
 
   private Mono<Void> verifyAuthentication(ServerWebExchange exchange, String path, WebFilterChain chain) {
     if (testWithoutAuthentication(path)) {
-      return chain.filter(exchange);
+      // TODO: temporary solution!
+      return extractFromHeader(exchange.getRequest().getHeaders())
+        .flatMap(this::verifyAndExtractPrincipal)
+        .flatMap(principal -> verifyRole(principal, exchange, path))
+        .flatMap(v -> chain.filter(exchange))
+        .onErrorResume(v -> chain.filter(exchange));
     }
     return extractFromHeader(exchange.getRequest().getHeaders())
       .flatMap(this::verifyAndExtractPrincipal)
@@ -137,7 +142,7 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
   }
 
   private boolean testWithoutAuthentication(/*@NonNull*/ String path) {
-    if (path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search")
+    if (path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search") || path.startsWith("/api/v1/store") || path.contains("delivery")
       || path.startsWith("/api/v1/product") || path.startsWith("/api/v1/catalog") || path.startsWith("/api/v1/index") || path.startsWith("/api/v1/admin/login")) {
       return true;
     }

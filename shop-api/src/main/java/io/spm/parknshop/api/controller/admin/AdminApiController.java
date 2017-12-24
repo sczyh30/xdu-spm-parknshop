@@ -1,7 +1,8 @@
-package io.spm.parknshop.api.controller;
+package io.spm.parknshop.api.controller.admin;
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
+import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.service.ApplyProcessService;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
@@ -15,6 +16,7 @@ import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /**
@@ -88,7 +90,7 @@ public class AdminApiController {
   }
 
   @GetMapping("/admin/commission")
-  public Mono<Double> getCommission() {
+  public Mono<Double> apiGetCommission() {
     return adminService.getCommission();
   }
 
@@ -110,12 +112,5 @@ public class AdminApiController {
   @PostMapping("/admin/set_commission")
   public Mono<?> apiSetCommission(@RequestBody String commission) {
     return adminService.setCommission(Double.valueOf(commission));
-}
-
-  @PostMapping("/admin/manage/apply/reject/{applyId}")
-  public Mono<?> apiRejectAd(@PathVariable("applyId") Long applyId,
-                             @RequestBody ApplyResult applyResult) {
-    //TODO get processorId
-    return applyProcessService.rejectApply(applyId, "1", applyResult);
   }
 }

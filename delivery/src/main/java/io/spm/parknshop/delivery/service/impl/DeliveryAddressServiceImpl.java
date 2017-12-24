@@ -26,12 +26,14 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
 
   @Override
   public Mono<DeliveryAddress> addAddress(DeliveryAddress address) {
-    return null;
+    // TODO: Check.
+    return async(() -> deliveryAddressRepository.save(address));
   }
 
   @Override
   public Mono<DeliveryAddress> updateAddress(Long id, DeliveryAddress address) {
-    return null;
+    // TODO: Check.
+    return async(() -> deliveryAddressRepository.save(address.setId(id)));
   }
 
   @Override
@@ -44,11 +46,17 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
 
   @Override
   public Flux<DeliveryAddress> getByUserId(Long userId) {
-    return null;
+    if (Objects.isNull(userId) || userId <= 0) {
+      return Flux.error(ExceptionUtils.invalidParam("userId"));
+    }
+    return asyncIterable(() -> deliveryAddressRepository.getByUserId(userId));
   }
 
   @Override
   public Mono<Long> deleteAddress(Long id) {
-    return null;
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> deliveryAddressRepository.deleteById(id));
   }
 }

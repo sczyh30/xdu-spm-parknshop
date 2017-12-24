@@ -1,4 +1,4 @@
-package io.spm.parknshop.api.controller;
+package io.spm.parknshop.api.controller.user;
 
 import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.PrincipalModifyDO;
@@ -43,6 +43,5 @@ public class UserApiController {
   public Mono<User> apiUserRegister(@RequestBody User user) {
     return userService.register(user);
   }
-
 
 }

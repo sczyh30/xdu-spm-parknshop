@@ -19,6 +19,8 @@ public class Advertisement {
   private Date gmtCreate;
   private Date gmtModified;
 
+  private Long applyId;
+
   private int adType;
   private String adOwner;
   private Long adTarget;
@@ -138,5 +140,33 @@ public class Advertisement {
   public Advertisement setStatus(int status) {
     this.status = status;
     return this;
+  }
+
+  public Long getApplyId() {
+    return applyId;
+  }
+
+  public Advertisement setApplyId(Long applyId) {
+    this.applyId = applyId;
+    return this;
+  }
+
+  @Override
+  public String toString() {
+    return "Advertisement{" +
+      "id=" + id +
+      ", gmtCreate=" + gmtCreate +
+      ", gmtModified=" + gmtModified +
+      ", applyId=" + applyId +
+      ", adType=" + adType +
+      ", adOwner='" + adOwner + '\'' +
+      ", adTarget=" + adTarget +
+      ", description='" + description + '\'' +
+      ", adUrl='" + adUrl + '\'' +
+      ", adTotalPrice=" + adTotalPrice +
+      ", startDate=" + startDate +
+      ", endDate=" + endDate +
+      ", status=" + status +
+      '}';
   }
 }

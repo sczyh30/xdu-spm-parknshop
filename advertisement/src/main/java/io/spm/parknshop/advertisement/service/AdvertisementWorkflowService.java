@@ -6,9 +6,9 @@ import reactor.core.publisher.Mono;
 /**
  * @author Eric Zhao
  */
-public interface AdvertisementService {
+public interface AdvertisementWorkflowService {
 
-  Mono<Advertisement> getById(Long id);
+  Mono<String> startPay(String processorId, Long applyId);
 
-  Mono<Advertisement> addNewAdvertisement(Advertisement advertisement);
+  Mono<Advertisement> finishPay(Long applyId, Long outerPaymentId);
 }
