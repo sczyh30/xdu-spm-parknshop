@@ -43,5 +43,4 @@ public class UserApiController {
   public Mono<User> apiUserRegister(@RequestBody User user) {
     return userService.register(user);
   }
-
 }

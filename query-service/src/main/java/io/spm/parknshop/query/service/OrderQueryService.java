@@ -14,6 +14,8 @@ public interface OrderQueryService {
 
   Flux<OrderVO> queryOrdersByUser(Long userId);
 
+  Flux<OrderVO> queryOrdersBySeller(Long sellerId);
+
   Flux<OrderVO> queryOrdersByStore(Long userId);
 
   Flux<OrderEvent> queryOrderEventsById(Long orderId);

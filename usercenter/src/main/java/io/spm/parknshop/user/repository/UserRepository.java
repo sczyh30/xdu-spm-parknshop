@@ -15,6 +15,8 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+  long countByUserType(int userType);
+
   @Query(value = "SELECT * FROM user WHERE username = ?1 AND user_type = 0", nativeQuery = true)
   Optional<User> getCustomerByUsername(String username);
 

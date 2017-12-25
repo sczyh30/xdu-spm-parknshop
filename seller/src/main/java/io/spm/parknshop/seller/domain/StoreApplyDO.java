@@ -9,6 +9,7 @@ public class StoreApplyDO {
   private String id;
   private Date applyTime;
   private Store store;
+  private String sellerUsername;
 
   public String getId() {
     return id;
@@ -37,12 +38,12 @@ public class StoreApplyDO {
     return this;
   }
 
-  @Override
-  public String toString() {
-    return "StoreApplyDO{" +
-        "id='" + id + '\'' +
-        ", applyTime=" + applyTime +
-        ", store=" + store +
-        '}';
+  public String getSellerUsername() {
+    return sellerUsername;
+  }
+
+  public StoreApplyDO setSellerUsername(String sellerUsername) {
+    this.sellerUsername = sellerUsername;
+    return this;
   }
 }

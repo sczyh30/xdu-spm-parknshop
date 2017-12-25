@@ -3,6 +3,8 @@ package io.spm.parknshop.query.vo;
 import io.spm.parknshop.delivery.domain.DeliveryAddress;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.domain.OrderProduct;
+import io.spm.parknshop.payment.domain.PaymentRecord;
+import io.spm.parknshop.user.domain.User;
 
 import java.util.List;
 
@@ -12,7 +14,9 @@ public class OrderVO {
   private Order order;
   private SimpleStoreVO store;
   private List<OrderProduct> products;
+  private PaymentRecord payment;
   private DeliveryAddress deliveryAddress;
+  private User user;
 
   public OrderVO() {
   }
@@ -67,6 +71,24 @@ public class OrderVO {
 
   public OrderVO setDeliveryAddress(DeliveryAddress deliveryAddress) {
     this.deliveryAddress = deliveryAddress;
+    return this;
+  }
+
+  public PaymentRecord getPayment() {
+    return payment;
+  }
+
+  public OrderVO setPayment(PaymentRecord payment) {
+    this.payment = payment;
+    return this;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public OrderVO setUser(User user) {
+    this.user = user;
     return this;
   }
 }

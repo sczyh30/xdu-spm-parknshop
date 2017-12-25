@@ -1,6 +1,7 @@
 package io.spm.parknshop.user.service;
 
 import io.spm.parknshop.common.auth.AuthCenter;
+import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
@@ -173,6 +174,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public Flux<User> getAllUsers() {
     return asyncIterable(() -> userRepository.findAll());
+  }
+
+  @Override
+  public Flux<User> getAllCustomers() {
+    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.CUSTOMER));
   }
 
   private boolean isValidUser(User user) {

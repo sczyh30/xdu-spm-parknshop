@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+  int countByStoreId(long storeId);
+
   List<Product> getByStoreId(long storeId);
 
   List<Product> getByCatalogId(long catalogId);
@@ -27,4 +29,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Query(value = "UPDATE product SET pic_uri = ?1, gmt_modified = CURRENT_TIMESTAMP WHERE id = ?2", nativeQuery = true)
   @Transactional
   void modifyProductPicUrl(String url, long id);
+
+  @Modifying
+  @Query(value = "UPDATE product SET status = 4, gmt_modified = CURRENT_TIMESTAMP WHERE id = ?1", nativeQuery = true)
+  @Transactional
+  void markAsDeleted(long id);
 }

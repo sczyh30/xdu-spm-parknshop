@@ -6,7 +6,7 @@ import io.spm.parknshop.inventory.repository.InventoryRepository;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.repository.ProductRepository;
-import io.spm.parknshop.product.repository.ProductVORepository;
+import io.spm.parknshop.product.repository.ProductQueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
   @Autowired
   private ProductRepository productRepository;
   @Autowired
-  private ProductVORepository productVORepository;
+  private ProductQueryRepository productQueryRepository;
 
   @Autowired
   private InventoryRepository inventoryRepository;
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return async(() -> productVORepository.getProductVO(id));
+    return async(() -> productQueryRepository.getProductVO(id));
   }
 
   @Override
@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
     if (Objects.isNull(storeId) || storeId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("storeId"));
     }
-    return asyncIterable(() -> productVORepository.getByStoreId(storeId));
+    return asyncIterable(() -> productQueryRepository.getByStoreId(storeId));
   }
 
   @Override
@@ -101,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
     if (Objects.isNull(catalogId) || catalogId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("catalogId"));
     }
-    return asyncIterable(() -> productVORepository.searchProductVOByCatalog(catalogId));
+    return asyncIterable(() -> productQueryRepository.searchProductVOByCatalog(catalogId));
   }
 
   @Override
@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
     if (number <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("number"));
     }
-    return asyncIterable(() -> productVORepository.getNRecentProductVO(number));
+    return asyncIterable(() -> productQueryRepository.getNRecentProductVO(number));
   }
 
   @Override
@@ -117,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return asyncExecute(() -> removeInternal(id));
+    return asyncExecute(() -> productRepository.markAsDeleted(id));
   }
 
   @Transactional
@@ -131,7 +131,7 @@ public class ProductServiceImpl implements ProductService {
     if(Objects.isNull(keyword) || "".equals(keyword)) {
       return Flux.error(ExceptionUtils.invalidParam("keyword"));
     }
-    return asyncIterable(() -> productVORepository.searchProductVOByKeyword(keyword));
+    return asyncIterable(() -> productQueryRepository.searchProductVOByKeyword(keyword));
   }
 
   @Override

@@ -55,7 +55,7 @@ public class SellerUserServiceImpl implements SellerUserService {
 
   @Override
   public Mono<User> register(User user) {
-    return userService.register(user.setUserStatus(AuthRoles.SELLER));
+    return userService.register(user.setUserType(AuthRoles.SELLER));
   }
 
   @Override

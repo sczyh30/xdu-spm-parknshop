@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 
@@ -32,6 +33,14 @@ public class ImageUploadApiController {
     return parts.filter(e -> e instanceof FilePart)
         .map(e -> (FilePart) e)
         .flatMap(e -> saveImg(e, "user", String.format("user_%s.png", id)));
+  }
+
+  @PostMapping(value = "/img/ad/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @ResponseBody
+  public Publisher<?> apiUploadAdImg( @RequestBody Flux<Part> parts) {
+    return parts.filter(e -> e instanceof FilePart)
+      .map(e -> (FilePart) e)
+      .flatMap(e -> saveImg(e, "advertisement", String.format("ad_%d%d.png", System.currentTimeMillis(), ThreadLocalRandom.current().nextInt(0, 9999))));
   }
 
   @PostMapping(value = "/img/product/upload/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

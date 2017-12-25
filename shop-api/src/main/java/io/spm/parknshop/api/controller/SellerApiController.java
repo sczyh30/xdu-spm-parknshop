@@ -4,6 +4,7 @@ import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.seller.service.SellerService;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ public class SellerApiController {
   private SellerService sellerService;
   @Autowired
   private SellerUserService sellerUserService;
+  @Autowired
+  private StoreService storeService;
 
   @PostMapping("/seller/apply/apply_store")
   public /*Mono<String>*/ Mono<?> apiApplyStore(ServerWebExchange exchange, @RequestBody Store store) {
-    return AuthUtils.getUserId(exchange)
-      .flatMap(sellerId -> sellerService.applyStore(sellerId, store));
+    return AuthUtils.getSellerId(exchange)
+      .flatMap(sellerId -> sellerService.applyStore(sellerId, store.setSellerId(sellerId)));
   }
 
   @GetMapping("/seller/u/{id}")
@@ -43,6 +46,15 @@ public class SellerApiController {
   @PostMapping("/seller/login")
   public Mono<LoginVO> apiSellerLogin(@RequestBody User user) {
     return sellerUserService.login(user.getUsername(), user.getPassword());
+  }
+
+  @GetMapping("/seller/my_store")
+  public Mono<Store> apiGetStoreBySeller(ServerWebExchange exchange) {
+    return AuthUtils.getSellerId(exchange)
+      .flatMap(sellerId -> storeService.getBySellerId(sellerId)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+      );
   }
 
 }

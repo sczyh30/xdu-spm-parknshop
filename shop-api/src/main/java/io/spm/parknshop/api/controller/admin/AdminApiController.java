@@ -5,6 +5,8 @@ import io.spm.parknshop.admin.service.AdminService;
 import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.service.ApplyProcessService;
+import io.spm.parknshop.query.service.StoreQueryService;
+import io.spm.parknshop.query.vo.StoreVO;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
@@ -30,6 +32,8 @@ public class AdminApiController {
   private AdminService adminService;
   @Autowired
   private StoreService storeService;
+  @Autowired
+  private StoreQueryService storeQueryService;
   @Autowired
   private UserService userService;
   @Autowired
@@ -95,13 +99,18 @@ public class AdminApiController {
   }
 
   @GetMapping("/admin/shops/all")
-  public Publisher<Store> apiGetAllShops() {
-    return storeService.getAll();
+  public Publisher<StoreVO> apiGetAllShops() {
+    return storeQueryService.getAll();
   }
 
   @GetMapping("/admin/users/all")
   public Publisher<User> apiGetAllSellers() {
     return userService.getAllUsers();
+  }
+
+  @GetMapping("/admin/customers/all")
+  public Publisher<User> apiGetAllCustomers() {
+    return userService.getAllCustomers();
   }
 
   @GetMapping("/admin/sellers/all")

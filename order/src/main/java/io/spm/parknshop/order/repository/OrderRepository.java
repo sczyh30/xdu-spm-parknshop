@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,14 +19,24 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Modifying
   void updateStatus(long id, int status);
 
+  int countByStoreId(long storeId);
+
   List<Order> getByCreatorIdOrderByIdDesc(long creatorId);
 
   List<Order> getByCreatorIdAndOrderStatus(long creatorId, int status);
 
-  List<Order> getByStoreId(long storeId);
+  List<Order> getByStoreIdOrderByIdDesc(long storeId);
 
   List<Order> getByStoreIdAndOrderStatus(long storeId, int status);
 
   List<Order> getByPaymentId(long paymentId);
 
+  @Query(value = "SELECT SUM(final_total_price) FROM order_metadata WHERE order_status BETWEEN 1 AND 6", nativeQuery = true)
+  double getAllSaleMoney();
+
+  @Query(value = "SELECT SUM(final_total_price) FROM order_metadata WHERE store_id = ?1 AND order_status BETWEEN 1 AND 6", nativeQuery = true)
+  double getSaleMoneyForStore(long storeId);
+
+  @Query(value = "SELECT SUM(final_total_price) FROM order_metadata WHERE store_id = ?1 AND order_status BETWEEN 1 AND 6 AND gmt_create BETWEEN ?2 AND ?3", nativeQuery = true)
+  double getSaleMoneyForStoreBetween(long storeId, Date from, Date to);
 }

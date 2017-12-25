@@ -21,6 +21,14 @@ public final class AuthUtils {
     return exchange.getResponse().getHeaders().getFirst(PRINCIPAL_HEADER_INTERNAL);
   }
 
+  public static Mono<String> getNonAdminPrincipal(ServerWebExchange exchange) {
+    String principal = extractPrincipal(exchange);
+    if (StringUtils.isEmpty(principal) || (!principal.startsWith(USER_PREFIX) && !principal.startsWith(SELLER_PREFIX))) {
+      return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Your role doesn't have the permission"));
+    }
+    return Mono.just(principal);
+  }
+
   public static Mono<Long> getUserId(ServerWebExchange exchange) {
     String principal = extractPrincipal(exchange);
     if (StringUtils.isEmpty(principal) || !principal.startsWith(USER_PREFIX)) {

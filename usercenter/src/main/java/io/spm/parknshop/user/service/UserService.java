@@ -34,4 +34,6 @@ public interface UserService {
   Mono<Long> deleteUser(Long id);
 
   Flux<User> getAllUsers();
+
+  Flux<User> getAllCustomers();
 }

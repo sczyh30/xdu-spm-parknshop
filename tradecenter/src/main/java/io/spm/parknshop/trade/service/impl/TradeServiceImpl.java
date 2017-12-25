@@ -16,6 +16,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,7 @@ public class TradeServiceImpl implements TradeService {
     return checkRpcMessage(confirmOrderMessage)
       .flatMap(v -> paymentService.createPaymentRecord(confirmOrderMessage.getOrderPreview().getTotalPrice()))
       .flatMap(payment -> splitAndCreateOrders(confirmOrderMessage, payment)
-        .flatMap(v -> paymentService.startPayment(payment.getId()))
-        .map(e -> new ConfirmOrderResult().setPaymentData(e))
+        .flatMap(v -> startPayInternal(payment.getId()))
       );
   }
 
@@ -61,5 +61,19 @@ public class TradeServiceImpl implements TradeService {
       .map(e -> message.getDeliveryAddress())
       .map(Mono::just)
       .orElse(Mono.error(ExceptionUtils.invalidParam("Invalid trade")));
+  }
+
+  private Mono<ConfirmOrderResult> startPayInternal(/*@NonNull*/ Long paymentId) {
+    return paymentService.startPayment(paymentId)
+      .map(e -> new ConfirmOrderResult().setPaymentData(e));
+  }
+
+  @Override
+  public Mono<ConfirmOrderResult> startPayForOrder(Long orderId) {
+    if (Objects.isNull(orderId) || orderId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("orderId"));
+    }
+    return orderService.getOrderMetadataById(orderId)
+      .flatMap(e -> startPayInternal(e.getPaymentId()));
   }
 }

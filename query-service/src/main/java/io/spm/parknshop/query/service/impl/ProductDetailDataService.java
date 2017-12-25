@@ -1,4 +1,4 @@
-package io.spm.parknshop.query.service;
+package io.spm.parknshop.query.service.impl;
 
 import io.spm.parknshop.favorite.service.FavoriteService;
 import io.spm.parknshop.query.vo.ProductDetailUserVO;

@@ -1,6 +1,8 @@
 package io.spm.parknshop.store.service;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
+import io.spm.parknshop.delivery.domain.DeliveryTemplate;
+import io.spm.parknshop.delivery.repository.DeliveryTemplateRepository;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.domain.StoreStatus;
 import io.spm.parknshop.store.repository.StoreRepository;
@@ -13,15 +15,16 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.async;
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.asyncExecute;
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.asyncIterable;
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 
 @Service
 public class StoreServiceImpl implements StoreService {
 
   @Autowired
   private StoreRepository storeRepository;
+
+  @Autowired
+  private DeliveryTemplateRepository deliveryTemplateRepository;
 
   @Override
   public Mono<Store> addStore(Store store) {
@@ -32,7 +35,15 @@ public class StoreServiceImpl implements StoreService {
       return Mono.error(ExceptionUtils.invalidParam("storeId should not be provided"));
     }
     //TODO Seller may no exist
-    return async(() -> storeRepository.save(store));
+    return async(() -> createInitialStore(store));
+  }
+
+  private Store createInitialStore(Store store) {
+    Store newStore = storeRepository.save(store);
+    DeliveryTemplate deliveryTemplate = new DeliveryTemplate().setStoreId(store.getId())
+      .setExpressType(1).setDescription("Express").setDefaultPrice(0.0d);
+    deliveryTemplateRepository.save(deliveryTemplate);
+    return newStore;
   }
 
   @Override

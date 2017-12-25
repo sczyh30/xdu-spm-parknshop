@@ -5,6 +5,7 @@ import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.seller.domain.StoreApplyDO;
 import io.spm.parknshop.seller.repository.StoreApplyRepository;
 import io.spm.parknshop.seller.service.SellerService;
+import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class SellerServiceImpl implements SellerService {
 
   @Autowired
   private StoreService storeService;
+  @Autowired
+  private SellerUserService sellerUserService;
 
   @Override
   public Mono<String> applyStore(Long sellerId, Store store) {
@@ -40,7 +43,7 @@ public class SellerServiceImpl implements SellerService {
         .flatMap(v -> checkPendingApply(sellerId))
         .switchIfEmpty(checkIfOwnedStore(sellerId))
         .map(Object::toString)
-        .switchIfEmpty(Mono.just(convert(store))
+        .switchIfEmpty(convertToApply(store, sellerId)
             .flatMap(e -> storeApplyRepository.putStoreApply(sellerId, e)
                 .map(v -> e.getId())
             )
@@ -66,10 +69,16 @@ public class SellerServiceImpl implements SellerService {
         .flatMap(e -> Mono.error(new ServiceException(STORE_ALREADY_OPEN, "You already have a store")));
   }
 
-  private StoreApplyDO convert(Store store) {
-    return new StoreApplyDO()
+  private Mono<StoreApplyDO> convertToApply(Store store, Long sellerId) {
+    return sellerUserService.getSellerById(sellerId)
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(USER_NOT_EXIST, "Seller does not exist")))
+      .map(seller -> new StoreApplyDO()
         .setId(UUID.randomUUID().toString())
         .setApplyTime(new Date())
-        .setStore(store);
+        .setStore(store)
+        .setSellerUsername(seller.getUsername())
+      );
   }
 }

@@ -26,8 +26,10 @@ public class Product {
 
   private double price;
 
-  private String picUri;
+  private String picUri = "default_product_picture.jpg";
   private String description;
+
+  private int status;
 
   public Long getId() {
     return id;
@@ -110,6 +112,15 @@ public class Product {
     return this;
   }
 
+  public int getStatus() {
+    return status;
+  }
+
+  public Product setStatus(int status) {
+    this.status = status;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "Product{" +
@@ -122,6 +133,7 @@ public class Product {
       ", price=" + price +
       ", picUri='" + picUri + '\'' +
       ", description='" + description + '\'' +
+      ", status=" + status +
       '}';
   }
 }

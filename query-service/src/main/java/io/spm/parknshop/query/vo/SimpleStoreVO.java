@@ -6,7 +6,8 @@ public class SimpleStoreVO {
   private String storeName;
 
   private Long sellerId;
-  private String sellerTelephone;
+  private String storeTelephone;
+  private String storeEmail;
 
   public Long getStoreId() {
     return storeId;
@@ -35,12 +36,21 @@ public class SimpleStoreVO {
     return this;
   }
 
-  public String getSellerTelephone() {
-    return sellerTelephone;
+  public String getStoreTelephone() {
+    return storeTelephone;
   }
 
-  public SimpleStoreVO setSellerTelephone(String sellerTelephone) {
-    this.sellerTelephone = sellerTelephone;
+  public SimpleStoreVO setStoreTelephone(String storeTelephone) {
+    this.storeTelephone = storeTelephone;
+    return this;
+  }
+
+  public String getStoreEmail() {
+    return storeEmail;
+  }
+
+  public SimpleStoreVO setStoreEmail(String storeEmail) {
+    this.storeEmail = storeEmail;
     return this;
   }
 }

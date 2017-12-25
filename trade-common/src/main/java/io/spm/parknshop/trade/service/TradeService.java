@@ -11,4 +11,6 @@ public interface TradeService {
 
   Mono<ConfirmOrderResult> dispatchAndProcessOrder(ConfirmOrderMessage confirmOrderMessage);
 
+  Mono<ConfirmOrderResult> startPayForOrder(Long orderId);
+
 }

@@ -8,6 +8,7 @@ import io.spm.parknshop.order.repository.OrderEventRepository;
 import io.spm.parknshop.query.repository.OrderQueryRepository;
 import io.spm.parknshop.query.service.OrderQueryService;
 import io.spm.parknshop.query.vo.OrderVO;
+import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,6 +30,9 @@ public class OrderQueryServiceImpl implements OrderQueryService {
   @Autowired
   private OrderEventRepository orderEventRepository;
 
+  @Autowired
+  private StoreService storeService;
+
   @Override
   public Mono<OrderVO> queryOrderById(Long orderId) {
     if (Objects.isNull(orderId) || orderId <= 0) {
@@ -46,6 +50,17 @@ public class OrderQueryServiceImpl implements OrderQueryService {
       return Flux.error(ExceptionUtils.invalidParam("userId"));
     }
     return asyncIterable(() -> orderQueryRepository.queryOrderByUser(userId));
+  }
+
+  @Override
+  public Flux<OrderVO> queryOrdersBySeller(Long sellerId) {
+    if (Objects.isNull(sellerId) || sellerId <= 0) {
+      return Flux.error(ExceptionUtils.invalidParam("sellerId"));
+    }
+    return storeService.getBySellerId(sellerId)
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .flatMapMany(e -> queryOrdersByStore(e.getId()));
   }
 
   @Override

@@ -15,10 +15,10 @@ import java.util.Optional;
  */
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
-  Optional<Store>  getBySellerId(Long sellerId);
+  Optional<Store> getBySellerId(Long sellerId);
 
-  @Query(value = "SELECT * FROM store where store.name LIKE  CONCAT('%',:keyword,'%')", nativeQuery = true)
-  List<Store> searchStoreByKeyword(@Param("keyword")String keyword);
+  @Query(value = "SELECT * FROM store WHERE store.name LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
+  List<Store> searchStoreByKeyword(@Param("keyword") String keyword);
 
   @Query(value = "UPDATE store SET status=?1, gmt_modified=CURRENT_TIMESTAMP WHERE id=?2", nativeQuery = true)
   @Modifying

@@ -23,6 +23,14 @@ public class OrderEvent {
 
   private String extraData;
 
+  public OrderEvent() {
+  }
+
+  public OrderEvent(Long orderId, int orderEventType) {
+    this.orderId = orderId;
+    this.orderEventType = orderEventType;
+  }
+
   public Long getId() {
     return id;
   }

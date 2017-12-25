@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Eric Zhao
@@ -22,9 +23,20 @@ public class OrderQueryApiController {
   private OrderQueryService orderQueryService;
 
   @GetMapping("/order/query/simple/u")
-  public Publisher<OrderVO> apiQueryOrderById(ServerWebExchange exchange) {
+  public Publisher<OrderVO> apiQueryOrdersByUser(ServerWebExchange exchange) {
     return AuthUtils.getUserId(exchange)
       .flatMapMany(uid -> orderQueryService.queryOrdersByUser(uid));
+  }
+
+  @GetMapping("/order/query/simple/seller")
+  public Publisher<OrderVO> apiQueryOrdersByCurrentSeller(ServerWebExchange exchange) {
+    return AuthUtils.getSellerId(exchange)
+      .flatMapMany(uid -> orderQueryService.queryOrdersBySeller(uid));
+  }
+
+  @GetMapping("/order/query/detail/{id}")
+  public Mono<OrderVO> apiQueryOrderById(ServerWebExchange exchange, @PathVariable("id") Long id) {
+    return orderQueryService.queryOrderById(id);
   }
 
 }
