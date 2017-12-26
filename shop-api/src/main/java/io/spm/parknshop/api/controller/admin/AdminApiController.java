@@ -119,7 +119,7 @@ public class AdminApiController {
   }
 
   @PostMapping("/admin/set_commission")
-  public Mono<?> apiSetCommission(@RequestBody String commission) {
-    return adminService.setCommission(Double.valueOf(commission));
+  public Mono<?> apiSetCommission(@RequestParam("commission") Double commission) {
+    return adminService.setCommission(commission);
   }
 }

@@ -58,6 +58,13 @@ public class OrderQueryRepository {
       .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
+  public List<OrderVO> queryFinishedOrderByStore(long storeId) {
+    return orderRepository.getFinishedByStoreId(storeId).stream()
+      .map(this::buildRawOrderVO)
+      .collect(Collectors.toList());
+  }
+
   private OrderVO buildRawOrderVO(final Order order) {
     return buildOrderVO(order).orElse(new OrderVO().setOrder(order).setId(order.getId()));
   }

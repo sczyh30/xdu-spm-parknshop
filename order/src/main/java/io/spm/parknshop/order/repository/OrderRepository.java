@@ -27,6 +27,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   List<Order> getByStoreIdOrderByIdDesc(long storeId);
 
+  @Query(value = "SELECT * FROM order_metadata WHERE store_id = ?1 AND order_status IN (5, 6)", nativeQuery = true)
+  List<Order> getFinishedByStoreId(long storeId);
+
   List<Order> getByStoreIdAndOrderStatus(long storeId, int status);
 
   List<Order> getByPaymentId(long paymentId);

@@ -53,6 +53,17 @@ public class OrderQueryServiceImpl implements OrderQueryService {
   }
 
   @Override
+  public Flux<OrderVO> queryFinishedOrdersBySeller(Long sellerId) {
+    if (Objects.isNull(sellerId) || sellerId <= 0) {
+      return Flux.error(ExceptionUtils.invalidParam("sellerId"));
+    }
+    return storeService.getBySellerId(sellerId)
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .flatMapMany(e -> queryFinishedOrdersByStore(e.getId()));
+  }
+
+  @Override
   public Flux<OrderVO> queryOrdersBySeller(Long sellerId) {
     if (Objects.isNull(sellerId) || sellerId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("sellerId"));
@@ -69,6 +80,14 @@ public class OrderQueryServiceImpl implements OrderQueryService {
       return Flux.error(ExceptionUtils.invalidParam("storeId"));
     }
     return asyncIterable(() -> orderQueryRepository.queryOrderByStore(storeId));
+  }
+
+  @Override
+  public Flux<OrderVO> queryFinishedOrdersByStore(Long storeId) {
+    if (Objects.isNull(storeId) || storeId <= 0) {
+      return Flux.error(ExceptionUtils.invalidParam("storeId"));
+    }
+    return asyncIterable(() -> orderQueryRepository.queryFinishedOrderByStore(storeId));
   }
 
   @Override

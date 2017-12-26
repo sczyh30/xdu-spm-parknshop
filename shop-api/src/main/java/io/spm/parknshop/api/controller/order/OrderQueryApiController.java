@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -29,9 +30,18 @@ public class OrderQueryApiController {
   }
 
   @GetMapping("/order/query/simple/seller")
-  public Publisher<OrderVO> apiQueryOrdersByCurrentSeller(ServerWebExchange exchange) {
-    return AuthUtils.getSellerId(exchange)
-      .flatMapMany(uid -> orderQueryService.queryOrdersBySeller(uid));
+  public Publisher<OrderVO> apiQueryOrdersByCurrentSeller(ServerWebExchange exchange,
+                                                          @RequestParam(value = "type", defaultValue = "all") String type) {
+    switch (type) {
+      case "finished":
+        return AuthUtils.getSellerId(exchange)
+          .flatMapMany(uid -> orderQueryService.queryFinishedOrdersBySeller(uid));
+      case "all":
+      default:
+        return AuthUtils.getSellerId(exchange)
+          .flatMapMany(uid -> orderQueryService.queryOrdersBySeller(uid));
+    }
+
   }
 
   @GetMapping("/order/query/detail/{id}")
