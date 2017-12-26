@@ -1,21 +1,21 @@
 package io.spm.parknshop.api.util;
 
-import io.spm.parknshop.catalog.domain.Catalog;
+import io.spm.parknshop.category.domain.Category;
 import io.spm.parknshop.product.domain.ProductVO;
 
 import java.util.List;
 
 public class IndexPage {
 
-  private List<Catalog> catalogs;
+  private List<Category> categories;
   private List<ProductVO> products;
 
-  public List<Catalog> getCatalogs() {
-    return catalogs;
+  public List<Category> getCategories() {
+    return categories;
   }
 
-  public IndexPage setCatalogs(List<Catalog> catalogs) {
-    this.catalogs = catalogs;
+  public IndexPage setCategories(List<Category> categories) {
+    this.categories = categories;
     return this;
   }
 

@@ -20,7 +20,7 @@ public final class ReactorAsyncWrapper {
   private static final int poolSize = 64;
 
   static final ExecutorService pool = Executors.newFixedThreadPool(poolSize,
-    new NiceThreadFactory("reactive-jdbc-blocking-pool"));
+    new NiceThreadFactory("reactive-blocking-pool"));
   private static final Scheduler scheduler = Schedulers.fromExecutor(pool);
 
   /**

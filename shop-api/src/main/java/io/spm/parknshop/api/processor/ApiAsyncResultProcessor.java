@@ -39,7 +39,11 @@ public class ApiAsyncResultProcessor {
     MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
     Method asyncMethod = methodSignature.getMethod();
     try {
-      return processAsyncResult(pjp.proceed());
+      if (asyncMethod.getName().startsWith("api")) {
+        return processAsyncResult(pjp.proceed());
+      } else {
+        return pjp.proceed();
+      }
     } catch (Throwable ex) {
       logger.error("Unexpected error in handler function {}", asyncMethod.getName(), ex);
       return newUnknownError(asyncMethod.getReturnType());

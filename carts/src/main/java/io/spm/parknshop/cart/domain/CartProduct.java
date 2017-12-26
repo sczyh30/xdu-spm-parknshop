@@ -1,41 +1,35 @@
 package io.spm.parknshop.cart.domain;
 
+import io.spm.parknshop.product.domain.ProductVO;
+
 /**
+ * A product unit in cart.
+ *
  * @author Eric Zhao
  */
 public class CartProduct {
 
-  private Long id;
+  private Long productId;
 
-  private Long sellerId;
-
-  private Double price;
+  private ProductVO product;
   private Integer amount;
+  private boolean checked;
 
-  public Long getId() {
-    return id;
+  public Long getProductId() {
+    return productId;
   }
 
-  public CartProduct setId(Long id) {
-    this.id = id;
+  public CartProduct setProductId(Long productId) {
+    this.productId = productId;
     return this;
   }
 
-  public Long getSellerId() {
-    return sellerId;
+  public ProductVO getProduct() {
+    return product;
   }
 
-  public CartProduct setSellerId(Long sellerId) {
-    this.sellerId = sellerId;
-    return this;
-  }
-
-  public Double getPrice() {
-    return price;
-  }
-
-  public CartProduct setPrice(Double price) {
-    this.price = price;
+  public CartProduct setProduct(ProductVO product) {
+    this.product = product;
     return this;
   }
 
@@ -48,13 +42,22 @@ public class CartProduct {
     return this;
   }
 
+  public boolean isChecked() {
+    return checked;
+  }
+
+  public CartProduct setChecked(boolean checked) {
+    this.checked = checked;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "CartProduct{" +
-      "id=" + id +
-      ", sellerId=" + sellerId +
-      ", price=" + price +
+      "productId=" + productId +
+      ", product=" + product +
       ", amount=" + amount +
+      ", checked=" + checked +
       '}';
   }
 }

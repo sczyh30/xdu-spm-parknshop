@@ -1,0 +1,14 @@
+package io.spm.parknshop.advertisement.service;
+
+import io.spm.parknshop.advertisement.domain.Advertisement;
+import reactor.core.publisher.Mono;
+
+/**
+ * @author Eric Zhao
+ */
+public interface AdvertisementService {
+
+  Mono<Advertisement> getById(Long id);
+
+  Mono<Advertisement> addNewAdvertisement(Advertisement advertisement);
+}

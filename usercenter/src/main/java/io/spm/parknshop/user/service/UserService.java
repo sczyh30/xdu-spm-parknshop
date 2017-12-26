@@ -25,7 +25,7 @@ public interface UserService {
 
   Mono<Optional<User>> getUserById(Long id);
 
-  Flux<User> searchUserByKeyword(String keyword);
+  Flux<User> searchCustomerByKeyword(String keyword, Integer page, Integer size);
 
   Mono<Long> setBlacklist(Long id);
 
@@ -34,4 +34,6 @@ public interface UserService {
   Mono<Long> deleteUser(Long id);
 
   Flux<User> getAllUsers();
+
+  Flux<User> getAllCustomers();
 }

@@ -25,7 +25,12 @@
 
   <modules>
     <module>common</module>
-    <module>catalog</module>
+    <module>common-auth</module>
+    <module>apply-workflow</module>
+
+    <module>notifycenter</module>
+
+    <module>category</module>
     <module>product</module>
     <module>usercenter</module>
     <module>seller</module>
@@ -34,15 +39,19 @@
     <module>advertisement</module>
     <module>carts</module>
     <module>buy</module>
+    <module>trade-common</module>
+    <module>tradecenter</module>
     <module>payment</module>
     <module>admincenter</module>
     <module>order</module>
     <module>favorite</module>
     <module>history</module>
+    <module>delivery</module>
+    <module>ratecenter</module>
+
+    <module>query-service</module>
 
     <module>shop-api</module>
-    <module>shop-app</module>
-    <module>shop-admin-app</module>
   </modules>
 
   <dependencies>

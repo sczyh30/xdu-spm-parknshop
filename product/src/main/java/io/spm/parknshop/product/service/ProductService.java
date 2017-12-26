@@ -24,7 +24,7 @@ public interface ProductService {
 
   Flux<Product> getByCatalogId(Long catalogId);
 
-  Flux<ProductVO> getVOByCatalogId(Long catalogId);
+  Flux<ProductVO> getVOByCategoryId(Long catalogId);
 
   Flux<ProductVO> getRecentProducts(int number);
 
@@ -33,4 +33,6 @@ public interface ProductService {
   Flux<ProductVO> searchProductByKeyword(String keyword);
 
   Mono<Optional<ProductVO>> getProductVO(Long id);
+
+  Mono<String> modifyPicUrl(String url, Long id);
 }

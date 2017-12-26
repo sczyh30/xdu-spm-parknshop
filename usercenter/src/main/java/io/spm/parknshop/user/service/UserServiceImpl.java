@@ -1,6 +1,7 @@
 package io.spm.parknshop.user.service;
 
 import io.spm.parknshop.common.auth.AuthCenter;
+import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
@@ -11,6 +12,8 @@ import io.spm.parknshop.user.domain.UserStatus;
 import io.spm.parknshop.user.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -61,7 +64,7 @@ public class UserServiceImpl implements UserService {
     if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
       return Mono.error(ExceptionUtils.invalidParam("username/password"));
     }
-    return async(() -> userRepository.getByUsername(username))
+    return async(() -> userRepository.getCustomerByUsername(username))
       .flatMap(this::extractUser)
       .flatMap(user ->
         Mono.just(verifyCredential(user, username, password))
@@ -134,12 +137,15 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Flux<User> searchUserByKeyword(String keyword) {
+  public Flux<User> searchCustomerByKeyword(String keyword, Integer page, Integer size) {
     if (StringUtils.isEmpty(keyword)) {
       return Flux.error(ExceptionUtils.invalidParam("keyword"));
     }
-    return asyncIterable(() -> userRepository.searchUserByKeyword(keyword));
+    //
+    Pageable pageable = PageRequest.of(page-1, size);
+    return asyncIterable(() -> userRepository.searchCustomerByKeyword(keyword,pageable));
   }
+
 
   @Override
   public Mono<Long> setBlacklist(Long id) {
@@ -168,6 +174,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public Flux<User> getAllUsers() {
     return asyncIterable(() -> userRepository.findAll());
+  }
+
+  @Override
+  public Flux<User> getAllCustomers() {
+    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.CUSTOMER));
   }
 
   private boolean isValidUser(User user) {
