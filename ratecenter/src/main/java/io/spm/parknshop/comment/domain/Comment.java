@@ -27,7 +27,7 @@ public class Comment {
   private Long productId;
 
   private String commentText;
-  private int rate;
+  private Integer rate;
 
   public Long getId() {
     return id;
@@ -92,11 +92,11 @@ public class Comment {
     return this;
   }
 
-  public int getRate() {
+  public Integer getRate() {
     return rate;
   }
 
-  public Comment setRate(int rate) {
+  public Comment setRate(Integer rate) {
     this.rate = rate;
     return this;
   }
