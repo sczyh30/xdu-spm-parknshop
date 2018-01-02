@@ -1,13 +1,16 @@
-package io.spm.parknshop.store.service;
+package io.spm.parknshop.store.service.impl;
 
+import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.delivery.domain.DeliveryTemplate;
 import io.spm.parknshop.delivery.repository.DeliveryTemplateRepository;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.domain.StoreStatus;
 import io.spm.parknshop.store.repository.StoreRepository;
+import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -16,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
+import static io.spm.parknshop.common.exception.ErrorConstants.STORE_NOT_EXIST;
 
 @Service
 public class StoreServiceImpl implements StoreService {
@@ -38,7 +42,8 @@ public class StoreServiceImpl implements StoreService {
     return async(() -> createInitialStore(store));
   }
 
-  private Store createInitialStore(Store store) {
+  @Transactional
+  protected Store createInitialStore(Store store) {
     Store newStore = storeRepository.save(store);
     DeliveryTemplate deliveryTemplate = new DeliveryTemplate().setStoreId(store.getId())
       .setExpressType(1).setDescription("Express").setDefaultPrice(0.0d);
@@ -62,11 +67,14 @@ public class StoreServiceImpl implements StoreService {
   }
 
   @Override
-  public Mono<Optional<Store>> getById(Long id) {
+  public Mono<Store> getById(Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return async(() -> storeRepository.findById(id));
+    return async(() -> storeRepository.findById(id))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(STORE_NOT_EXIST, "Target store does not exist")));
   }
 
   @Override
@@ -74,8 +82,10 @@ public class StoreServiceImpl implements StoreService {
     if (Objects.isNull(sellerId) || sellerId <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("sellerId"));
     }
-
     return async(() -> storeRepository.getBySellerId(sellerId));
+      //.filter(Optional::isPresent)
+      //.map(Optional::get)
+      //.switchIfEmpty(Mono.error(new ServiceException(STORE_NOT_EXIST, "Target seller does not own a store")));
   }
 
   @Override
@@ -88,7 +98,7 @@ public class StoreServiceImpl implements StoreService {
 
   @Override
   public Flux<Store> searchStoreByKeyword(String keyword) {
-    if(Objects.isNull(keyword) || "".equals(keyword)) {
+    if (Objects.isNull(keyword) || "".equals(keyword)) {
       return Flux.error(ExceptionUtils.invalidParam("keyword"));
     }
     return asyncIterable(() -> storeRepository.searchStoreByKeyword(keyword));
@@ -115,22 +125,22 @@ public class StoreServiceImpl implements StoreService {
     return asyncExecute(() -> storeRepository.modifyStatus(StoreStatus.NORMAL, id));
   }
 
-  private static boolean isValidNewStore(Store store){
+  private static boolean isValidNewStore(Store store) {
     return Optional.ofNullable(store)
-        .map(e -> store.getBriefDescription())
-        .map(e -> store.getSellerId())
-        .map(e -> store.getName())
-        .map(e -> store.getTelephone())
-        .isPresent();
+      .map(e -> store.getBriefDescription())
+      .map(e -> store.getSellerId())
+      .map(e -> store.getName())
+      .map(e -> store.getTelephone())
+      .isPresent();
   }
 
-  private  static boolean isValidStore(Store store){
+  private static boolean isValidStore(Store store) {
     return Optional.ofNullable(store)
-        .map(e -> store.getId())
-        .map(e -> store.getBriefDescription())
-        .map(e -> store.getSellerId())
-        .map(e -> store.getName())
-        .map(e -> store.getTelephone())
-        .isPresent();
+      .map(e -> store.getId())
+      .map(e -> store.getBriefDescription())
+      .map(e -> store.getSellerId())
+      .map(e -> store.getName())
+      .map(e -> store.getTelephone())
+      .isPresent();
   }
 }

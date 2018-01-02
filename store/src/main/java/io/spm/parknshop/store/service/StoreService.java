@@ -6,13 +6,16 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
+/**
+ * @author Eric Zhao
+ */
 public interface StoreService {
 
   Mono<Store> addStore(Store store);
 
   Mono<Store> modify(Long id, Store store);
 
-  Mono<Optional<Store>> getById(Long id);
+  Mono<Store> getById(Long id);
 
   Mono<Optional<Store>> getBySellerId(Long sellerId);
 
