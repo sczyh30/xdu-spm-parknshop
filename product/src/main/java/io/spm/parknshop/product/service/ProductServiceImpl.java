@@ -1,5 +1,7 @@
 package io.spm.parknshop.product.service;
 
+import io.spm.parknshop.common.exception.ErrorConstants;
+import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.inventory.domain.Inventory;
 import io.spm.parknshop.inventory.repository.InventoryRepository;
@@ -65,11 +67,14 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Mono<Optional<Product>> getById(final Long id) {
+  public Mono<Product> getById(final Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return async(() -> productRepository.findById(id));
+    return async(() -> productRepository.findById(id))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST, "Product does not exist")));
   }
 
   @Override

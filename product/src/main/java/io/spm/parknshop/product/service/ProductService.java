@@ -18,7 +18,7 @@ public interface ProductService {
 
   Mono<Product> modify(Long productId, Product product);
 
-  Mono<Optional<Product>> getById(Long id);
+  Mono<Product> getById(Long id);
 
   Flux<ProductVO> getByStoreId(Long storeId);
 

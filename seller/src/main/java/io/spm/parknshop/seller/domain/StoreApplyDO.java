@@ -4,6 +4,7 @@ import io.spm.parknshop.store.domain.Store;
 
 import java.util.Date;
 
+@Deprecated
 public class StoreApplyDO {
 
   private String id;

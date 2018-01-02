@@ -1,7 +1,8 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.api.util.AuthUtils;
-import io.spm.parknshop.apply.domain.AdvertisementDO;
+import io.spm.parknshop.advertisement.domain.apply.AdvertisementDTO;
+import io.spm.parknshop.apply.domain.ApplyProcessorRoles;
 import io.spm.parknshop.apply.service.ApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +20,11 @@ import reactor.core.publisher.Mono;
 public class AdvertisementApiController {
 
   @Autowired
-  private ApplyService<AdvertisementDO, String> applyService;
+  private ApplyService<AdvertisementDTO, Long> applyService;
 
   @PostMapping("/ad/apply")
-  public Mono<?> apiAdApply(ServerWebExchange exchange, @RequestBody AdvertisementDO advertisement){
-    return AuthUtils.getUserId(exchange)
-      .flatMap(userId -> applyService.applyFor(AuthUtils.USER_PREFIX + userId, advertisement));
+  public Mono<Long> apiAdApply(ServerWebExchange exchange, @RequestBody AdvertisementDTO advertisement){
+    return AuthUtils.getSellerId(exchange)
+      .flatMap(sellerId -> applyService.applyFor(ApplyProcessorRoles.SELLER_PREFIX + sellerId, advertisement));
   }
 }

@@ -11,6 +11,7 @@ import io.spm.parknshop.common.exception.ErrorConstants;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.inventory.service.InventoryService;
+import io.spm.parknshop.product.domain.ProductStatus;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +142,7 @@ public class CartServiceImpl implements CartService {
   }
 
   private CartUnit buildCartUnit(List<CartProduct> products, long storeId) {
+    // TODO: What if all products in the shop is unavailable, or the shop is in blacklist?
     String storeName = products.get(0).getProduct().getStoreName();
     double totalPrice = products.stream()
       .filter(CartProduct::isChecked)
@@ -159,6 +161,7 @@ public class CartServiceImpl implements CartService {
     return productService.getProductVO(simpleProduct.getId())
       .filter(Optional::isPresent)
       .map(Optional::get)
+      .filter(e -> ProductStatus.isAvaliable(e.getProduct().getStatus()))
       .map(product -> new CartProduct().setProductId(simpleProduct.getId())
         .setAmount(simpleProduct.getAmount())
         .setProduct(product)
@@ -177,7 +180,7 @@ public class CartServiceImpl implements CartService {
     return inventoryService.getInventoryAmount(productId)
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST, "Product does not exist")))
+      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST, "Invalid product inventory status")))
       .flatMap(amount -> {
         if (amount < n) {
           return Mono.error(new ServiceException(ErrorConstants.PRODUCT_NO_INVENTORY, String.format("Inventory of product %d is insufficient", productId)));
@@ -188,10 +191,7 @@ public class CartServiceImpl implements CartService {
   }
 
   private Mono<?> checkProductExists(Long productId) {
-    return productService.getById(productId)
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST, "Product does not exist")));
+    return productService.getById(productId);
   }
 
   private Mono<?> doDelete(/*@NonNull*/ Long userId, SimpleCartProduct cartProduct) {

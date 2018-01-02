@@ -3,7 +3,7 @@ package io.spm.parknshop.trade.domain;
 /**
  * @author Eric Zhao
  */
-public class ConfirmOrderResult {
+public class SubmitOrderResult {
 
   private PaymentRedirectData paymentData;
 
@@ -11,7 +11,7 @@ public class ConfirmOrderResult {
     return paymentData;
   }
 
-  public ConfirmOrderResult setPaymentData(PaymentRedirectData paymentData) {
+  public SubmitOrderResult setPaymentData(PaymentRedirectData paymentData) {
     this.paymentData = paymentData;
     return this;
   }

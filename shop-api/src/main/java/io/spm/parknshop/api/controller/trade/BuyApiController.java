@@ -3,7 +3,7 @@ package io.spm.parknshop.api.controller.trade;
 import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.buy.domain.ConfirmOrderDO;
 import io.spm.parknshop.buy.service.ConfirmOrderService;
-import io.spm.parknshop.trade.domain.ConfirmOrderResult;
+import io.spm.parknshop.trade.domain.SubmitOrderResult;
 import io.spm.parknshop.trade.domain.OrderPreview;
 import io.spm.parknshop.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +32,13 @@ public class BuyApiController {
   }
 
   @PostMapping("/buy/confirm_order")
-  public Mono<ConfirmOrderResult> apiConfirmOrder(ServerWebExchange exchange, @RequestBody ConfirmOrderDO confirmOrderDO) {
+  public Mono<SubmitOrderResult> apiConfirmOrder(ServerWebExchange exchange, @RequestBody ConfirmOrderDO confirmOrderDO) {
     return AuthUtils.getUserId(exchange)
-      .flatMap(userId -> confirmOrderService.confirmOrder(userId, confirmOrderDO));
+      .flatMap(userId -> confirmOrderService.submitOrder(userId, confirmOrderDO));
   }
 
   @PostMapping("/buy/order_pay")
-  public Mono<ConfirmOrderResult> apiContinuePayForOrder(ServerWebExchange exchange, @RequestParam("order") Long id) {
+  public Mono<SubmitOrderResult> apiContinuePayForOrder(ServerWebExchange exchange, @RequestParam("order") Long id) {
     return AuthUtils.getUserId(exchange)
       .flatMap(userId -> tradeService.startPayForOrder(id));
   }

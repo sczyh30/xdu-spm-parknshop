@@ -48,10 +48,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   }
 
   private Mono<?> checkProductExists(Long productId) {
-    return productService.getById(productId)
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST, "Product does not exist")));
+    return productService.getById(productId);
   }
 
   private Mono<FavoriteRelation> saveFavorite(FavoriteRelation favoriteRelation) {

@@ -52,9 +52,7 @@ public class StoreApiController {
 
   @GetMapping("/store/{id}")
   public Mono<Store> apiGetStore(@PathVariable("id") Long id) {
-    return storeService.getById(id)
-        .filter(Optional::isPresent)
-        .map(Optional::get);
+    return storeService.getById(id);
   }
 
   @PostMapping("/store/{id}")

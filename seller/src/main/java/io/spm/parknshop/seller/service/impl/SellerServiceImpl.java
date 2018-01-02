@@ -38,6 +38,7 @@ public class SellerServiceImpl implements SellerService {
   private SellerUserService sellerUserService;
 
   @Override
+  @Deprecated
   public Mono<String> applyStore(Long sellerId, Store store) {
     return checkApplyParams(sellerId, store)
         .flatMap(v -> checkPendingApply(sellerId))

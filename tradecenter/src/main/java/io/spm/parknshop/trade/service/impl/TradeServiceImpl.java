@@ -7,7 +7,7 @@ import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.payment.domain.PaymentRecord;
 import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.trade.domain.ConfirmOrderMessage;
-import io.spm.parknshop.trade.domain.ConfirmOrderResult;
+import io.spm.parknshop.trade.domain.SubmitOrderResult;
 import io.spm.parknshop.trade.domain.OrderStoreGroupUnit;
 import io.spm.parknshop.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class TradeServiceImpl implements TradeService {
   private PaymentService paymentService;
 
   @Override
-  public Mono<ConfirmOrderResult> dispatchAndProcessOrder(ConfirmOrderMessage confirmOrderMessage) {
+  public Mono<SubmitOrderResult> dispatchAndProcessOrder(ConfirmOrderMessage confirmOrderMessage) {
     return checkRpcMessage(confirmOrderMessage)
       .flatMap(v -> paymentService.createPaymentRecord(confirmOrderMessage.getOrderPreview().getTotalPrice()))
       .flatMap(payment -> splitAndCreateOrders(confirmOrderMessage, payment)
@@ -63,13 +63,13 @@ public class TradeServiceImpl implements TradeService {
       .orElse(Mono.error(ExceptionUtils.invalidParam("Invalid trade")));
   }
 
-  private Mono<ConfirmOrderResult> startPayInternal(/*@NonNull*/ Long paymentId) {
+  private Mono<SubmitOrderResult> startPayInternal(/*@NonNull*/ Long paymentId) {
     return paymentService.startPayment(paymentId)
-      .map(e -> new ConfirmOrderResult().setPaymentData(e));
+      .map(e -> new SubmitOrderResult().setPaymentData(e));
   }
 
   @Override
-  public Mono<ConfirmOrderResult> startPayForOrder(Long orderId) {
+  public Mono<SubmitOrderResult> startPayForOrder(Long orderId) {
     if (Objects.isNull(orderId) || orderId <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("orderId"));
     }
