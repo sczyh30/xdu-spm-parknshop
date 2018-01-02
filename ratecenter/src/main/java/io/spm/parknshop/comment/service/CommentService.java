@@ -13,6 +13,8 @@ public interface CommentService {
 
   Mono<Comment> addComment(Comment comment);
 
+  Mono<Comment> addReply(Comment comment);
+
   Mono<Optional<Comment>> getById(Long id);
 
   Flux<Comment> getCommentsByUser(Long userId);
