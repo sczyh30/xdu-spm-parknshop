@@ -26,7 +26,7 @@ public class Advertisement {
   private Long adTarget;
 
   private String description;
-  private String adUrl;
+  private String adPicUrl;
   private int adTotalPrice;
 
   private Date startDate;
@@ -97,12 +97,12 @@ public class Advertisement {
     return this;
   }
 
-  public String getAdUrl() {
-    return adUrl;
+  public String getAdPicUrl() {
+    return adPicUrl;
   }
 
-  public Advertisement setAdUrl(String adUrl) {
-    this.adUrl = adUrl;
+  public Advertisement setAdPicUrl(String adPicUrl) {
+    this.adPicUrl = adPicUrl;
     return this;
   }
 
@@ -162,7 +162,7 @@ public class Advertisement {
       ", adOwner='" + adOwner + '\'' +
       ", adTarget=" + adTarget +
       ", description='" + description + '\'' +
-      ", adUrl='" + adUrl + '\'' +
+      ", adPicUrl='" + adPicUrl + '\'' +
       ", adTotalPrice=" + adTotalPrice +
       ", startDate=" + startDate +
       ", endDate=" + endDate +

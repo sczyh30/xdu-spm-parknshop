@@ -1,18 +1,18 @@
-package io.spm.parknshop.apply.domain;
+package io.spm.parknshop.advertisement.domain.apply;
 
 import java.util.Date;
 
 /**
  * @author Eric Zhao
  */
-public class AdvertisementDO {
+public class AdvertisementDTO {
 
   private int adType;
   private String adOwner;
   private Long adTarget;
 
   private String description;
-  private String adUrl;
+  private String adPicUrl;
 
   private Date startDate;
   private Date endDate;
@@ -21,7 +21,7 @@ public class AdvertisementDO {
     return adType;
   }
 
-  public AdvertisementDO setAdType(int adType) {
+  public AdvertisementDTO setAdType(int adType) {
     this.adType = adType;
     return this;
   }
@@ -30,7 +30,7 @@ public class AdvertisementDO {
     return adOwner;
   }
 
-  public AdvertisementDO setAdOwner(String adOwner) {
+  public AdvertisementDTO setAdOwner(String adOwner) {
     this.adOwner = adOwner;
     return this;
   }
@@ -39,7 +39,7 @@ public class AdvertisementDO {
     return adTarget;
   }
 
-  public AdvertisementDO setAdTarget(Long adTarget) {
+  public AdvertisementDTO setAdTarget(Long adTarget) {
     this.adTarget = adTarget;
     return this;
   }
@@ -48,17 +48,17 @@ public class AdvertisementDO {
     return description;
   }
 
-  public AdvertisementDO setDescription(String description) {
+  public AdvertisementDTO setDescription(String description) {
     this.description = description;
     return this;
   }
 
-  public String getAdUrl() {
-    return adUrl;
+  public String getAdPicUrl() {
+    return adPicUrl;
   }
 
-  public AdvertisementDO setAdUrl(String adUrl) {
-    this.adUrl = adUrl;
+  public AdvertisementDTO setAdPicUrl(String adPicUrl) {
+    this.adPicUrl = adPicUrl;
     return this;
   }
 
@@ -66,7 +66,7 @@ public class AdvertisementDO {
     return startDate;
   }
 
-  public AdvertisementDO setStartDate(Date startDate) {
+  public AdvertisementDTO setStartDate(Date startDate) {
     this.startDate = startDate;
     return this;
   }
@@ -75,19 +75,19 @@ public class AdvertisementDO {
     return endDate;
   }
 
-  public AdvertisementDO setEndDate(Date endDate) {
+  public AdvertisementDTO setEndDate(Date endDate) {
     this.endDate = endDate;
     return this;
   }
 
   @Override
   public String toString() {
-    return "AdvertisementDO{" +
+    return "AdvertisementDTO{" +
         "adType=" + adType +
         ", adOwner=" + adOwner +
         ", adTarget=" + adTarget +
         ", description='" + description + '\'' +
-        ", adUrl='" + adUrl + '\'' +
+        ", adPicUrl='" + adPicUrl + '\'' +
         ", startDate=" + startDate +
         ", endDate=" + endDate +
         '}';

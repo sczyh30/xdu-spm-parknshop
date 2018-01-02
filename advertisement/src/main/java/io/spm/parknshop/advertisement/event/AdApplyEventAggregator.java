@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
  * @author Eric Zhao
  */
 @Component
-public class AdApplyEventAggregator implements WorkflowEventAggregator<Integer> {
+public class AdApplyEventAggregator implements WorkflowEventAggregator<Integer, Integer> {
 
   @Autowired
   @Qualifier(value = "adStateMachine")
@@ -24,5 +24,10 @@ public class AdApplyEventAggregator implements WorkflowEventAggregator<Integer> 
   public Mono<Integer> aggregate(Flux<ApplyEvent> eventStream) {
     return eventStream.map(ApplyEvent::getApplyEventType)
       .reduce(ApplyStatus.NEW_APPLY, stateMachine::transform);
+  }
+
+  @Override
+  public Integer transform(Integer curState, Integer event) {
+    return stateMachine.transform(curState, event);
   }
 }

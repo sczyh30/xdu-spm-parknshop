@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import static io.spm.parknshop.advertisement.domain.AdApplyEventType.*;
+import static io.spm.parknshop.advertisement.domain.apply.AdApplyEventType.*;
 
 @Component
 public class AdApplyEventNotifier implements WorkflowEventNotifier<String> {

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static io.spm.parknshop.apply.domain.ApplyStatus.*;
-import static io.spm.parknshop.advertisement.domain.AdApplyEventType.*;
+import static io.spm.parknshop.advertisement.domain.apply.AdApplyEventType.*;
 
 @Configuration("adConfig")
 public class Config {

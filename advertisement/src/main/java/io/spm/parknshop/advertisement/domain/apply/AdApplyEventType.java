@@ -1,4 +1,4 @@
-package io.spm.parknshop.advertisement.domain;
+package io.spm.parknshop.advertisement.domain.apply;
 
 /**
  * @author Eric Zhao
