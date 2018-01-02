@@ -35,5 +35,5 @@ public interface ApplyDataService {
    * @param applyEvent apply submit event, should be checked (NEW_SUBMIT type)
    * @return the apply and apply event entity
    */
-  Tuple2<Apply, ApplyEvent> saveNewApply(Apply applyMetadata, ApplyEvent applyEvent);
+  Mono<Tuple2<Apply, ApplyEvent>> saveNewApply(Apply applyMetadata, ApplyEvent applyEvent);
 }

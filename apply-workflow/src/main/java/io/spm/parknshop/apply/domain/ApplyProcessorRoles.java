@@ -32,11 +32,19 @@ public final class ApplyProcessorRoles {
     return !StringUtils.isEmpty(processorId) && processorId.startsWith(ADMIN_PREFIX);
   }
 
-  public static Mono<Long> getSellerId(String processorId) {
+  public static Mono<Long> checkSellerId(String processorId) {
     if (StringUtils.isEmpty(processorId) || !processorId.startsWith(SELLER_PREFIX)) {
-      return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Invalid role or id"));
+      return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Invalid role"));
     }
     return Mono.just(processorId.replace(SELLER_PREFIX, ""))
+      .map(Long::valueOf);
+  }
+
+  public static Mono<Long> checkAdminId(String processorId) {
+    if (StringUtils.isEmpty(processorId) || !processorId.startsWith(ADMIN_PREFIX)) {
+      return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Invalid role"));
+    }
+    return Mono.just(processorId.replace(ADMIN_PREFIX, ""))
       .map(Long::valueOf);
   }
 

@@ -95,7 +95,12 @@ public class ApplyDataServiceImpl implements ApplyDataService {
   }
 
   @Override
-  public Tuple2<Apply, ApplyEvent> saveNewApply(/*@NonNull*/ Apply applyMetadata, /*@NonNull*/ ApplyEvent applyEvent) {
+  public Mono<Tuple2<Apply, ApplyEvent>> saveNewApply(/*@NonNull*/ Apply applyMetadata, /*@NonNull*/ ApplyEvent applyEvent) {
+    return async(() -> saveNewApplyInternal(applyMetadata, applyEvent));
+  }
+
+  @Transactional
+  protected Tuple2<Apply, ApplyEvent> saveNewApplyInternal(/*@NonNull*/ Apply applyMetadata, /*@NonNull*/ ApplyEvent applyEvent) {
     Apply apply = applyMetadataRepository.save(applyMetadata);
     applyEvent.setApplyId(apply.getId());
     ApplyEvent newEvent = applyEventRepository.save(applyEvent);

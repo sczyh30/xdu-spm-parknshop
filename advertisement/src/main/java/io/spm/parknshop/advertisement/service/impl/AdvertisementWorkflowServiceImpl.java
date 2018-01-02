@@ -30,7 +30,6 @@ import reactor.core.publisher.Mono;
 import java.util.Date;
 import java.util.Optional;
 
-import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 /**
@@ -100,7 +99,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
       .setStatus(ApplyStatus.NEW_APPLY);
     ApplyEvent applyEvent = new ApplyEvent().setApplyEventType(AdApplyEventType.SUBMIT_APPLY)
       .setProcessorId(proposerId);
-    return async(() -> applyDataService.saveNewApply(applyMetadata, applyEvent));
+    return applyDataService.saveNewApply(applyMetadata, applyEvent);
   }
 
   @Override
