@@ -6,7 +6,7 @@ package io.spm.parknshop.common.exception;
  * @author Eric Zhao
  * @date 2017/12/02
  */
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
 
   private final int errorCode;
   private Object attach;

@@ -38,6 +38,9 @@ public final class ErrorConstants {
   public static final int ORDER_UNEXPECTED_DATA = 4701;
   public static final int ORDER_UNEXPECTED_STATE = 4702;
 
+  // Apply workflow exception: 4900 - 4939
+  public static final int ILLEGAL_APPLY_TYPE = 4901;
+
   public static final int USER_ALREADY_EXISTS = 4110;
 
   public static final int USER_MODIFY_OLD_PASSWORD_NOT_MATCH = 4115;
@@ -59,6 +62,7 @@ public final class ErrorConstants {
 
   public static final int PRODUCT_NO_INVENTORY = 4610;
 
+  // Advertisement exception: 8100 - 8119
   public static final int AD_UNKNOWN_TYPE = 8100;
 
   private ErrorConstants() {}
