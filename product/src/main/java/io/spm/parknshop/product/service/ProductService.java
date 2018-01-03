@@ -20,7 +20,11 @@ public interface ProductService {
 
   Mono<Product> getById(Long id);
 
-  Flux<ProductVO> getByStoreId(Long storeId);
+  Mono<Product> filterNormal(Product product);
+
+  Flux<Product> getByStoreId(Long storeId);
+
+  Flux<ProductVO> getVOByStoreId(Long storeId);
 
   Flux<Product> getByCatalogId(Long catalogId);
 

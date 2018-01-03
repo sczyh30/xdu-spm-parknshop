@@ -4,6 +4,7 @@ import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.seller.service.SellerService;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.store.domain.StoreDTO;
 import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.User;
@@ -26,9 +27,9 @@ public class SellerApiController {
   private StoreService storeService;
 
   @PostMapping("/seller/apply/apply_store")
-  public /*Mono<String>*/ Mono<?> apiApplyStore(ServerWebExchange exchange, @RequestBody Store store) {
+  public Mono<Long> apiApplyStore(ServerWebExchange exchange, @RequestBody StoreDTO store) {
     return AuthUtils.getSellerId(exchange)
-      .flatMap(sellerId -> sellerService.applyStore(sellerId, store.setSellerId(sellerId)));
+      .flatMap(sellerId -> sellerService.applyStore(AuthUtils.SELLER_PREFIX + sellerId, store));
   }
 
   @GetMapping("/seller/u/{id}")

@@ -83,9 +83,6 @@ public class StoreServiceImpl implements StoreService {
       return Mono.error(ExceptionUtils.invalidParam("sellerId"));
     }
     return async(() -> storeRepository.getBySellerId(sellerId));
-      //.filter(Optional::isPresent)
-      //.map(Optional::get)
-      //.switchIfEmpty(Mono.error(new ServiceException(STORE_NOT_EXIST, "Target seller does not own a store")));
   }
 
   @Override

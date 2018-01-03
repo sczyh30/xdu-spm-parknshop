@@ -1,7 +1,6 @@
 package io.spm.parknshop.seller.service;
 
-import io.spm.parknshop.store.domain.Store;
-import io.spm.parknshop.user.domain.User;
+import io.spm.parknshop.store.domain.StoreDTO;
 import reactor.core.publisher.Mono;
 
 /**
@@ -9,6 +8,6 @@ import reactor.core.publisher.Mono;
  */
 public interface SellerService {
 
-  Mono<String> applyStore(Long sellerId, Store store);
+  Mono<Long> applyStore(String sellerProposer, StoreDTO storeDTO);
 
 }

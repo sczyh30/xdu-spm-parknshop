@@ -14,8 +14,6 @@ import io.spm.parknshop.apply.domain.ApplyEvent;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.domain.ApplyStatus;
 import io.spm.parknshop.apply.service.ApplyDataService;
-import io.spm.parknshop.apply.service.ApplyProcessService;
-import io.spm.parknshop.apply.service.ApplyService;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.common.util.ExceptionUtils;
@@ -37,7 +35,7 @@ import static io.spm.parknshop.common.exception.ErrorConstants.*;
  * @author four
  */
 @Service("adApplyService")
-public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowService, ApplyService<AdvertisementDTO, Long>, ApplyProcessService {
+public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowService {
 
   @Autowired
   private ApplyDataService applyDataService;

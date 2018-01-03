@@ -1,6 +1,5 @@
 package io.spm.parknshop.api.controller;
 
-import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.service.ProductService;
@@ -16,10 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -32,7 +28,7 @@ public class StoreApiController {
 
   @GetMapping("/store/{id}/products")
   public /*Flux*/ Publisher<ProductVO> apiGetProductsById(@PathVariable("id") Long id) {
-    return productService.getByStoreId(id);
+    return productService.getVOByStoreId(id);
   }
 
   @PostMapping("/store/{id}/add_product")

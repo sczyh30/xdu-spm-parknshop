@@ -6,6 +6,7 @@ import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.inventory.domain.Inventory;
 import io.spm.parknshop.inventory.repository.InventoryRepository;
 import io.spm.parknshop.product.domain.Product;
+import io.spm.parknshop.product.domain.ProductStatus;
 import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.repository.ProductRepository;
 import io.spm.parknshop.product.repository.ProductQueryRepository;
@@ -20,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
+import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -67,6 +69,17 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public Mono<Product> filterNormal(/*@NonNull*/ Product product) {
+    if (ProductStatus.isRemoved(product.getStatus())) {
+      return Mono.error(new ServiceException(PRODUCT_REMOVED, "This product has been deleted"));
+    }
+    if (ProductStatus.isAvailable(product.getStatus())) {
+      return Mono.just(product);
+    }
+    return Mono.error(new ServiceException(PRODUCT_UNAVAILABLE, "This product is not unavailable"));
+  }
+
+  @Override
   public Mono<Product> getById(final Long id) {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
@@ -86,7 +99,15 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Flux<ProductVO> getByStoreId(Long storeId) {
+  public Flux<Product> getByStoreId(Long storeId) {
+    if (Objects.isNull(storeId) || storeId <= 0) {
+      return Flux.error(ExceptionUtils.invalidParam("storeId"));
+    }
+    return asyncIterable(() -> productRepository.getByStoreId(storeId));
+  }
+
+  @Override
+  public Flux<ProductVO> getVOByStoreId(Long storeId) {
     if (Objects.isNull(storeId) || storeId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("storeId"));
     }

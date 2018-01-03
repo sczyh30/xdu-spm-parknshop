@@ -1,4 +1,4 @@
-package io.spm.parknshop.store.service.impl;
+package io.spm.parknshop.store.service;
 
 import io.spm.parknshop.apply.service.ApplyProcessService;
 import io.spm.parknshop.apply.service.ApplyService;

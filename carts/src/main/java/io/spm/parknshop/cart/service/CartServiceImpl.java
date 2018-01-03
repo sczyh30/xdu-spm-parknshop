@@ -161,7 +161,7 @@ public class CartServiceImpl implements CartService {
     return productService.getProductVO(simpleProduct.getId())
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .filter(e -> ProductStatus.isAvaliable(e.getProduct().getStatus()))
+      .filter(e -> ProductStatus.isAvailable(e.getProduct().getStatus()))
       .map(product -> new CartProduct().setProductId(simpleProduct.getId())
         .setAmount(simpleProduct.getAmount())
         .setProduct(product)
@@ -191,7 +191,8 @@ public class CartServiceImpl implements CartService {
   }
 
   private Mono<?> checkProductExists(Long productId) {
-    return productService.getById(productId);
+    return productService.getById(productId)
+      .flatMap(productService::filterNormal);
   }
 
   private Mono<?> doDelete(/*@NonNull*/ Long userId, SimpleCartProduct cartProduct) {

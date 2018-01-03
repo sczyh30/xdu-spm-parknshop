@@ -1,6 +1,5 @@
 package io.spm.parknshop.api.controller.admin;
 
-import io.spm.parknshop.admin.service.AdminService;
 import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.service.ApplyProcessService;

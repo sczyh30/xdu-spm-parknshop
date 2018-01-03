@@ -6,8 +6,6 @@ import io.spm.parknshop.apply.domain.ApplyProcessorRoles;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.domain.ApplyStatus;
 import io.spm.parknshop.apply.service.ApplyDataService;
-import io.spm.parknshop.apply.service.ApplyProcessService;
-import io.spm.parknshop.apply.service.ApplyService;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.common.util.ExceptionUtils;
@@ -19,6 +17,7 @@ import io.spm.parknshop.store.domain.StoreStatus;
 import io.spm.parknshop.store.event.StoreApplyEventAggregator;
 import io.spm.parknshop.store.event.StoreApplyEventNotifier;
 import io.spm.parknshop.store.service.StoreService;
+import io.spm.parknshop.store.service.StoreWorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -130,7 +129,8 @@ public class StoreWorkflowServiceImpl implements StoreWorkflowService {
 
   @Override
   public Mono<Long> cancelApply(Long applyId, String processorId) {
-    return applyDataService.performApplyTransform(applyId, StoreApplyEventType.WITHDRAW_APPLY, processorId, new ApplyResult(), applyEventAggregator);
+    return applyDataService.checkAllowPerformCancel(applyId, processorId)
+      .flatMap(v -> applyDataService.performApplyTransform(applyId, StoreApplyEventType.WITHDRAW_APPLY, processorId, new ApplyResult(), applyEventAggregator));
   }
 
   private Mono<StoreDTO> checkApplyParams(String proposerId, StoreDTO store) {

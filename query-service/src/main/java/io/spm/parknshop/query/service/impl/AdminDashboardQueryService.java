@@ -1,7 +1,7 @@
 package io.spm.parknshop.query.service.impl;
 
-import io.spm.parknshop.admin.service.AdminService;
 import io.spm.parknshop.common.auth.AuthRoles;
+import io.spm.parknshop.configcenter.service.GlobalConfigService;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.query.vo.AdminDashboardVO;
 import io.spm.parknshop.user.repository.UserRepository;
@@ -20,10 +20,10 @@ public class AdminDashboardQueryService {
   private OrderRepository orderRepository;
 
   @Autowired
-  private AdminService adminService;
+  private GlobalConfigService globalConfigService;
 
   public Mono<AdminDashboardVO> getDashboardData() {
-    return adminService.getCommission()
+    return globalConfigService.getCommission()
     .flatMap(commission -> async(() -> {
       double profit = orderRepository.getAllSaleMoney() * commission / 100.0d;
       long customerCount = userRepository.countByUserType(AuthRoles.CUSTOMER);
