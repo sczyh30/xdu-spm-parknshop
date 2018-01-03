@@ -1,7 +1,9 @@
 package io.spm.parknshop.apply.domain;
 
+import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.exception.ErrorConstants;
 import io.spm.parknshop.common.exception.ServiceException;
+import io.spm.parknshop.common.functional.Tuple2;
 import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
@@ -38,6 +40,22 @@ public final class ApplyProcessorRoles {
     }
     return Mono.just(processorId.replace(SELLER_PREFIX, ""))
       .map(Long::valueOf);
+  }
+
+  public static Tuple2<Integer, Long> getDetailed(/*@Normal*/ String processorId) {
+    if (isAdmin(processorId)) {
+      return Tuple2.of(AuthRoles.ADMIN, Long.valueOf(processorId.replace(ADMIN_PREFIX, "")));
+    }
+    if (isSysAuto(processorId)) {
+      return Tuple2.of(AuthRoles.SYS_AUTO, 0L);
+    }
+    if (isSeller(processorId)) {
+      return Tuple2.of(AuthRoles.SELLER, Long.valueOf(processorId.replace(SELLER_PREFIX, "")));
+    }
+    if (isCustomer(processorId)) {
+      return Tuple2.of(AuthRoles.CUSTOMER, Long.valueOf(processorId.replace(CUSTOMER_PREFIX, "")));
+    }
+    return Tuple2.of(AuthRoles.UNKNOWN_ROLE, -1L);
   }
 
   public static Mono<Long> checkAdminId(String processorId) {

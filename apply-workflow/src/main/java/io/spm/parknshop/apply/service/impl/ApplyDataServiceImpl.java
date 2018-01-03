@@ -2,11 +2,13 @@ package io.spm.parknshop.apply.service.impl;
 
 import io.spm.parknshop.apply.domain.Apply;
 import io.spm.parknshop.apply.domain.ApplyEvent;
+import io.spm.parknshop.apply.domain.ApplyProcessorRoles;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.event.WorkflowEventAggregator;
 import io.spm.parknshop.apply.repository.ApplyEventRepository;
 import io.spm.parknshop.apply.repository.ApplyMetadataRepository;
 import io.spm.parknshop.apply.service.ApplyDataService;
+import io.spm.parknshop.common.exception.ErrorConstants;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.common.util.ExceptionUtils;
@@ -40,7 +42,7 @@ public class ApplyDataServiceImpl implements ApplyDataService {
   @Override
   public Flux<ApplyEvent> getEventStream(Long applyId) {
     return checkApplyId(applyId)
-      .flatMapMany(v -> asyncIterable(() -> applyEventRepository.getByApplyId(applyId)))
+      .flatMapMany(v -> asyncIterable(() -> applyEventRepository.getByApplyIdOrderById(applyId)))
       .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "Not exist: apply " + applyId)));
   }
 
@@ -105,6 +107,24 @@ public class ApplyDataServiceImpl implements ApplyDataService {
     applyEvent.setApplyId(apply.getId());
     ApplyEvent newEvent = applyEventRepository.save(applyEvent);
     return Tuple2.of(apply, newEvent);
+  }
+
+  @Override
+  public Mono<?> checkAllowPerformCancel(Long applyId, String processorId) {
+    if (Objects.isNull(processorId)) {
+      return Mono.error(ExceptionUtils.invalidParam("processorId"));
+    }
+    if (ApplyProcessorRoles.isAdmin(processorId)) {
+      return Mono.just(true);
+    }
+    return getApplyById(applyId)
+      .filter(apply -> apply.getProposerId().equals(processorId))
+      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "You don't have permission for the operation")));
+  }
+
+  @Override
+  public Mono<?> checkAllowViewApply(Long applyId, String processorId) {
+    return checkAllowPerformCancel(applyId, processorId);
   }
 
   private Mono<String> checkProposerId(String proposerId) {

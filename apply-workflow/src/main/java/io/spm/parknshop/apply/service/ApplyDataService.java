@@ -9,7 +9,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * @author Eric Zhao
@@ -36,4 +35,9 @@ public interface ApplyDataService {
    * @return the apply and apply event entity
    */
   Mono<Tuple2<Apply, ApplyEvent>> saveNewApply(Apply applyMetadata, ApplyEvent applyEvent);
+
+  Mono<?> checkAllowPerformCancel(Long applyId, String processorId);
+
+  Mono<?> checkAllowViewApply(Long applyId, String processorId);
+
 }

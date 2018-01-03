@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ApplyEventRepository extends JpaRepository<ApplyEvent, Long> {
 
-  List<ApplyEvent> getByApplyId(long applyId);
+  List<ApplyEvent> getByApplyIdOrderById(long applyId);
 }

@@ -16,15 +16,22 @@ public final class ErrorConstants {
   public static final int NOT_FOUND = 404;
   public static final int SERVER_ERROR = 500;
 
+  // Not exist: 404x
   public static final int NOT_EXIST = 4040;
   public static final int USER_NOT_EXIST = 4041;
   public static final int USER_DELIVERY_ADDRESS_NOT_EXIST = 40413;
   public static final int PRODUCT_NOT_EXIST = 40421;
   public static final int PRODUCT_NOT_EXIST_IN_CART = 40422;
+  public static final int COMMENT_NOT_EXIST = 40429;
   public static final int STORE_NOT_EXIST = 4043;
   public static final int APPLY_NOT_EXIST = 4045;
   public static final int ORDER_NOT_EXIST = 4046;
   public static final int PAYMENT_NOT_EXIST = 4047;
+  public static final int AD_NOT_EXIST = 4048;
+
+  // Product exception: 460x
+  public static final int PRODUCT_REMOVED = 4600;
+  public static final int PRODUCT_UNAVAILABLE = 4601;
 
   // Cart exception: 461x
   public static final int EMPTY_CART = 4611;
@@ -58,7 +65,8 @@ public final class ErrorConstants {
   public static final int STORE_ALREADY_OPEN = 7312;
   public static final int STORE_APPLY_NOT_EXIST = 7313;
 
-  public static final int COMMISSION_IS_ERROR = 8001;
+  public static final int INVALID_COMMISSION = 8001;
+  public static final int INVALID_PRICE = 8002;
 
   public static final int PRODUCT_NO_INVENTORY = 4610;
 

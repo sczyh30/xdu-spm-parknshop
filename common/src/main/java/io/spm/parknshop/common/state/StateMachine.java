@@ -38,7 +38,7 @@ public class StateMachine implements Transformer<Integer, Integer> {
 
   public static class StateMachineBuilder {
 
-    private List<StateTransformer> list = new ArrayList<>();
+    private final List<StateTransformer> list = new ArrayList<>();
     private int defaultState = 0;
     private StateMismatchStrategy stateMismatchStrategy = StateMismatchStrategy.DEFAULT_STATE;
 
@@ -120,9 +120,9 @@ public class StateMachine implements Transformer<Integer, Integer> {
   }
 
   private static class StateTransformer {
-    private int s;
-    private int e;
-    private int r;
+    private final int s;
+    private final int e;
+    private final int r;
 
     StateTransformer(int s, int e, int r) {
       this.s = s;
