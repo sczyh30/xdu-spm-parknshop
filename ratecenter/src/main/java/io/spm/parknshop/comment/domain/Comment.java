@@ -3,6 +3,7 @@ package io.spm.parknshop.comment.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Date;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -28,6 +29,11 @@ public class Comment {
 
   private String commentText;
   private Integer rate;
+
+  @Transient
+  private String userShowName;
+  @Transient
+  private int userType;
 
   public Long getId() {
     return id;
@@ -101,6 +107,24 @@ public class Comment {
     return this;
   }
 
+  public String getUserShowName() {
+    return userShowName;
+  }
+
+  public Comment setUserShowName(String userShowName) {
+    this.userShowName = userShowName;
+    return this;
+  }
+
+  public int getUserType() {
+    return userType;
+  }
+
+  public Comment setUserType(int userType) {
+    this.userType = userType;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "Comment{" +
@@ -112,6 +136,8 @@ public class Comment {
       ", productId=" + productId +
       ", commentText='" + commentText + '\'' +
       ", rate=" + rate +
+      ", userShowName='" + userShowName + '\'' +
+      ", userType=" + userType +
       '}';
   }
 }

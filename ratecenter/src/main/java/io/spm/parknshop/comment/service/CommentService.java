@@ -1,6 +1,7 @@
 package io.spm.parknshop.comment.service;
 
 import io.spm.parknshop.comment.domain.Comment;
+import io.spm.parknshop.comment.domain.CommentDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -11,11 +12,11 @@ import java.util.Optional;
  */
 public interface CommentService {
 
-  Mono<Comment> addComment(Comment comment);
+  long ROOT_PARENT = 0L;
 
-  Mono<Comment> addReply(Comment comment);
+  Mono<Comment> addCommentOrReply(Long userId, CommentDTO comment);
 
-  Mono<Optional<Comment>> getById(Long id);
+  Mono<Comment> getById(Long id);
 
   Flux<Comment> getCommentsByUser(Long userId);
 

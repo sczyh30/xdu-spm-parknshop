@@ -48,6 +48,10 @@ public final class ErrorConstants {
   // Apply workflow exception: 4900 - 4939
   public static final int ILLEGAL_APPLY_TYPE = 4901;
 
+  // Comment exception: 4940 - 4944
+  public static final int DUPLICATE_COMMENT = 4940;
+  public static final int COMMENT_NOT_ALLOW_NOT_BUY = 4941;
+
   public static final int USER_ALREADY_EXISTS = 4110;
 
   public static final int USER_MODIFY_OLD_PASSWORD_NOT_MATCH = 4115;

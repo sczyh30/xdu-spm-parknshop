@@ -22,7 +22,6 @@ public class Config {
       .addTransformer(SHIPPED, OrderEventType.CONFIRM_ORDER, COMPLETED)
       .addTransformer(DELIVERED, OrderEventType.CONFIRM_ORDER, COMPLETED)
       .addTransformer(COMPLETED, OrderEventType.FINISH_DELIVERY, COMPLETED)
-      .addTransformer(COMPLETED, OrderEventType.ADD_COMMENT, COMMENTED)
       .withDefaultState(UNEXPECTED_STATE)
       .build();
   }
