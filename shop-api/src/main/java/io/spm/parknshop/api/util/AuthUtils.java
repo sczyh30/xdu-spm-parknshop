@@ -17,7 +17,7 @@ public final class AuthUtils {
   public static final String SELLER_PREFIX = "SELLER_";
   public static final String ADMIN_PREFIX = "ADMIN_";
 
-  private static String extractPrincipal(ServerWebExchange exchange) {
+  public static String extractPrincipal(ServerWebExchange exchange) {
     return exchange.getResponse().getHeaders().getFirst(PRINCIPAL_HEADER_INTERNAL);
   }
 
@@ -27,6 +27,22 @@ public final class AuthUtils {
       return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Your role doesn't have the permission"));
     }
     return Mono.just(principal);
+  }
+
+  public static Mono<Long> getUserOrSellerId(ServerWebExchange exchange) {
+    String principal = extractPrincipal(exchange);
+    if (StringUtils.isEmpty(principal)) {
+      return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Your role doesn't have the permission"));
+    }
+    if (principal.startsWith(USER_PREFIX)) {
+      return Mono.just(principal.replace(USER_PREFIX, ""))
+        .map(Long::valueOf);
+    }
+    if (principal.startsWith(SELLER_PREFIX)) {
+      return Mono.just(principal.replace(SELLER_PREFIX, ""))
+        .map(Long::valueOf);
+    }
+    return Mono.error(new ServiceException(ErrorConstants.USER_ROLE_NO_PERMISSION, "Your role doesn't have the permission"));
   }
 
   public static Mono<Long> getUserId(ServerWebExchange exchange) {

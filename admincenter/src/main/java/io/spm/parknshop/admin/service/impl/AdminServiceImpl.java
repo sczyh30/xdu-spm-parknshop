@@ -1,23 +1,20 @@
-package io.spm.parknshop.admin.service;
+package io.spm.parknshop.admin.service.impl;
 
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.repository.AdminRepository;
-import io.spm.parknshop.admin.repository.CommissionRepository;
+import io.spm.parknshop.admin.service.AdminService;
 import io.spm.parknshop.common.auth.AuthCenter;
 import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
-import io.spm.parknshop.seller.domain.StoreApplyDO;
-import io.spm.parknshop.seller.repository.StoreApplyRepository;
-import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.configcenter.service.GlobalConfigService;
 import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.user.domain.LoginVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -32,11 +29,10 @@ public class AdminServiceImpl implements AdminService {
   @Autowired
   private AdminRepository adminRepository;
   @Autowired
-  private StoreApplyRepository storeApplyRepository;
-  @Autowired
   private StoreService storeService;
+
   @Autowired
-  private CommissionRepository commissionRepository;
+  private GlobalConfigService globalConfigService;
 
   @Override
   public Mono<LoginVO> login(String username, String password) {
@@ -58,7 +54,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public Mono<Admin> modifyDetail(Long id, Admin admin) {
+  public Mono<Admin> modifyProfileDetail(Long id, Admin admin) {
     if (!isValidUser(admin)) {
       return Mono.error(ExceptionUtils.invalidParam("admin"));
     }
@@ -95,44 +91,6 @@ public class AdminServiceImpl implements AdminService {
       return Mono.error(ExceptionUtils.loginIncorrect());
     }
   }
-  @Override
-  public Flux<StoreApplyDO> getApplyList() {
-    return storeApplyRepository.getApplyStoreList();
-  }
-
-  @Override
-  public Mono<Store> approveApply(Long id) {
-    return storeApplyRepository.getPendingStoreBySellerId(id)
-        .flatMap(e ->approveOne(e.getStore()))
-        .switchIfEmpty(Mono.error(new ServiceException(STORE_APPLY_NOT_EXIST,"no apply record")));
-  }
-
-  @Override
-  public Mono<Long> rejectApply(Long id) {
-    return storeApplyRepository.getPendingStoreBySellerId(id)
-        .flatMap(e -> storeApplyRepository.deleteOneApply(id))
-        .switchIfEmpty(Mono.error(new ServiceException(STORE_APPLY_NOT_EXIST,"no apply record")));
-  }
-
-  @Override
-  public Mono<Boolean> setCommission(Double commission) {
-    if (commission >= 100 || commission <= 0) {
-     return Mono.error(new ServiceException(COMMISSION_IS_ERROR, "commission is error"));
-    }
-    return commissionRepository.setCommission(commission);
-  }
-
-  @Override
-  public Mono<Double> getCommission() {
-    return commissionRepository.getCommission();
-  }
-
-
-  private Mono<Store> approveOne(Store store) {
-    return storeApplyRepository.deleteOneApply(store.getSellerId())
-        .flatMap(e -> storeService.addStore(store))
-        .switchIfEmpty(Mono.error(new ServiceException(STORE_ALREADY_OPEN,"this user already have a store")));
-  }
 
   private Mono<String> getIdByUsername(String username) {
     if (StringUtils.isEmpty(username)) {
@@ -141,6 +99,13 @@ public class AdminServiceImpl implements AdminService {
     return async(() -> adminRepository.getIdByUsername(username));
   }
 
+  @Override
+  public Mono<Optional<Admin>> getById(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return async(() -> adminRepository.findById(id));
+  }
 
   private boolean verifyCredential(/*@NonNull*/ Admin admin, /*@NonNull*/ String username, /*@NonNull*/ String password) {
     return username.equals(admin.getUsername()) && AuthCenter.decryptMatches(password, admin.getPassword());

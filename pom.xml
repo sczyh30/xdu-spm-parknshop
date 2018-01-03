@@ -27,6 +27,7 @@
     <module>common</module>
     <module>common-auth</module>
     <module>apply-workflow</module>
+    <module>config-center</module>
 
     <module>notifycenter</module>
 

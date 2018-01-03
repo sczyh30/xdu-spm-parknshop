@@ -1,6 +1,5 @@
-package io.spm.parknshop.admin.config;
+package io.spm.parknshop.configcenter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -10,13 +9,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import javax.annotation.PreDestroy;
-
-@Configuration("adminRedisConfig")
+@Configuration("globalConfRedisConfig")
 public class RedisConfig {
-
-  @Autowired
-  private RedisConnectionFactory factory;
 
   @Bean
   public ReactiveRedisTemplate<String, String> adminReactiveRedisTemplate(ReactiveRedisConnectionFactory connectionFactory){
