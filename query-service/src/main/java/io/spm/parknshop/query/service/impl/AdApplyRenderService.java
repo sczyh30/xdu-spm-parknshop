@@ -4,7 +4,7 @@ import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.configcenter.service.GlobalConfigService;
 import io.spm.parknshop.product.service.ProductService;
-import io.spm.parknshop.query.vo.AdNewApplyPageVO;
+import io.spm.parknshop.query.vo.apply.AdNewApplyPageVO;
 import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

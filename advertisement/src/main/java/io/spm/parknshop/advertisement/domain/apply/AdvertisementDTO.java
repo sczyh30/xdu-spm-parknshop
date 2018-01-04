@@ -8,7 +8,6 @@ import java.util.Date;
 public class AdvertisementDTO {
 
   private int adType;
-  private String adOwner;
   private Long adTarget;
 
   private String description;
@@ -23,15 +22,6 @@ public class AdvertisementDTO {
 
   public AdvertisementDTO setAdType(int adType) {
     this.adType = adType;
-    return this;
-  }
-
-  public String getAdOwner() {
-    return adOwner;
-  }
-
-  public AdvertisementDTO setAdOwner(String adOwner) {
-    this.adOwner = adOwner;
     return this;
   }
 
@@ -83,13 +73,12 @@ public class AdvertisementDTO {
   @Override
   public String toString() {
     return "AdvertisementDTO{" +
-        "adType=" + adType +
-        ", adOwner=" + adOwner +
-        ", adTarget=" + adTarget +
-        ", description='" + description + '\'' +
-        ", adPicUrl='" + adPicUrl + '\'' +
-        ", startDate=" + startDate +
-        ", endDate=" + endDate +
-        '}';
+      "adType=" + adType +
+      ", adTarget=" + adTarget +
+      ", description='" + description + '\'' +
+      ", adPicUrl='" + adPicUrl + '\'' +
+      ", startDate=" + startDate +
+      ", endDate=" + endDate +
+      '}';
   }
 }

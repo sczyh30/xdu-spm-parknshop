@@ -1,4 +1,4 @@
-package io.spm.parknshop.query.vo;
+package io.spm.parknshop.query.vo.apply;
 
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.store.domain.Store;

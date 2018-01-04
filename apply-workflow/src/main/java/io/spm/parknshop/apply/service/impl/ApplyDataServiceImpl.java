@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class ApplyDataServiceImpl implements ApplyDataService {
     String range = statusSet.stream().map(Object::toString).collect(Collectors.joining(","));
     return checkProposerId(proposerId)
       .flatMap(v -> async(() -> applyMetadataRepository.getConditionalWithStatusRange(proposerId, applyType, range)))
-      .map(List::isEmpty);
+      .map(list -> !list.isEmpty());
   }
 
   @Override
@@ -69,6 +68,12 @@ public class ApplyDataServiceImpl implements ApplyDataService {
       .filter(Optional::isPresent)
       .map(Optional::get)
       .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "Not exist: apply " + applyId)));
+  }
+
+  @Override
+  public Flux<Apply> getApplyByProposerId(String proposerId) {
+    return checkProposerId(proposerId)
+      .flatMapMany(v -> asyncIterable(() -> applyMetadataRepository.getByProposerIdOrderByIdDesc(proposerId)));
   }
 
   @Override

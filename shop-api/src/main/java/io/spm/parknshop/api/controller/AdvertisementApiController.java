@@ -27,13 +27,13 @@ public class AdvertisementApiController {
   @Autowired
   private AdApplyRenderService adApplyRenderService;
 
-  @PostMapping("/ad/submit_apply")
+  @PostMapping("/ad/apply/submit_apply")
   public Mono<Long> apiAdApply(ServerWebExchange exchange, @RequestBody AdvertisementDTO advertisement){
     return AuthUtils.getSellerId(exchange)
       .flatMap(sellerId -> applyService.applyFor(ApplyProcessorRoles.SELLER_PREFIX + sellerId, advertisement));
   }
 
-  @GetMapping("/ad/render_new_apply")
+  @GetMapping("/ad/apply/render_new_apply")
   public Mono<?> apiRenderNewApply(ServerWebExchange exchange) {
     return AuthUtils.getSellerId(exchange)
       .flatMap(adApplyRenderService::renderNewApplyFor);
