@@ -19,6 +19,8 @@ public interface ApplyDataService {
 
   Mono<Apply> getApplyById(Long applyId);
 
+  Flux<Apply> getApplyByProposerId(String proposerId);
+
   Flux<Apply> getApplyByType(int applyType);
 
   Mono<Boolean> checkApplyExistsFor(String proposerId, int applyType, Set<Integer> statusSet);

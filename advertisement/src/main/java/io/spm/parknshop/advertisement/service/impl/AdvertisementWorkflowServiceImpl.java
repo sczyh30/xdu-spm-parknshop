@@ -11,13 +11,16 @@ import io.spm.parknshop.advertisement.service.AdvertisementWorkflowService;
 import io.spm.parknshop.advertisement.domain.apply.AdvertisementDTO;
 import io.spm.parknshop.apply.domain.Apply;
 import io.spm.parknshop.apply.domain.ApplyEvent;
+import io.spm.parknshop.apply.domain.ApplyProcessorRoles;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.domain.ApplyStatus;
 import io.spm.parknshop.apply.service.ApplyDataService;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.functional.Tuple2;
+import io.spm.parknshop.common.util.DateUtils;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.common.util.JsonUtils;
+import io.spm.parknshop.configcenter.service.GlobalConfigService;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.service.StoreService;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
@@ -45,6 +49,8 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   private ProductService productService;
   @Autowired
   private StoreService storeService;
+  @Autowired
+  private GlobalConfigService globalConfigService;
 
   @Autowired
   private AdApplyEventNotifier eventNotifier;
@@ -53,8 +59,8 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
 
   @Override
   public Mono<Long> applyFor(String proposerId, AdvertisementDTO advertisement) {
-    return checkApplyParams(proposerId, advertisement)
-      .map(this::wrapAdvertisement)
+    return checkApplyParamsThenExtractId(proposerId, advertisement)
+      .flatMap(sellerId -> wrapAdvertisement(advertisement, sellerId))
       .flatMap(ad -> checkTargetExists(ad)
         .flatMap(v -> submitNewApply(proposerId, ad))
         .flatMap(t -> eventNotifier.doNotify(t.r2, t.r1)
@@ -63,16 +69,28 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
       );
   }
 
-  private Advertisement wrapAdvertisement(AdvertisementDTO advertisementDTO) {
-    return new Advertisement()
-      .setAdType(advertisementDTO.getAdType())
-      .setAdOwner(advertisementDTO.getAdOwner())
-      .setAdTarget(advertisementDTO.getAdTarget())
-      .setDescription(advertisementDTO.getDescription())
-      .setAdPicUrl(advertisementDTO.getAdPicUrl())
-      .setStartDate(advertisementDTO.getStartDate())
-      .setEndDate(advertisementDTO.getEndDate())
-      .setAdTotalPrice(advertisementDTO.getAdType() == AdType.AD_PRODUCT ? 1000 : 500);
+  private Mono<Advertisement> wrapAdvertisement(AdvertisementDTO advertisementDTO, Long sellerId) {
+    return globalConfigService.getAdPrice()
+      .map(price -> calcAdTotalPrice(price, advertisementDTO.getAdType(), advertisementDTO.getStartDate(), advertisementDTO.getEndDate()))
+      .map(price -> new Advertisement()
+        .setAdType(advertisementDTO.getAdType())
+        .setAdOwner(sellerId)
+        .setAdTarget(advertisementDTO.getAdTarget())
+        .setDescription(advertisementDTO.getDescription())
+        .setAdPicUrl(advertisementDTO.getAdPicUrl())
+        .setStartDate(advertisementDTO.getStartDate())
+        .setEndDate(advertisementDTO.getEndDate())
+        .setAdTotalPrice(price)
+      );
+  }
+
+  private double calcAdTotalPrice(Tuple2<Double, Double> price, int adType, Date startDate, Date endDate) {
+    long duration = ChronoUnit.DAYS.between(DateUtils.toLocalDate(startDate), DateUtils.toLocalDate(endDate)) + 1;
+    if (adType == AdType.AD_PRODUCT) {
+      return price.r1 * duration;
+    } else {
+      return price.r2 * duration;
+    }
   }
 
   private Mono<?> checkTargetExists(Advertisement advertisement) {
@@ -88,7 +106,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
 
   private Mono<Tuple2<Apply, ApplyEvent>> submitNewApply(String proposerId, Advertisement advertisement) {
     int applyType = AdApplyType.fromAdType(advertisement.getAdType());
-    if (AdApplyType.isAdApply(applyType)) {
+    if (!AdApplyType.isAdApply(applyType)) {
       return Mono.error(new ServiceException(ILLEGAL_APPLY_TYPE, "Error apply type"));
     }
     Apply applyMetadata = new Apply().setApplyType(applyType)
@@ -145,7 +163,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
     return storeService.getById(storeId);
   }
 
-  private Mono<AdvertisementDTO> checkApplyParams(String proposerId, AdvertisementDTO advertisement) {
+  private Mono<Long> checkApplyParamsThenExtractId(String proposerId, AdvertisementDTO advertisement) {
     if (StringUtils.isEmpty(proposerId)) {
       return Mono.error(ExceptionUtils.invalidParam("proposerId"));
     }
@@ -159,6 +177,9 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
     if (!valid) {
       return Mono.error(ExceptionUtils.invalidParam("Invalid advertisement apply"));
     }
-    return Mono.just(advertisement);
+    if (advertisement.getStartDate().after(advertisement.getEndDate())) {
+      return Mono.error(ExceptionUtils.invalidParam("Start date should not be later than end date"));
+    }
+    return ApplyProcessorRoles.checkSellerId(proposerId);
   }
 }

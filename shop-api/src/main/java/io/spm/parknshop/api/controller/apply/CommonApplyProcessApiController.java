@@ -3,6 +3,7 @@ package io.spm.parknshop.api.controller.apply;
 import io.spm.parknshop.advertisement.domain.apply.AdApplyType;
 import io.spm.parknshop.advertisement.service.AdvertisementWorkflowService;
 import io.spm.parknshop.api.util.AuthUtils;
+import io.spm.parknshop.apply.domain.Apply;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.domain.ApplyVO;
 import io.spm.parknshop.apply.service.ApplyDataService;
@@ -10,6 +11,7 @@ import io.spm.parknshop.apply.service.ApplyProcessService;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.query.service.ApplyQueryService;
 import io.spm.parknshop.store.service.StoreWorkflowService;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,8 +74,14 @@ public class CommonApplyProcessApiController {
     return applyQueryService.renderApplyView(id, AuthUtils.extractPrincipal(exchange));
   }
 
+  @GetMapping("/workflow/apply/list_u")
+  public Publisher<Apply> apiApplyListForUser(ServerWebExchange exchange) {
+    return AuthUtils.getNonAdminPrincipal(exchange)
+      .flatMapMany(applyDataService::getApplyByProposerId);
+  }
+
   private Mono<ApplyProcessService> findService(int type) {
-    if (type <= 0 || serviceMap.containsKey(type)) {
+    if (type <= 0 || !serviceMap.containsKey(type)) {
       return Mono.error(ExceptionUtils.invalidParam("apply type"));
     }
     return Mono.just(serviceMap.get(type));

@@ -20,7 +20,7 @@ public interface ApplyMetadataRepository extends JpaRepository<Apply, Long> {
   @Transactional
   void updateStatus(long id, int status);
 
-  List<Apply> getByProposerId(String proposerId);
+  List<Apply> getByProposerIdOrderByIdDesc(String proposerId);
 
   List<Apply> getByApplyType(int type);
 

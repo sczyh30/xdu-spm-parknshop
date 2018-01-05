@@ -11,6 +11,8 @@ public class ApplyVO {
   private Apply apply;
   private List<ApplyRecordVO> records;
 
+  private Object bizData;
+
   public Long getApplyId() {
     return applyId;
   }
@@ -35,6 +37,15 @@ public class ApplyVO {
 
   public ApplyVO setRecords(List<ApplyRecordVO> records) {
     this.records = records;
+    return this;
+  }
+
+  public Object getBizData() {
+    return bizData;
+  }
+
+  public ApplyVO setBizData(Object bizData) {
+    this.bizData = bizData;
     return this;
   }
 }

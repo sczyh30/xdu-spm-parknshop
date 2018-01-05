@@ -22,12 +22,12 @@ public class Advertisement {
   private Long applyId;
 
   private int adType;
-  private String adOwner;
+  private Long adOwner;
   private Long adTarget;
 
   private String description;
   private String adPicUrl;
-  private int adTotalPrice;
+  private double adTotalPrice;
 
   private Date startDate;
   private Date endDate;
@@ -70,11 +70,11 @@ public class Advertisement {
     return this;
   }
 
-  public String getAdOwner() {
+  public Long getAdOwner() {
     return adOwner;
   }
 
-  public Advertisement setAdOwner(String adOwner) {
+  public Advertisement setAdOwner(Long adOwner) {
     this.adOwner = adOwner;
     return this;
   }
@@ -106,11 +106,11 @@ public class Advertisement {
     return this;
   }
 
-  public int getAdTotalPrice() {
+  public double getAdTotalPrice() {
     return adTotalPrice;
   }
 
-  public Advertisement setAdTotalPrice(int adTotalPrice) {
+  public Advertisement setAdTotalPrice(double adTotalPrice) {
     this.adTotalPrice = adTotalPrice;
     return this;
   }
