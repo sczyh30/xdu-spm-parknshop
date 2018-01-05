@@ -2,6 +2,7 @@ package io.spm.parknshop.api.controller.admin;
 
 import io.spm.parknshop.admin.domain.Admin;
 import io.spm.parknshop.admin.service.AdminService;
+import io.spm.parknshop.admin.service.DBBackupService;
 import io.spm.parknshop.configcenter.service.GlobalConfigService;
 import io.spm.parknshop.query.service.StoreQueryService;
 import io.spm.parknshop.query.vo.StoreVO;
@@ -13,6 +14,7 @@ import io.spm.parknshop.user.service.UserService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -33,7 +35,8 @@ public class AdminApiController {
   private UserService userService;
   @Autowired
   private SellerUserService sellerUserService;
-
+  @Autowired
+  private DBBackupService dbBackupService;
   @Autowired
   private GlobalConfigService globalConfigService;
 
@@ -100,5 +103,18 @@ public class AdminApiController {
   @PostMapping("/admin/set_commission")
   public Mono<?> apiSetCommission(@RequestParam("commission") Double commission) {
     return globalConfigService.setCommission(commission);
+  }
+
+  @GetMapping("/admin/db/backups")
+  public Flux<String> apiGetBackups() {
+    return dbBackupService.getBackups();
+  }
+  @PostMapping("/admin/db/recover")
+  public Mono<String> apiRecover(@RequestParam("fileName") String fileName) {
+    return dbBackupService.recover(fileName);
+  }
+  @GetMapping("/admin/db/backup")
+  public Mono<String> apiBackup() {
+    return dbBackupService.backupDB();
   }
 }
