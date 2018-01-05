@@ -12,8 +12,10 @@ import io.spm.parknshop.payment.domain.PaymentType;
 import io.spm.parknshop.payment.repository.PaymentRecordRepository;
 import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.trade.domain.PaymentRedirectData;
+import io.spm.parknshop.trade.domain.PaymentResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
@@ -98,9 +100,24 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  public Mono<PaymentRecord> cancelPay(Long paymentId) {
+  public Mono<PaymentResult> cancelPay(String proposer, Long paymentId) {
     return getPaymentById(paymentId)
-      .map(e -> e.setStatus(PaymentStatus.CANCELED).setGmtModified(new Date()))
-      .flatMap(e -> async(() -> paymentRecordRepository.save(e)));
+      .flatMap(record -> {
+        switch (record.getPaymentType()) {
+          case PaymentType.WECHAT_PAY:
+          case PaymentType.ALIPAY:
+            return alipayService.cancelPayment(paymentId, record.getPaymentId(), proposer)
+              .flatMap(e -> cancelStatusInternal(record).map(r -> e));
+          default:
+            return Mono.error(new ServiceException(UNKNOWN_PAYMENT_TYPE, "Unknown payment type"));
+        }
+      });
+  }
+
+  private Mono<PaymentRecord> cancelStatusInternal(PaymentRecord record) {
+    if (record.getStatus() != PaymentStatus.NEW_CREATED) {
+      return Mono.error(new ServiceException(PAYMENT_CANCELED_OR_FINISHED, "Payment has already been finished or canceled"));
+    }
+    return async(() -> paymentRecordRepository.save(record.setStatus(PaymentStatus.CANCELED).setGmtModified(new Date())));
   }
 }

@@ -95,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return async(() -> productQueryRepository.getProductVO(id));
+    return async(() -> productQueryRepository.getProductVOWithDeleted(id));
   }
 
   @Override

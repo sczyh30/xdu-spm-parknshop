@@ -24,4 +24,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
   @Modifying
   @Transactional
   void modifyStatus(int status, long id);
+
+  @Transactional
+  @Modifying
+  void deleteBySellerId(long sellerId);
 }

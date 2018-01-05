@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * @author Eric Zhao
@@ -23,6 +24,8 @@ public class OrderProduct {
 
   private Double unitPrice;
   private Double totalPrice;
+
+  private Integer status;
 
   public Long getId() {
     return id;
@@ -84,6 +87,15 @@ public class OrderProduct {
 
   public OrderProduct setProductName(String productName) {
     this.productName = productName;
+    return this;
+  }
+
+  public Integer getStatus() {
+    return status;
+  }
+
+  public OrderProduct setStatus(Integer status) {
+    this.status = status;
     return this;
   }
 }

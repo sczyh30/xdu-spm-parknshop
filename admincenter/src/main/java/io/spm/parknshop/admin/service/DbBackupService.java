@@ -3,10 +3,11 @@ package io.spm.parknshop.admin.service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface DBBackupService {
+public interface DbBackupService {
+
   Mono<String> backupDB();
 
-  Flux<String> getBackups();
+  Flux<Long> getBackups();
 
-  Mono<String> recover(String fileName);
+  Mono<Long> recover(Long timestamp);
 }

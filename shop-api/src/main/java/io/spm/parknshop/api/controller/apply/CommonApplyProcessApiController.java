@@ -63,10 +63,10 @@ public class CommonApplyProcessApiController {
   }
 
   @PostMapping("/workflow/apply/cancel/{id}")
-  public Mono<Long> apiCancelApply(@PathVariable("id") Long id, ServerWebExchange exchange) {
+  public Mono<Long> apiCancelApply(@PathVariable("id") Long id, @RequestBody ApplyResult applyResult, ServerWebExchange exchange) {
     return applyDataService.getApplyById(id)
       .flatMap(apply -> findService(apply.getApplyType()))
-      .flatMap(service -> service.cancelApply(id, AuthUtils.extractPrincipal(exchange)));
+      .flatMap(service -> service.cancelApply(id, AuthUtils.extractPrincipal(exchange), applyResult));
   }
 
   @GetMapping("/workflow/apply/render/{id}")

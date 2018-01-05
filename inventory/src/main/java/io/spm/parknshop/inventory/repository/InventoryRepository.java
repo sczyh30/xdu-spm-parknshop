@@ -16,4 +16,9 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
   @Transactional
   @Query(value = "UPDATE inventory SET gmt_modified = CURRENT_TIMESTAMP, amount = ?2 WHERE id = ?1", nativeQuery = true)
   void saveAmount(long id, int amount);
+
+  @Modifying
+  @Transactional
+  @Query(value = "UPDATE inventory SET gmt_modified = CURRENT_TIMESTAMP, amount = amount + ?2 WHERE id = ?1", nativeQuery = true)
+  void addAmount(long id, int amount);
 }

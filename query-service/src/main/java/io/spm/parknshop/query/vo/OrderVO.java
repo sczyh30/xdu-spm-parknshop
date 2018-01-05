@@ -21,12 +21,14 @@ public class OrderVO {
   public OrderVO() {
   }
 
-  public OrderVO(Long id, Order order, SimpleStoreVO store, List<OrderProduct> products, DeliveryAddress deliveryAddress) {
+  public OrderVO(Long id, Order order, SimpleStoreVO store, List<OrderProduct> products, PaymentRecord payment, DeliveryAddress deliveryAddress, User user) {
     this.id = id;
     this.order = order;
     this.store = store;
     this.products = products;
+    this.payment = payment;
     this.deliveryAddress = deliveryAddress;
+    this.user = user;
   }
 
   public Long getId() {

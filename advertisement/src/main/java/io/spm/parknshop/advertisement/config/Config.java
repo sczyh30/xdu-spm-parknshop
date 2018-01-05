@@ -2,6 +2,7 @@ package io.spm.parknshop.advertisement.config;
 
 import io.spm.parknshop.advertisement.domain.AdStatus;
 import io.spm.parknshop.common.state.StateMachine;
+import io.spm.parknshop.common.state.StateMismatchStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +21,7 @@ public class Config {
       .addTransformer(NEW_APPLY, APPROVE_APPLY, APPROVED)
       .addTransformer(APPROVED, WITHDRAW_APPLY, CANCELED)
       .addTransformer(APPROVED, FINISH_PAY, AdStatus.PAYED)
-      .withDefaultState(REJECTED)
+      .withStateMismatchStrategy(StateMismatchStrategy.THROW_EXCEPTION)
       .build();
   }
 }

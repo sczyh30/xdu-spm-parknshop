@@ -30,6 +30,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
@@ -120,18 +121,27 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
 
   @Override
   public Mono<Long> rejectApply(Long applyId, String processorId, ApplyResult applyResult) {
+    if (Objects.isNull(applyResult)) {
+      applyResult = new ApplyResult();
+    }
     return applyDataService.performApplyTransform(applyId, AdApplyEventType.REJECT_APPLY, processorId, applyResult, applyEventAggregator);
   }
 
   @Override
   public Mono<Long> approveApply(Long applyId, String processorId, ApplyResult applyResult) {
+    if (Objects.isNull(applyResult)) {
+      applyResult = new ApplyResult();
+    }
     return applyDataService.performApplyTransform(applyId, AdApplyEventType.APPROVE_APPLY, processorId, applyResult, applyEventAggregator)
       .flatMap(e -> finishPay(applyId, 12233L)).map(e -> 0L); // TODO: For test
   }
 
   @Override
-  public Mono<Long> cancelApply(Long applyId, String processorId) {
-    return applyDataService.performApplyTransform(applyId, AdApplyEventType.WITHDRAW_APPLY, processorId, new ApplyResult(), applyEventAggregator);
+  public Mono<Long> cancelApply(Long applyId, String processorId, ApplyResult applyResult) {
+    if (Objects.isNull(applyResult)) {
+      applyResult = new ApplyResult();
+    }
+    return applyDataService.performApplyTransform(applyId, AdApplyEventType.WITHDRAW_APPLY, processorId, applyResult, applyEventAggregator);
   }
 
   @Override

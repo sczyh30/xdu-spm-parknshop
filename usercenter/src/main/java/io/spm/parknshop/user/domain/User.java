@@ -33,6 +33,10 @@ public class User {
   private int userType;
   private int userStatus;
 
+  public static User deletedUser(Long id) {
+    return new User().setUsername("(Deleted Account)").setId(id);
+  }
+
   public Long getId() {
     return id;
   }

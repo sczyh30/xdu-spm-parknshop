@@ -104,7 +104,7 @@ public class StoreWorkflowServiceImpl implements StoreWorkflowService {
   }
 
   @Override
-  public Mono<Long> approveApply(Long applyId, String processorId, ApplyResult applyResult) {
+  public Mono<Long> approveApply(Long applyId, String processorId, final ApplyResult applyResult) {
     return ApplyProcessorRoles.checkAdminId(processorId)
       .flatMap(adminId -> applyDataService.performApplyTransform(applyId, StoreApplyEventType.APPROVE_APPLY, processorId, applyResult, applyEventAggregator))
       .flatMap(v -> triggerApplyApproveHook(applyId));
@@ -128,9 +128,9 @@ public class StoreWorkflowServiceImpl implements StoreWorkflowService {
   }
 
   @Override
-  public Mono<Long> cancelApply(Long applyId, String processorId) {
+  public Mono<Long> cancelApply(Long applyId, String processorId, ApplyResult applyResult) {
     return applyDataService.checkAllowPerformCancel(applyId, processorId)
-      .flatMap(v -> applyDataService.performApplyTransform(applyId, StoreApplyEventType.WITHDRAW_APPLY, processorId, new ApplyResult(), applyEventAggregator));
+      .flatMap(v -> applyDataService.performApplyTransform(applyId, StoreApplyEventType.WITHDRAW_APPLY, processorId, applyResult, applyEventAggregator));
   }
 
   private Mono<StoreDTO> checkApplyParams(String proposerId, StoreDTO store) {

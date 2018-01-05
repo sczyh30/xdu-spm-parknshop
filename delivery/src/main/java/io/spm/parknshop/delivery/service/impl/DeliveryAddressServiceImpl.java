@@ -1,5 +1,7 @@
 package io.spm.parknshop.delivery.service.impl;
 
+import io.spm.parknshop.common.exception.ErrorConstants;
+import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.delivery.domain.DeliveryAddress;
 import io.spm.parknshop.delivery.repository.DeliveryAddressRepository;
@@ -42,6 +44,17 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
     return async(() -> deliveryAddressRepository.findById(id));
+  }
+
+  @Override
+  public Mono<DeliveryAddress> getByIdWithDeleted(Long id) {
+    if (Objects.isNull(id) || id <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return async(() -> deliveryAddressRepository.findByIdWithDeleted(id))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.USER_DELIVERY_ADDRESS_NOT_EXIST, "The address does not exist")));
   }
 
   @Override

@@ -2,6 +2,8 @@ package io.spm.parknshop.api.controller.order;
 
 import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.order.service.OrderStatusService;
+import io.spm.parknshop.trade.domain.PaymentResult;
+import io.spm.parknshop.trade.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +17,12 @@ import reactor.core.publisher.Mono;
  */
 @RestController
 @RequestMapping("/api/v1/")
-public class OrderStatusApiController {
+public class OrderProcessApiController {
 
   @Autowired
   private OrderStatusService orderStatusService;
+  @Autowired
+  private TradeService tradeService;
 
   @PostMapping("/order/op/prepare_shipment/{id}")
   public Mono<Long> apiPrepareShipment(ServerWebExchange exchange, @PathVariable("id") Long id) {
@@ -45,8 +49,8 @@ public class OrderStatusApiController {
   }
 
   @PostMapping("/order/op/cancel/{id}")
-  public Mono<Long> apiCancelOrder(ServerWebExchange exchange, @PathVariable("id") Long id) {
+  public Mono<PaymentResult> apiCancelOrder(ServerWebExchange exchange, @PathVariable("id") Long id) {
     return AuthUtils.getNonAdminPrincipal(exchange)
-      .flatMap(proposer -> orderStatusService.cancelOrder(proposer, id));
+      .flatMap(proposer -> tradeService.cancelOrder(proposer, id));
   }
 }

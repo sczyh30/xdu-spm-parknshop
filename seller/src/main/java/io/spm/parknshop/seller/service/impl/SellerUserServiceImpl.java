@@ -5,6 +5,7 @@ import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.auth.JWTUtils;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.seller.service.SellerUserService;
+import io.spm.parknshop.store.repository.StoreRepository;
 import io.spm.parknshop.user.domain.LoginVO;
 import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.repository.UserRepository;
@@ -12,6 +13,7 @@ import io.spm.parknshop.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -28,6 +30,8 @@ public class SellerUserServiceImpl implements SellerUserService {
 
   @Autowired
   private UserRepository userRepository;
+  @Autowired
+  private StoreRepository storeRepository;
 
   @Autowired
   private UserService userService;
@@ -89,4 +93,17 @@ public class SellerUserServiceImpl implements SellerUserService {
     }
   }
 
+  @Override
+  public Mono<Long> deleteSeller(Long sellerId) {
+    if (Objects.isNull(sellerId) || sellerId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("id"));
+    }
+    return asyncExecute(() -> deleteSellerInternal(sellerId));
+  }
+
+  @Transactional
+  protected void deleteSellerInternal(long sellerId) {
+    userRepository.deleteById(sellerId);
+    storeRepository.deleteBySellerId(sellerId);
+  }
 }

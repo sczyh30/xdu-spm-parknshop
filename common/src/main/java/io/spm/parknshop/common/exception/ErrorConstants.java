@@ -21,6 +21,7 @@ public final class ErrorConstants {
   public static final int USER_NOT_EXIST = 4041;
   public static final int USER_DELIVERY_ADDRESS_NOT_EXIST = 40413;
   public static final int PRODUCT_NOT_EXIST = 40421;
+  public static final int PRODUCT_DELETED = 40423;
   public static final int PRODUCT_NOT_EXIST_IN_CART = 40422;
   public static final int COMMENT_NOT_EXIST = 40429;
   public static final int STORE_NOT_EXIST = 4043;
@@ -40,6 +41,8 @@ public final class ErrorConstants {
   public static final int PAYMENT_CANCELED_OR_FINISHED = 4620;
   public static final int PAYMENT_ALREADY_STARTED = 4621;
   public static final int UNKNOWN_PAYMENT_TYPE = 4622;
+  public static final int PAYMENT_CANNOT_CALL_PAY_INTERFACE = 4623;
+  public static final int PAYMENT_CANCEL_PAY_FAIL = 4624;
 
   // Order exception: 47xx
   public static final int ORDER_UNEXPECTED_DATA = 4701;

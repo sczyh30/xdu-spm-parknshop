@@ -33,8 +33,20 @@ public class ProductQueryRepository {
 
   public Optional<ProductVO> getProductVO(long id) {
     return jdbcTemplate.query("SELECT a.*, b.name AS catalog_name, c.name AS store_name, d.amount AS inventory " +
-      "FROM product a, catalog b, store c, inventory d " +
-      "WHERE a.id = ? AND a.catalog_id = b.id AND a.store_id = c.id AND a.id = d.id", new Object[] { id }, resultSetExtractor);
+      "FROM product a " +
+      "LEFT JOIN store c ON a.store_id = c.id " +
+      "LEFT JOIN catalog b ON a.catalog_id = b.id " +
+      "LEFT JOIN inventory d ON a.id = d.id " +
+      "WHERE a.id = ? AND a.status = 0", new Object[] { id }, resultSetExtractor);
+  }
+
+  public Optional<ProductVO> getProductVOWithDeleted(long id) {
+    return jdbcTemplate.query("SELECT a.*, b.name AS catalog_name, c.name AS store_name, d.amount AS inventory " +
+      "FROM product a " +
+      "LEFT JOIN store c ON a.store_id = c.id " +
+      "LEFT JOIN catalog b ON a.catalog_id = b.id " +
+      "LEFT JOIN inventory d ON a.id = d.id " +
+      "WHERE a.id = ? AND a.status IN (0, 4)", new Object[] { id }, resultSetExtractor);
   }
 
   public List<ProductVO> searchProductVOByCatalog(long catalogId) {
@@ -64,6 +76,7 @@ public class ProductQueryRepository {
       .setDescription(rs.getString("description"))
       .setName(rs.getString("name"))
       .setPrice(rs.getDouble("price"))
+      .setStatus(rs.getInt("status"))
       .setPicUri(rs.getString("pic_uri"));
     Category category = new Category().setId(rs.getLong("catalog_id"))
       .setName(rs.getString("catalog_name"));
@@ -82,6 +95,7 @@ public class ProductQueryRepository {
         .setDescription(rs.getString("description"))
         .setName(rs.getString("name"))
         .setPrice(rs.getDouble("price"))
+        .setStatus(rs.getInt("status"))
         .setPicUri(rs.getString("pic_uri"));
       Category category = new Category().setId(rs.getLong("catalog_id"))
         .setName(rs.getString("catalog_name"));

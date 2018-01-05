@@ -9,6 +9,8 @@ public class SimpleStoreVO {
   private String storeTelephone;
   private String storeEmail;
 
+  private int status;
+
   public Long getStoreId() {
     return storeId;
   }
@@ -51,6 +53,15 @@ public class SimpleStoreVO {
 
   public SimpleStoreVO setStoreEmail(String storeEmail) {
     this.storeEmail = storeEmail;
+    return this;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
+  public SimpleStoreVO setStatus(int status) {
+    this.status = status;
     return this;
   }
 }

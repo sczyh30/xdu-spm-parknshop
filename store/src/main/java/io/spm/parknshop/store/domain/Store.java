@@ -31,6 +31,10 @@ public class Store {
 
   private Integer status;
 
+  public static Store deletedStore(Long id) {
+    return new Store().setId(id).setName("(Deleted Shop)").setStatus(StoreStatus.DELETED);
+  }
+
   public Long getId() {
     return id;
   }

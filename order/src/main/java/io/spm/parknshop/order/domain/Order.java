@@ -25,13 +25,15 @@ public class Order {
 
   private Long storeId;
   private Long paymentId;
-  private Long addressId;
+  private String addressSnapshot;
   private Long deliveryId;
 
   private Double freightPrice;
   private Double finalTotalPrice;
 
   private int orderStatus;
+
+  private Double commissionSnapshot;
 
   public Long getId() {
     return id;
@@ -87,12 +89,12 @@ public class Order {
     return this;
   }
 
-  public Long getAddressId() {
-    return addressId;
+  public String getAddressSnapshot() {
+    return addressSnapshot;
   }
 
-  public Order setAddressId(Long addressId) {
-    this.addressId = addressId;
+  public Order setAddressSnapshot(String addressSnapshot) {
+    this.addressSnapshot = addressSnapshot;
     return this;
   }
 
@@ -132,6 +134,15 @@ public class Order {
     return this;
   }
 
+  public Double getCommissionSnapshot() {
+    return commissionSnapshot;
+  }
+
+  public Order setCommissionSnapshot(Double commissionSnapshot) {
+    this.commissionSnapshot = commissionSnapshot;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "Order{" +
@@ -141,7 +152,7 @@ public class Order {
       ", creatorId=" + creatorId +
       ", storeId=" + storeId +
       ", paymentId=" + paymentId +
-      ", addressId=" + addressId +
+      ", addressSnapshot='" + addressSnapshot + '\'' +
       ", deliveryId=" + deliveryId +
       ", freightPrice=" + freightPrice +
       ", finalTotalPrice=" + finalTotalPrice +

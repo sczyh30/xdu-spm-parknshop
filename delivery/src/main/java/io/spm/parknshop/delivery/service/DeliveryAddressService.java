@@ -17,6 +17,8 @@ public interface DeliveryAddressService {
 
   Mono<Optional<DeliveryAddress>> getById(Long id);
 
+  Mono<DeliveryAddress> getByIdWithDeleted(Long id);
+
   Flux<DeliveryAddress> getByUserId(Long userId);
 
   Mono<Long> deleteAddress(Long id);

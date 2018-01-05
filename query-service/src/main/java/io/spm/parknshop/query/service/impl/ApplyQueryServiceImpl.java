@@ -53,21 +53,22 @@ public class ApplyQueryServiceImpl implements ApplyQueryService {
   }
 
   private Mono<ApplyVO> wrapWithBizData(/*@NonNull*/ ApplyVO applyVO) {
+    Long oriSellerId = ApplyProcessorRoles.getDetailed(applyVO.getApply().getProposerId()).r2;
     switch (applyVO.getApply().getApplyType()) {
       case AdApplyType.APPLY_AD_PRODUCT:
         Long productId = JsonUtils.parse(applyVO.getApply().getApplyData(), Advertisement.class).getAdTarget();
-        return adPageQueryService.getProductAdvertisement(productId)
+        return adPageQueryService.getProductAdvertisement(productId, oriSellerId)
           .map(applyVO::setBizData);
       case AdApplyType.APPLY_AD_SHOP:
         Long shopId = JsonUtils.parse(applyVO.getApply().getApplyData(), Advertisement.class).getAdTarget();
-        return adPageQueryService.getShopAdvertisement(shopId)
+        return adPageQueryService.getShopAdvertisement(shopId, oriSellerId)
           .map(applyVO::setBizData);
       case StoreWorkflowService.STORE_APPLY:
         Long sellerId = JsonUtils.parse(applyVO.getApply().getApplyData(), StoreDTO.class).getSellerId();
         return sellerUserService.getSellerById(sellerId)
           .filter(Optional::isPresent)
           .map(Optional::get)
-          .switchIfEmpty(Mono.just(new User().setUsername("Deleted Seller").setId(sellerId)))
+          .switchIfEmpty(Mono.just(User.deletedUser(sellerId)))
           .map(applyVO::setBizData);
       default:
         return Mono.just(applyVO);
