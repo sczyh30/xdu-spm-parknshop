@@ -23,14 +23,13 @@ public class AdminDashboardQueryService {
   private GlobalConfigService globalConfigService;
 
   public Mono<AdminDashboardVO> getDashboardData() {
-    return globalConfigService.getCommission()
-    .flatMap(commission -> async(() -> {
-      double profit = orderRepository.getAllSaleMoney() * commission / 100.0d;
+    return async(() -> {
+      double profit = orderRepository.getAllSaleProfit() / 100.0d;
       long customerCount = userRepository.countByUserType(AuthRoles.CUSTOMER);
       long sellerCount = userRepository.countByUserType(AuthRoles.SELLER);
       long orderCount = orderRepository.count();
       return new AdminDashboardVO().setTotalProfit(profit).setTotalCustomerAmount(customerCount)
         .setTotalSellerAmount(sellerCount).setTotalOrderAmount(orderCount);
-    }));
+    });
   }
 }

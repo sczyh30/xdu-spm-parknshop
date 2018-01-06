@@ -80,6 +80,12 @@ public class CommonApplyProcessApiController {
       .flatMapMany(applyDataService::getApplyByProposerId);
   }
 
+  @GetMapping("/workflow/apply/all")
+  public Publisher<Apply> apiApplyListAll(ServerWebExchange exchange) {
+    return AuthUtils.getAdminId(exchange)
+      .flatMapMany(adminId -> applyDataService.getAll());
+  }
+
   private Mono<ApplyProcessService> findService(int type) {
     if (type <= 0 || !serviceMap.containsKey(type)) {
       return Mono.error(ExceptionUtils.invalidParam("apply type"));

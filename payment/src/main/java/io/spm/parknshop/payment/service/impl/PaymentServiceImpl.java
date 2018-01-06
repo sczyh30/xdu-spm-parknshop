@@ -120,4 +120,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
     return async(() -> paymentRecordRepository.save(record.setStatus(PaymentStatus.CANCELED).setGmtModified(new Date())));
   }
+
+  public Mono<?> processRefund(Long paymentId, String outerPaymentId, String refundId) {
+    return Mono.empty();
+  }
 }

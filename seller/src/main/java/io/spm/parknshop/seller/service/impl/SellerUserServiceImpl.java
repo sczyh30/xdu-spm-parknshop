@@ -46,7 +46,7 @@ public class SellerUserServiceImpl implements SellerUserService {
 
   @Override
   public Flux<User> getAllSellers() {
-    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.SELLER));
+    return asyncIterable(() -> userRepository.getByUserType(AuthRoles.SELLER));
   }
 
   @Override

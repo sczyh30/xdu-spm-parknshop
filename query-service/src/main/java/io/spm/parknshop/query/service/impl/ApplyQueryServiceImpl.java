@@ -12,6 +12,7 @@ import io.spm.parknshop.apply.service.ApplyDataService;
 import io.spm.parknshop.common.auth.AuthRoles;
 import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.common.util.JsonUtils;
+import io.spm.parknshop.query.service.AdPageQueryService;
 import io.spm.parknshop.query.service.ApplyQueryService;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.StoreDTO;

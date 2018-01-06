@@ -3,7 +3,7 @@ package io.spm.parknshop.query.vo.ad;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.user.domain.User;
 
-public class ShopAdvertisementVO {
+public class ShopAdvertisementVO extends AdvertisementVO {
 
   private Store store;
   private User seller;

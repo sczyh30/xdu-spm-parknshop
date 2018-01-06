@@ -128,7 +128,7 @@ public class CartServiceImpl implements CartService {
   public Mono<ShoppingCart> getCartForUser(Long userId) {
     return checkUserId(userId)
       .flatMapMany(v -> cartRepository.getCart(userId))
-      .flatMap(this::aggregateCartProduct)
+      .concatMap(this::aggregateCartProduct)
       .groupBy(e -> e.getProduct().getProduct().getStoreId())
       .concatMap(stream -> stream.collectList()
         .map(e -> buildCartUnit(e, stream.key())))

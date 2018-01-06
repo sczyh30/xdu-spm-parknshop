@@ -39,6 +39,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Transactional
   void markAsDeleted(long id);
 
+  @Modifying
+  @Query(value = "UPDATE product SET status = 4, gmt_modified = CURRENT_TIMESTAMP WHERE store_id = ?1", nativeQuery = true)
+  @Transactional
+  void deleteShopProducts(long shopId);
+
   @Query(value = "SELECT * FROM product WHERE id = ?1", nativeQuery = true)
   Optional<Product> findByIdWithDeleted(Long id);
 

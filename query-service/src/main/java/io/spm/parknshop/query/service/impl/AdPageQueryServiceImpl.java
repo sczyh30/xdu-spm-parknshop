@@ -1,8 +1,13 @@
 package io.spm.parknshop.query.service.impl;
 
+import io.spm.parknshop.advertisement.domain.AdType;
+import io.spm.parknshop.advertisement.domain.Advertisement;
+import io.spm.parknshop.advertisement.service.AdvertisementService;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.product.repository.ProductRepository;
+import io.spm.parknshop.query.service.AdPageQueryService;
+import io.spm.parknshop.query.vo.ad.AdvertisementVO;
 import io.spm.parknshop.query.vo.ad.ProductAdvertisementVO;
 import io.spm.parknshop.query.vo.ad.ShopAdvertisementVO;
 import io.spm.parknshop.store.domain.Store;
@@ -12,6 +17,7 @@ import io.spm.parknshop.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -24,7 +30,10 @@ import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
  * @author Eric Zhao
  */
 @Service
-public class AdPageQueryService {
+public class AdPageQueryServiceImpl implements AdPageQueryService {
+
+  @Autowired
+  private AdvertisementService advertisementService;
 
   @Autowired
   private ProductRepository productRepository;
@@ -33,6 +42,32 @@ public class AdPageQueryService {
   @Autowired
   private UserRepository userRepository;
 
+  @Override
+  public Mono<AdvertisementVO> getAdvertisementById(Long id) {
+    return advertisementService.getById(id)
+      .flatMap(this::getAdInternal);
+  }
+
+  @Override
+  public Flux<AdvertisementVO> getAdvertisementBySellerId(Long sellerId) {
+    return advertisementService.getBySeller(sellerId)
+      .flatMap(this::getAdInternal);
+  }
+
+  private Mono<? extends AdvertisementVO> getAdInternal(/*@NonNull*/ Advertisement advertisement) {
+    switch (advertisement.getAdType()) {
+      case AdType.AD_PRODUCT:
+        return getProductAdvertisement(advertisement.getAdTarget(), advertisement.getAdOwner())
+          .map(e -> e.setAd(advertisement));
+      case AdType.AD_STORE:
+        return getShopAdvertisement(advertisement.getAdTarget(), advertisement.getAdOwner())
+          .map(e -> e.setAd(advertisement));
+      default:
+        return Mono.error(new ServiceException(AD_UNKNOWN_TYPE, "Unknown advertisement type"));
+    }
+  }
+
+  @Override
   public Mono<ProductAdvertisementVO> getProductAdvertisement(Long productId, Long sellerId) {
     if (Objects.isNull(productId) || productId <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("productId"));
@@ -40,9 +75,10 @@ public class AdPageQueryService {
     return async(() -> retrieveProductAd(productId, sellerId))
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .switchIfEmpty(Mono.error(new ServiceException(PRODUCT_NOT_EXIST, "Product or related shop is not present")));
+      .switchIfEmpty(Mono.error(new ServiceException(PRODUCT_NOT_EXIST, "Product is not present")));
   }
 
+  @Override
   public Mono<ShopAdvertisementVO> getShopAdvertisement(Long storeId, Long sellerId) {
     if (Objects.isNull(storeId) || storeId <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("storeId"));
@@ -60,9 +96,10 @@ public class AdPageQueryService {
   @Transactional(readOnly = true)
   protected Optional<ProductAdvertisementVO> retrieveProductAd(long productId, Long sellerId) {
     return productRepository.findByIdWithDeleted(productId)
-      .flatMap(product -> storeRepository.findById(product.getStoreId())
-        .flatMap(store -> userRepository.getSellerById(store.getSellerId())
-          .map(seller -> new ProductAdvertisementVO(product, store, seller))
-        ));
+      .map(product -> {
+        Store store = storeRepository.findById(product.getStoreId()).orElse(Store.deletedStore(product.getStoreId()));
+        User seller = userRepository.getSellerById(sellerId).orElse(User.deletedUser(sellerId));
+        return new ProductAdvertisementVO(product, store, seller);
+      });
   }
 }

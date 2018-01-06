@@ -23,6 +23,8 @@ public interface ApplyDataService {
 
   Flux<Apply> getApplyByType(int applyType);
 
+  Flux<Apply> getAll();
+
   Mono<Boolean> checkApplyExistsFor(String proposerId, int applyType, Set<Integer> statusSet);
 
   <S, E> Mono<S> transformToNextState(Long applyId, E event, WorkflowEventAggregator<S, E> aggregator);

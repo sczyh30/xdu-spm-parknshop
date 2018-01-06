@@ -42,12 +42,17 @@ public class ApplyDataServiceImpl implements ApplyDataService {
   public Flux<ApplyEvent> getEventStream(Long applyId) {
     return checkApplyId(applyId)
       .flatMapMany(v -> asyncIterable(() -> applyEventRepository.getByApplyIdOrderById(applyId)))
-      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "Not exist: apply " + applyId)));
+      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "The apply does not exist", applyId)));
   }
 
   @Override
   public Flux<Apply> getApplyByType(int applyType) {
     return asyncIterable(() -> applyMetadataRepository.getByApplyType(applyType));
+  }
+
+  @Override
+  public Flux<Apply> getAll() {
+    return asyncIterable(() -> applyMetadataRepository.findAll());
   }
 
   @Override

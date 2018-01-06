@@ -4,10 +4,12 @@ import io.spm.parknshop.common.util.JsonUtils;
 import io.spm.parknshop.delivery.domain.DeliveryAddress;
 import io.spm.parknshop.delivery.repository.DeliveryAddressRepository;
 import io.spm.parknshop.order.domain.Order;
+import io.spm.parknshop.order.domain.OrderProduct;
 import io.spm.parknshop.order.repository.OrderProductRepository;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.payment.domain.PaymentRecord;
 import io.spm.parknshop.payment.repository.PaymentRecordRepository;
+import io.spm.parknshop.product.repository.ProductRepository;
 import io.spm.parknshop.query.vo.OrderVO;
 import io.spm.parknshop.query.vo.SimpleStoreVO;
 import io.spm.parknshop.store.domain.Store;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 @Repository
 public class OrderQueryRepository {
 
+  @Autowired
+  private ProductRepository productRepository;
   @Autowired
   private OrderRepository orderRepository;
   @Autowired
@@ -75,7 +79,14 @@ public class OrderQueryRepository {
     DeliveryAddress address = JsonUtils.parse(order.getAddressSnapshot(), DeliveryAddress.class);
     PaymentRecord payment = paymentRecordRepository.findById(order.getPaymentId()).orElse(null);
     User user = userRepository.findById(order.getCreatorId()).orElse(User.deletedUser(order.getCreatorId()));
-    return new OrderVO(orderId, order, store, orderProductRepository.getByOrderId(orderId), payment, address, user);
+    return new OrderVO(orderId, order, store, retrieveSubOrders(orderId), payment, address, user);
+  }
+
+  private List<OrderProduct> retrieveSubOrders(long orderId) {
+    return orderProductRepository.getByOrderId(orderId).stream()
+      .map(subOrder -> productRepository.findByIdWithDeleted(subOrder.getProductId()).map(product ->
+        subOrder.setProductStatus(product.getStatus()).setPicUri(product.getPicUri())).get())
+      .collect(Collectors.toList());
   }
 
   private SimpleStoreVO fromStore(Store store) {

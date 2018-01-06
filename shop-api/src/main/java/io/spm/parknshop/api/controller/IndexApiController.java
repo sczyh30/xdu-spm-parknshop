@@ -1,8 +1,7 @@
 package io.spm.parknshop.api.controller;
 
-import io.spm.parknshop.api.util.IndexPage;
-import io.spm.parknshop.category.service.CategoryService;
-import io.spm.parknshop.product.service.ProductService;
+import io.spm.parknshop.query.service.impl.CustomerIndexDataService;
+import io.spm.parknshop.query.vo.IndexPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,16 +13,10 @@ import reactor.core.publisher.Mono;
 public class IndexApiController {
 
   @Autowired
-  private CategoryService categoryService;
-  @Autowired
-  private ProductService productService;
+  private CustomerIndexDataService customerIndexDataService;
 
   @GetMapping("/index")
   public Mono<IndexPage> apiIndex() {
-    return categoryService.getAll().collectList()
-      .flatMap(catalogs -> productService.getRecentProducts(50)
-        .collectList()
-        .map(products -> new IndexPage().setCategories(catalogs).setProducts(products))
-      );
+    return customerIndexDataService.renderCustomerIndex();
   }
 }

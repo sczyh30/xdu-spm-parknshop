@@ -50,7 +50,7 @@ public class AdminUserManageApiController {
 
   @GetMapping("/admin/sellers/all")
   public Publisher<User> apiGetAllSellers() {
-    return userService.getAllUsers();
+    return sellerUserService.getAllSellers();
   }
 
   @GetMapping("/admin/customers/all")
@@ -60,7 +60,7 @@ public class AdminUserManageApiController {
 
   @GetMapping("/admin/users/all")
   public Publisher<User> apiGetAllUsers() {
-    return sellerUserService.getAllSellers();
+    return userService.getAllUsers();
   }
 
 }

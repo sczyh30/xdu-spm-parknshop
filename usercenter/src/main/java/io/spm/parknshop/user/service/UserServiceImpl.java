@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Flux<User> getAllCustomers() {
-    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.CUSTOMER));
+    return asyncIterable(() -> userRepository.getByUserType(AuthRoles.CUSTOMER));
   }
 
   private boolean isValidUser(User user) {

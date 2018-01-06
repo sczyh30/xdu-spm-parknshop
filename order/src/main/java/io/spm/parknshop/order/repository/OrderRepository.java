@@ -34,11 +34,14 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   List<Order> getByPaymentId(long paymentId);
 
-  @Query(value = "SELECT SUM(final_total_price) FROM order_metadata WHERE order_status BETWEEN 1 AND 6", nativeQuery = true)
-  double getAllSaleMoney();
+  @Query(value = "SELECT SUM(final_total_price * commission_snapshot) FROM order_metadata WHERE order_status BETWEEN 1 AND 6", nativeQuery = true)
+  double getAllSaleProfit();
 
   @Query(value = "SELECT SUM(final_total_price) FROM order_metadata WHERE store_id = ?1 AND order_status BETWEEN 1 AND 6", nativeQuery = true)
   double getSaleMoneyForStore(long storeId);
+
+  @Query(value = "SELECT SUM(final_total_price * (100 - commission_snapshot)) FROM order_metadata WHERE store_id = ?1 AND order_status BETWEEN 1 AND 6", nativeQuery = true)
+  double getSaleProfitForStore(long storeId);
 
   @Query(value = "SELECT SUM(final_total_price) FROM order_metadata WHERE store_id = ?1 AND order_status BETWEEN 1 AND 6 AND gmt_create BETWEEN ?2 AND ?3", nativeQuery = true)
   double getSaleMoneyForStoreBetween(long storeId, Date from, Date to);

@@ -2,18 +2,8 @@ package io.spm.parknshop.query.vo;
 
 public class ShopSaleVO {
 
-  private double commission;
   private double totalSale;
   private double totalProfit;
-
-  public double getCommission() {
-    return commission;
-  }
-
-  public ShopSaleVO setCommission(double commission) {
-    this.commission = commission;
-    return this;
-  }
 
   public double getTotalSale() {
     return totalSale;

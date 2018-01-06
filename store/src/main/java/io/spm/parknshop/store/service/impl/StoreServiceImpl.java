@@ -4,6 +4,7 @@ import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.delivery.domain.DeliveryTemplate;
 import io.spm.parknshop.delivery.repository.DeliveryTemplateRepository;
+import io.spm.parknshop.product.repository.ProductRepository;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.domain.StoreStatus;
 import io.spm.parknshop.store.repository.StoreRepository;
@@ -26,7 +27,8 @@ public class StoreServiceImpl implements StoreService {
 
   @Autowired
   private StoreRepository storeRepository;
-
+  @Autowired
+  private ProductRepository productRepository;
   @Autowired
   private DeliveryTemplateRepository deliveryTemplateRepository;
 
@@ -90,7 +92,13 @@ public class StoreServiceImpl implements StoreService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return asyncExecute(() -> storeRepository.deleteById(id));
+    return asyncExecute(() -> removeShopInternal(id));
+  }
+
+  @Transactional
+  protected void removeShopInternal(long id) {
+    storeRepository.deleteById(id);
+    productRepository.deleteShopProducts(id);
   }
 
   @Override

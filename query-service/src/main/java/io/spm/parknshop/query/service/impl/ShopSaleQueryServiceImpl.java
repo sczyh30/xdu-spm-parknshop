@@ -1,6 +1,6 @@
 package io.spm.parknshop.query.service.impl;
 
-import io.spm.parknshop.configcenter.service.GlobalConfigService;
+import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.query.service.ShopSaleQueryService;
 import io.spm.parknshop.query.vo.ShopSaleVO;
@@ -23,20 +23,15 @@ public class ShopSaleQueryServiceImpl implements ShopSaleQueryService {
   @Autowired
   private StoreRepository storeRepository;
 
-  @Autowired
-  private GlobalConfigService globalConfigService;
-
   @Override
   public Mono<ShopSaleVO> getSaleByStore(Long storeId) {
-    // TODO: Here we should refactor!
-    return globalConfigService.getCommission()
-      .flatMap(c -> async(() -> calcSaleInternal(c, storeId)));
+    return async(() -> calcSaleInternal(storeId));
   }
 
-  private ShopSaleVO calcSaleInternal(double c, long storeId) {
+  private ShopSaleVO calcSaleInternal(long storeId) {
     double totalPrice = orderRepository.getSaleMoneyForStore(storeId);
-    double totalProfit = c * totalPrice;
-    return new ShopSaleVO().setCommission(c).setTotalProfit(totalProfit).setTotalSale(totalPrice);
+    double totalProfit = orderRepository.getSaleProfitForStore(storeId) / 100;
+    return new ShopSaleVO().setTotalProfit(totalProfit).setTotalSale(totalPrice);
   }
 
   @Override
@@ -46,10 +41,10 @@ public class ShopSaleQueryServiceImpl implements ShopSaleQueryService {
 
   @Override
   public Mono<ShopSaleVO> getSaleBySeller(Long seller) {
-    return globalConfigService.getCommission()
-      .flatMap(c -> async(() -> storeRepository.getBySellerId(seller)
-        .map(e -> calcSaleInternal(c, e.getId()))))
+    return async(() -> storeRepository.getBySellerId(seller)
+      .map(e -> calcSaleInternal(e.getId())))
       .filter(Optional::isPresent)
-      .map(Optional::get);
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(STORE_NOT_EXIST, "The seller does not own a shop")));
   }
 }

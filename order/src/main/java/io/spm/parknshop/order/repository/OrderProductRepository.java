@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
 
-  @Query(value = "SELECT a.*, b.status FROM order_product a, product b WHERE a.order_id = ?1 AND b.id = a.product_id", nativeQuery = true)
+  @Query(value = "SELECT a.*, b.status AS product_status, b.pic_uri as pic_uri FROM order_product a, product b WHERE a.order_id = ?1 AND b.id = a.product_id", nativeQuery = true)
   List<OrderProduct> getByOrderId(long orderId);
 
   Optional<OrderProduct> getByOrderIdAndProductId(long orderId, long productId);

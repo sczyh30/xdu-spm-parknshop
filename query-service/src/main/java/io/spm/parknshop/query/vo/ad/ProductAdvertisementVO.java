@@ -4,7 +4,7 @@ import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.user.domain.User;
 
-public class ProductAdvertisementVO {
+public class ProductAdvertisementVO extends AdvertisementVO {
 
   private Product product;
   private Store store;

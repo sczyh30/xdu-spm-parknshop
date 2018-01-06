@@ -27,6 +27,11 @@ public class OrderProduct {
 
   private Integer status;
 
+  @Transient
+  private Integer productStatus;
+  @Transient
+  private String picUri;
+
   public Long getId() {
     return id;
   }
@@ -96,6 +101,24 @@ public class OrderProduct {
 
   public OrderProduct setStatus(Integer status) {
     this.status = status;
+    return this;
+  }
+
+  public Integer getProductStatus() {
+    return productStatus;
+  }
+
+  public OrderProduct setProductStatus(Integer productStatus) {
+    this.productStatus = productStatus;
+    return this;
+  }
+
+  public String getPicUri() {
+    return picUri;
+  }
+
+  public OrderProduct setPicUri(String picUri) {
+    this.picUri = picUri;
     return this;
   }
 }
