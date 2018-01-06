@@ -1,4 +1,4 @@
-package io.spm.parknshop.api.controller;
+package io.spm.parknshop.api.controller.ad;
 
 import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.advertisement.domain.apply.AdvertisementDTO;
@@ -59,5 +59,10 @@ public class AdvertisementApiController {
   @GetMapping("/ad/by_seller/{id}")
   public Publisher<AdvertisementVO> apiGetAdListBySellerId(@PathVariable("id") Long id, ServerWebExchange exchange) {
     return adPageQueryService.getAdvertisementBySellerId(id);
+  }
+
+  @GetMapping("/ad/all")
+  public Publisher<AdvertisementVO> apiGetFullAdList(ServerWebExchange exchange) {
+    return adPageQueryService.getFullList();
   }
 }

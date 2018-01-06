@@ -51,7 +51,13 @@ public class AdPageQueryServiceImpl implements AdPageQueryService {
   @Override
   public Flux<AdvertisementVO> getAdvertisementBySellerId(Long sellerId) {
     return advertisementService.getBySeller(sellerId)
-      .flatMap(this::getAdInternal);
+      .concatMap(this::getAdInternal);
+  }
+
+  @Override
+  public Flux<AdvertisementVO> getFullList() {
+    return advertisementService.getAll()
+      .concatMap(this::getAdInternal);
   }
 
   private Mono<? extends AdvertisementVO> getAdInternal(/*@NonNull*/ Advertisement advertisement) {

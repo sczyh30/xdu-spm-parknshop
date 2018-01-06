@@ -45,7 +45,7 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 
   @Override
   public Flux<Advertisement> getAll() {
-    return asyncIterable(() -> advertisementRepository.findAll());
+    return asyncIterable(() -> advertisementRepository.getAll());
   }
 
   @Override

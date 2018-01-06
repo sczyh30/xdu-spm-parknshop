@@ -39,6 +39,15 @@ public class ApplyDataServiceImpl implements ApplyDataService {
   private ApplyEventRepository applyEventRepository;
 
   @Override
+  public Mono<ApplyEvent> getSourceEvent(Long applyId) {
+    return checkApplyId(applyId)
+      .flatMap(v -> async(() -> applyEventRepository.getSourceEvent(applyId)))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "The apply does not exist", applyId)));
+  }
+
+  @Override
   public Flux<ApplyEvent> getEventStream(Long applyId) {
     return checkApplyId(applyId)
       .flatMapMany(v -> asyncIterable(() -> applyEventRepository.getByApplyIdOrderById(applyId)))
@@ -72,7 +81,7 @@ public class ApplyDataServiceImpl implements ApplyDataService {
       .flatMap(v -> async(() -> applyMetadataRepository.getById(applyId)))
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "Not exist: apply " + applyId)));
+      .switchIfEmpty(Mono.error(new ServiceException(APPLY_NOT_EXIST, "The apply does not exist", applyId)));
   }
 
   @Override

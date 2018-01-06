@@ -15,6 +15,8 @@ import java.util.Set;
  */
 public interface ApplyDataService {
 
+  Mono<ApplyEvent> getSourceEvent(Long applyId);
+
   Flux<ApplyEvent> getEventStream(Long applyId);
 
   Mono<Apply> getApplyById(Long applyId);

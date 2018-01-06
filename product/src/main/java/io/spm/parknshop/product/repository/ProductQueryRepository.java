@@ -58,7 +58,7 @@ public class ProductQueryRepository {
   public List<ProductVO> getNRecentProductVO(int limit) {
     return jdbcTemplate.query("SELECT a.*, b.name AS catalog_name, c.name AS store_name, d.amount AS inventory " +
       "FROM product a, catalog b, store c, inventory d " +
-      "WHERE  a.catalog_id = b.id  AND a.status = 0 AND a.store_id = c.id AND a.id = d.id " +
+      "WHERE a.catalog_id = b.id  AND a.status = 0 AND a.store_id = c.id AND c.status = 0 AND a.id = d.id " +
       "ORDER BY a.gmt_modified DESC LIMIT ?", new Object[] { limit }, rowMapper);
   }
 

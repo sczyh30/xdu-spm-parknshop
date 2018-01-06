@@ -11,7 +11,7 @@ public interface PaymentService {
 
   Mono<PaymentRecord> getPaymentById(Long id);
 
-  Mono<PaymentRedirectData> startPayment(Long paymentId);
+  Mono<PaymentRedirectData> startPayment(Long paymentId, int payMethod, int payType);
 
   Mono<PaymentRecord> finishPay(Long paymentId, String outerPaymentId);
 

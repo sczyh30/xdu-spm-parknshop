@@ -15,6 +15,8 @@ public interface AdPageQueryService {
 
   Flux<AdvertisementVO> getAdvertisementBySellerId(Long sellerId);
 
+  Flux<AdvertisementVO> getFullList();
+
   Mono<ProductAdvertisementVO> getProductAdvertisement(Long productId, Long sellerId);
 
   Mono<ShopAdvertisementVO> getShopAdvertisement(Long storeId, Long sellerId);

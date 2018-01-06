@@ -2,8 +2,11 @@ package io.spm.parknshop.payment.service.impl;
 
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayFundTransToaccountTransferRequest;
 import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
+import com.google.gson.JsonObject;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.payment.config.AlipayConfig;
 import io.spm.parknshop.trade.domain.PaymentResult;
@@ -24,7 +27,7 @@ public class AlipayService {
       AlipayConfig.alipay_public_key, AlipayConfig.sign_type);
   }
 
-  public Mono<String> invokePayment(Long paymentId, String payOrderName, double totalAmount) {
+  public Mono<String> invokeBuyPayment(Long paymentId, String payOrderName, double totalAmount) {
     //设置请求参数
     AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
     alipayRequest.setReturnUrl(AlipayConfig.BUY_PAY_RETURN_URL);
@@ -38,6 +41,26 @@ public class AlipayService {
     String subject = payOrderName;
     //商品描述，可空
     String body = "Products from PARKnSHOP.com";
+
+    alipayRequest.setBizContent("{\"out_trade_no\":\""+ out_trade_no +"\","
+      + "\"total_amount\":\""+ total_amount +"\","
+      + "\"subject\":\""+ subject +"\","
+      + "\"body\":\""+ body +"\","
+      + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}");
+
+    //请求
+    return async(() -> alipayClient.pageExecute(alipayRequest).getBody());
+  }
+
+  public Mono<String> invokeAdPayment(Long paymentId, double totalAmount) {
+    AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
+    alipayRequest.setReturnUrl(AlipayConfig.AD_PAY_RETURN_URL);
+    alipayRequest.setNotifyUrl(AlipayConfig.AD_PAY_NOTIFY_URL);
+
+    String out_trade_no = paymentId.toString();
+    String total_amount = String.valueOf(totalAmount);
+    String subject = "PARKnSHOP.com";
+    String body = "Advertisement payment from PARKnSHOP.com";
 
     alipayRequest.setBizContent("{\"out_trade_no\":\""+ out_trade_no +"\","
       + "\"total_amount\":\""+ total_amount +"\","
@@ -64,6 +87,51 @@ public class AlipayService {
           return Mono.just(new PaymentResult(ALIPAY_SUCCESS_CODE, response.getMsg()));
         } else {
           return Mono.error(new ServiceException(PAYMENT_CANCEL_PAY_FAIL, "Cancel pay fail: " + response.getMsg()));
+        }
+      });
+  }
+
+  public Mono<PaymentResult> processRefund(Long paymentId, String alipayTradeNo, double refundAmount, String refundReason,
+                                           String outRefundRequestNo, String storeId) {
+    AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+
+    JsonObject bizObj = new JsonObject();
+    bizObj.addProperty("out_trade_no", paymentId.toString());
+    bizObj.addProperty("trade_no", alipayTradeNo);
+    bizObj.addProperty("refund_amount", refundAmount);
+    bizObj.addProperty("refund_reason", refundReason);
+    bizObj.addProperty("out_request_no", outRefundRequestNo);
+    bizObj.addProperty("store_id", storeId);
+    request.setBizContent(bizObj.toString());
+    //请求
+    return async(() -> alipayClient.execute(request))
+      .flatMap(response -> {
+        if (response.isSuccess()) {
+          return Mono.just(new PaymentResult(ALIPAY_SUCCESS_CODE, response.getMsg()));
+        } else {
+          return Mono.error(new ServiceException(PAYMENT_CANCEL_PAY_FAIL, "Refund fail: " + response.getMsg()));
+        }
+      });
+  }
+
+  public Mono<PaymentResult> processTransfer(String transferBizNo, String alipayAccount, double amount) {
+    AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
+
+    JsonObject bizObj = new JsonObject();
+    bizObj.addProperty("out_biz_no", transferBizNo);
+    bizObj.addProperty("payee_type", "ALIPAY_LOGONID");
+    bizObj.addProperty("payee_account", alipayAccount);
+    bizObj.addProperty("amount", String.valueOf(amount));
+    bizObj.addProperty("payer_show_name", "PARKnSHOP.com");
+    bizObj.addProperty("remark", String.format("HK$%.2d sales money from PARKnSHOP.com", amount));
+    request.setBizContent(bizObj.toString());
+    //请求
+    return async(() -> alipayClient.execute(request))
+      .flatMap(response -> {
+        if (response.isSuccess()) {
+          return Mono.just(new PaymentResult(ALIPAY_SUCCESS_CODE, response.getMsg()));
+        } else {
+          return Mono.error(new ServiceException(PAYMENT_CANCEL_PAY_FAIL, "Refund fail: " + response.getMsg()));
         }
       });
   }

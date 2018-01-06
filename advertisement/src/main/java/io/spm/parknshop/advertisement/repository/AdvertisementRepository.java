@@ -15,6 +15,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 
   List<Advertisement> getByAdOwner(long owner);
 
+  @Query(value = "SELECT * FROM advertisement ORDER BY id DESC", nativeQuery = true)
+  List<Advertisement> getAll();
+
   List<Advertisement> getByAdTypeAndAdTarget(int type, long target);
 
   @Query(value = "SELECT count(*) FROM advertisement WHERE start_date >= ?1 AND end_date <= ?2", nativeQuery = true)

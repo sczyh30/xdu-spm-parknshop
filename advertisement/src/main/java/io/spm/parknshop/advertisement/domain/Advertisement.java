@@ -34,6 +34,8 @@ public class Advertisement {
 
   private int status;
 
+  private Long paymentId;
+
   public Long getId() {
     return id;
   }
@@ -151,6 +153,15 @@ public class Advertisement {
     return this;
   }
 
+  public Long getPaymentId() {
+    return paymentId;
+  }
+
+  public Advertisement setPaymentId(Long paymentId) {
+    this.paymentId = paymentId;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "Advertisement{" +
@@ -159,7 +170,7 @@ public class Advertisement {
       ", gmtModified=" + gmtModified +
       ", applyId=" + applyId +
       ", adType=" + adType +
-      ", adOwner='" + adOwner + '\'' +
+      ", adOwner=" + adOwner +
       ", adTarget=" + adTarget +
       ", description='" + description + '\'' +
       ", adPicUrl='" + adPicUrl + '\'' +
@@ -167,6 +178,7 @@ public class Advertisement {
       ", startDate=" + startDate +
       ", endDate=" + endDate +
       ", status=" + status +
+      ", paymentId=" + paymentId +
       '}';
   }
 }

@@ -14,6 +14,7 @@ import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.common.util.JsonUtils;
 import io.spm.parknshop.query.service.AdPageQueryService;
 import io.spm.parknshop.query.service.ApplyQueryService;
+import io.spm.parknshop.query.vo.apply.ApplyListSimpleVO;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.domain.StoreDTO;
 import io.spm.parknshop.store.service.StoreWorkflowService;
@@ -21,6 +22,7 @@ import io.spm.parknshop.user.domain.User;
 import io.spm.parknshop.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -116,5 +118,14 @@ public class ApplyQueryServiceImpl implements ApplyQueryService {
       default:
         return Mono.error(new IllegalArgumentException("Unknown role"));
     }
+  }
+
+  @Override
+  public Flux<ApplyListSimpleVO> getAll() {
+    return applyDataService.getAll()
+      .concatMap(apply -> applyDataService.getSourceEvent(apply.getId())
+        .flatMap(this::wrapEventWithRecord)
+        .map(source -> new ApplyListSimpleVO(apply, source))
+      );
   }
 }

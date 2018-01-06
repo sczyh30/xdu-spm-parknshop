@@ -11,7 +11,9 @@ import io.spm.parknshop.order.domain.OrderProduct;
 import io.spm.parknshop.order.repository.OrderProductRepository;
 import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.order.service.OrderStatusService;
+import io.spm.parknshop.payment.domain.PaymentMethod;
 import io.spm.parknshop.payment.domain.PaymentRecord;
+import io.spm.parknshop.payment.domain.PaymentType;
 import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.trade.domain.ConfirmOrderMessage;
 import io.spm.parknshop.trade.domain.PaymentResult;
@@ -88,7 +90,7 @@ public class TradeServiceImpl implements TradeService {
   }
 
   private Mono<SubmitOrderResult> startPayInternal(/*@NonNull*/ Long paymentId) {
-    return paymentService.startPayment(paymentId)
+    return paymentService.startPayment(paymentId, PaymentMethod.ALIPAY, PaymentType.BUY_PAY)
       .map(e -> new SubmitOrderResult().setPaymentData(e));
   }
 

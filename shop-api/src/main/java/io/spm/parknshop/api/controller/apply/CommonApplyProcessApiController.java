@@ -10,6 +10,7 @@ import io.spm.parknshop.apply.service.ApplyDataService;
 import io.spm.parknshop.apply.service.ApplyProcessService;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.query.service.ApplyQueryService;
+import io.spm.parknshop.query.vo.apply.ApplyListSimpleVO;
 import io.spm.parknshop.store.service.StoreWorkflowService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,9 +82,9 @@ public class CommonApplyProcessApiController {
   }
 
   @GetMapping("/workflow/apply/all")
-  public Publisher<Apply> apiApplyListAll(ServerWebExchange exchange) {
+  public Publisher<ApplyListSimpleVO> apiApplyListAll(ServerWebExchange exchange) {
     return AuthUtils.getAdminId(exchange)
-      .flatMapMany(adminId -> applyDataService.getAll());
+      .flatMapMany(adminId -> applyQueryService.getAll());
   }
 
   private Mono<ApplyProcessService> findService(int type) {

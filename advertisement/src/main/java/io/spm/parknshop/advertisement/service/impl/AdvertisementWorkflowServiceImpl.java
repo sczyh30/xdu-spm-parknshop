@@ -14,6 +14,7 @@ import io.spm.parknshop.apply.domain.ApplyEvent;
 import io.spm.parknshop.apply.domain.ApplyProcessorRoles;
 import io.spm.parknshop.apply.domain.ApplyResult;
 import io.spm.parknshop.apply.domain.ApplyStatus;
+import io.spm.parknshop.apply.repository.ApplyMetadataRepository;
 import io.spm.parknshop.apply.service.ApplyDataService;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.functional.Tuple2;
@@ -21,10 +22,16 @@ import io.spm.parknshop.common.util.DateUtils;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.common.util.JsonUtils;
 import io.spm.parknshop.configcenter.service.GlobalConfigService;
+import io.spm.parknshop.payment.domain.PaymentMethod;
+import io.spm.parknshop.payment.domain.PaymentRecord;
+import io.spm.parknshop.payment.domain.PaymentType;
+import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.service.StoreService;
+import io.spm.parknshop.trade.domain.PaymentRedirectData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -33,6 +40,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.spm.parknshop.common.async.ReactorAsyncWrapper.async;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
 /**
@@ -49,9 +57,14 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   @Autowired
   private ProductService productService;
   @Autowired
+  private PaymentService paymentService;
+  @Autowired
   private StoreService storeService;
   @Autowired
   private GlobalConfigService globalConfigService;
+
+  @Autowired
+  private ApplyMetadataRepository applyMetadataRepository;
 
   @Autowired
   private AdApplyEventNotifier eventNotifier;
@@ -133,7 +146,24 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
       applyResult = new ApplyResult();
     }
     return applyDataService.performApplyTransform(applyId, AdApplyEventType.APPROVE_APPLY, processorId, applyResult, applyEventAggregator)
-      .flatMap(e -> finishPay(applyId, 12233L)).map(e -> 0L); // TODO: For test
+      .flatMap(v -> createPayment(applyId));
+  }
+
+  private Mono<Long> createPayment(/*@NonNull*/ long applyId) {
+    return applyDataService.getApplyById(applyId)
+      .flatMap(apply -> paymentService.createPaymentRecord(parseAdvertisement(apply).getAdTotalPrice())
+        .map(record -> apply.setApplyData(JsonUtils.toJson(wrapWithPayment(parseAdvertisement(apply), record))))
+        .flatMap(e -> async(() -> applyMetadataRepository.save(e)))
+        .map(e -> 0L)
+      );
+  }
+
+  private Advertisement parseAdvertisement(Apply apply) {
+    return JsonUtils.parse(apply.getApplyData(), Advertisement.class);
+  }
+
+  private Advertisement wrapWithPayment(Advertisement ad, PaymentRecord paymentRecord) {
+    return ad.setPaymentId(paymentRecord.getId());
   }
 
   @Override
@@ -144,18 +174,28 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
     return applyDataService.performApplyTransform(applyId, AdApplyEventType.WITHDRAW_APPLY, processorId, applyResult, applyEventAggregator);
   }
 
-  @Override
-  public Mono<String> startPay(String processorId, Long applyId) {
-    // TODO: not implemented
-    return Mono.empty();
+  private Mono<Long> extractPaymentId(long applyId) {
+    return applyDataService.getApplyById(applyId)
+      .map(e -> parseAdvertisement(e).getPaymentId());
   }
 
   @Override
-  public Mono<Advertisement> finishPay(Long applyId, Long outerPaymentId) {
-    return applyDataService.getApplyById(applyId)
+  public Mono<PaymentRedirectData> startPay(Long applyId) {
+    return extractPaymentId(applyId)
+      .flatMap(paymentId -> paymentService.startPayment(paymentId, PaymentMethod.ALIPAY, PaymentType.BUY_PAY));
+  }
+
+  @Override
+  public Mono<Advertisement> finishPay(Long paymentId, String outerPaymentId) {
+    return getAdApplyByPaymentId(paymentId)
+      .flatMap(apply -> paymentService.finishPay(paymentId, outerPaymentId)
+      .flatMap(v -> applyDataService.performApplyTransform(apply.getId(), AdApplyEventType.FINISH_PAY, apply.getProposerId(), new ApplyResult().setMessage("Payment ID: " + outerPaymentId), applyEventAggregator))
+          .flatMap(v -> addAdvertisement(apply)
+      ));
+    /*return applyDataService.getApplyById(applyId)
       .flatMap(apply -> applyDataService.performApplyTransform(applyId, AdApplyEventType.FINISH_PAY, apply.getProposerId(), new ApplyResult().setMessage("Payment ID: " + outerPaymentId), applyEventAggregator)
         .flatMap(v -> addAdvertisement(apply))
-      );
+      );*/
   }
 
   private Mono<Advertisement> addAdvertisement(Apply apply) {
@@ -191,5 +231,14 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
       return Mono.error(ExceptionUtils.invalidParam("Start date should not be later than end date"));
     }
     return ApplyProcessorRoles.checkSellerId(proposerId);
+  }
+
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
+
+  private Mono<Apply> getAdApplyByPaymentId(long paymentId) {
+    return async(() -> Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM apply_metadata WHERE ad_payment_virtual = ?", Apply.class, new Object[] { paymentId })))
+      .filter(Optional::isPresent)
+      .map(Optional::get);
   }
 }

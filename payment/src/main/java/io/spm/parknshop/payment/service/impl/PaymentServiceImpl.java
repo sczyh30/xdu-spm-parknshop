@@ -8,6 +8,7 @@ import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.payment.domain.PaymentRecord;
 import io.spm.parknshop.payment.domain.PaymentStatus;
+import io.spm.parknshop.payment.domain.PaymentMethod;
 import io.spm.parknshop.payment.domain.PaymentType;
 import io.spm.parknshop.payment.repository.PaymentRecordRepository;
 import io.spm.parknshop.payment.service.PaymentService;
@@ -15,7 +16,6 @@ import io.spm.parknshop.trade.domain.PaymentRedirectData;
 import io.spm.parknshop.trade.domain.PaymentResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
@@ -45,7 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
     // TODO: check params.
     // TODO: No default type
     PaymentRecord record = new PaymentRecord().setStatus(PaymentStatus.NEW_CREATED)
-      .setPaymentType(PaymentType.ALIPAY).setTotalAmount(totalAmount);
+      .setPaymentType(PaymentMethod.ALIPAY).setTotalAmount(totalAmount);
     return async(() -> paymentRecordRepository.save(record));
   }
 
@@ -61,12 +61,13 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  public Mono<PaymentRedirectData> startPayment(Long paymentId) {
+  public Mono<PaymentRedirectData> startPayment(Long paymentId, int payMethod, int payType) {
     return getPaymentById(paymentId)
-      .flatMap(this::doStartPayment);
+      .flatMap(e -> async(() -> paymentRecordRepository.save(e.setPaymentType(payMethod))))
+      .flatMap(payment -> doStartPayment(payment, payType));
   }
 
-  private Mono<PaymentRedirectData> doStartPayment(PaymentRecord record) {
+  private Mono<PaymentRedirectData> doStartPayment(PaymentRecord record, int payType) {
     if (record.getStatus() != PaymentStatus.NEW_CREATED) {
       return Mono.error(new ServiceException(PAYMENT_CANCELED_OR_FINISHED, "Payment has already been finished or canceled"));
     }
@@ -74,10 +75,15 @@ public class PaymentServiceImpl implements PaymentService {
       return Mono.error(new ServiceException(PAYMENT_ALREADY_STARTED, "Payment already in progress"));
     }
     switch (record.getPaymentType()) {
-      case PaymentType.WECHAT_PAY:
-      case PaymentType.ALIPAY:
-        return alipayService.invokePayment(record.getId(), "PARKnSHOP.com", record.getTotalAmount())
-          .map(e -> new PaymentRedirectData().setPaymentId(record.getId()).setPaymentType(PaymentType.ALIPAY).setRenderForm(e));
+      case PaymentMethod.WECHAT_PAY:
+      case PaymentMethod.ALIPAY:
+        if (payType == PaymentType.BUY_PAY) {
+          return alipayService.invokeBuyPayment(record.getId(), "PARKnSHOP.com", record.getTotalAmount())
+            .map(e -> new PaymentRedirectData().setPaymentId(record.getId()).setPaymentType(PaymentMethod.ALIPAY).setRenderForm(e));
+        } else {
+          return alipayService.invokeAdPayment(record.getId(), record.getTotalAmount())
+            .map(e -> new PaymentRedirectData().setPaymentId(record.getId()).setPaymentType(PaymentMethod.ALIPAY).setRenderForm(e));
+        }
       default:
         return Mono.error(new ServiceException(UNKNOWN_PAYMENT_TYPE, "Unknown payment type"));
     }
@@ -104,8 +110,8 @@ public class PaymentServiceImpl implements PaymentService {
     return getPaymentById(paymentId)
       .flatMap(record -> {
         switch (record.getPaymentType()) {
-          case PaymentType.WECHAT_PAY:
-          case PaymentType.ALIPAY:
+          case PaymentMethod.WECHAT_PAY:
+          case PaymentMethod.ALIPAY:
             return alipayService.cancelPayment(paymentId, record.getPaymentId(), proposer)
               .flatMap(e -> cancelStatusInternal(record).map(r -> e));
           default:

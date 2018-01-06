@@ -1,5 +1,6 @@
 package io.spm.parknshop.api.controller.payment;
 
+import io.spm.parknshop.advertisement.service.AdvertisementWorkflowService;
 import io.spm.parknshop.payment.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,8 @@ public class PaymentCallbackController {
 
   @Autowired
   private PaymentService paymentService;
+  @Autowired
+  private AdvertisementWorkflowService advertisementWorkflowService;
 
   @ResponseBody
   @GetMapping("/buy/notify_callback")
@@ -28,7 +31,16 @@ public class PaymentCallbackController {
     exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
     Long shopPaymentId = Long.valueOf(shopPayment);
     return paymentService.finishPay(shopPaymentId, outerPaymentId);
+  }
 
+  @ResponseBody
+  @GetMapping("/ad/notify_callback")
+  public Mono<?> adPayNotifyCallback(ServerWebExchange exchange, @RequestParam("trade_no") String outerPaymentId,
+                                      @RequestParam("out_trade_no") String adPayment) {
+    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/ad/finish_pay?tradeId=" + adPayment);
+    exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
+    Long adPaymentId = Long.valueOf(adPayment);
+    return advertisementWorkflowService.finishPay(adPaymentId, outerPaymentId);
   }
 
   @ResponseBody
