@@ -4,6 +4,7 @@ import io.spm.parknshop.order.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -18,6 +19,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Transactional
   @Modifying
   void updateStatus(long id, int status);
+
+  @Query(value = "SELECT a.* FROM order_metadata a, order_product b WHERE b.product_id = :productId AND a.id = b.order_id AND a.creator_id = :userId", nativeQuery = true)
+  List<Order> getOrderForProductAndUser(@Param("userId") long userId, @Param("productId") long productId);
 
   int countByStoreId(long storeId);
 

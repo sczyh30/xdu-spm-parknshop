@@ -21,4 +21,9 @@ public interface RefundRecordRepository extends JpaRepository<RefundRecord, Long
   @Modifying
   @Transactional
   void updateWithResponseAndStatus(int status, String responseMessage, long id);
+
+  @Query(value = "UPDATE refund_record SET gmt_modified = CURRENT_TIMESTAMP, refund_status = ?1 WHERE id = ?2", nativeQuery = true)
+  @Modifying
+  @Transactional
+  void updateStatus(int status, long id);
 }

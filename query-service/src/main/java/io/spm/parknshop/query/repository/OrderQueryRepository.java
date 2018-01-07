@@ -75,7 +75,7 @@ public class OrderQueryRepository {
   @Transactional(readOnly = true)
   protected OrderVO buildOrderVO(final Order order) {
     Long orderId = order.getId();
-    SimpleStoreVO store = fromStore(storeRepository.findById(order.getStoreId()).orElse(Store.deletedStore(order.getStoreId())));
+    SimpleStoreVO store = SimpleStoreVO.fromStore(storeRepository.findById(order.getStoreId()).orElse(Store.deletedStore(order.getStoreId())));
     DeliveryAddress address = JsonUtils.parse(order.getAddressSnapshot(), DeliveryAddress.class);
     PaymentRecord payment = paymentRecordRepository.findById(order.getPaymentId()).orElse(null);
     User user = userRepository.findById(order.getCreatorId()).orElse(User.deletedUser(order.getCreatorId()));
@@ -87,14 +87,5 @@ public class OrderQueryRepository {
       .map(subOrder -> productRepository.findByIdWithDeleted(subOrder.getProductId()).map(product ->
         subOrder.setProductStatus(product.getStatus()).setPicUri(product.getPicUri())).get())
       .collect(Collectors.toList());
-  }
-
-  private SimpleStoreVO fromStore(Store store) {
-    return new SimpleStoreVO().setSellerId(store.getSellerId())
-      .setStoreId(store.getId())
-      .setStoreName(store.getName())
-      .setStoreTelephone(store.getTelephone())
-      .setStoreEmail(store.getEmail())
-      .setStatus(store.getStatus());
   }
 }

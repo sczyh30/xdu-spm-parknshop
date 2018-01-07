@@ -1,5 +1,7 @@
 package io.spm.parknshop.query.vo;
 
+import io.spm.parknshop.store.domain.Store;
+
 public class SimpleStoreVO {
 
   private Long storeId;
@@ -10,6 +12,15 @@ public class SimpleStoreVO {
   private String storeEmail;
 
   private int status;
+
+  public static SimpleStoreVO fromStore(Store store) {
+    return new SimpleStoreVO().setSellerId(store.getSellerId())
+      .setStoreId(store.getId())
+      .setStoreName(store.getName())
+      .setStoreTelephone(store.getTelephone())
+      .setStoreEmail(store.getEmail())
+      .setStatus(store.getStatus());
+  }
 
   public Long getStoreId() {
     return storeId;

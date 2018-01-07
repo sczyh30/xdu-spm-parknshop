@@ -50,6 +50,7 @@ public final class ErrorConstants {
   // Refund exception: 4650 - 4659
   public static final int REFUND_ALREADY_STARTED = 4650;
   public static final int REFUND_ALREADY_COMPLETED = 4651;
+  public static final int REFUND_INVALID_OPERATION = 4652;
   public static final int REFUND_NOT_EXIST = 4654;
 
   // Order exception: 47xx

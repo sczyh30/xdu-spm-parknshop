@@ -10,14 +10,18 @@ import io.spm.parknshop.order.domain.OrderStatus;
 import io.spm.parknshop.order.service.OrderStatusService;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.service.ProductService;
+import io.spm.parknshop.user.domain.User;
+import io.spm.parknshop.user.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
@@ -32,6 +36,8 @@ public class CommentServiceImpl implements CommentService {
 
   @Autowired
   private CommentRepository commentRepository;
+  @Autowired
+  private UserRepository userRepository;
 
   @Autowired
   private ProductService productService;
@@ -74,6 +80,16 @@ public class CommentServiceImpl implements CommentService {
         .setParentId(ROOT_PARENT)
         .setUserId(userId)
       );
+  }
+
+  @Override
+  public Mono<Boolean> canComment(Long userId, Long productId) {
+    return orderStatusService.getProductBuyStatusForUser(userId, productId)
+      .filter(s -> s == OrderStatus.COMPLETED)
+      .flatMap(v -> async(() -> commentRepository.findCommentByUserForProduct(userId, productId)))
+      .filter(opt -> !opt.isPresent())
+      .map(v -> true)
+      .switchIfEmpty(Mono.just(false));
   }
 
   private Mono<?> checkAllowNewComment(/*@NonNull*/ Long userId, /*@NonNull*/ Long productId) {
@@ -146,7 +162,7 @@ public class CommentServiceImpl implements CommentService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return async(() -> commentRepository.findById(id))
+    return async(() -> commentRepository.findById(id).map(this::wrapWithUser))
       .filter(Optional::isPresent)
       .map(Optional::get)
       .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.COMMENT_NOT_EXIST, "Comment does not exist")));
@@ -157,7 +173,16 @@ public class CommentServiceImpl implements CommentService {
     if (Objects.isNull(userId) || userId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("userId"));
     }
-    return asyncIterable(() -> commentRepository.getByUserId(userId));
+    return asyncIterable(() -> commentRepository.getByUserId(userId).stream()
+      .map(this::wrapWithUser)
+      .collect(Collectors.toList())
+    );
+  }
+
+  @Transactional
+  protected Comment wrapWithUser(Comment comment) {
+    User user = userRepository.findById(comment.getUserId()).orElse(User.deletedUser(comment.getUserId()));
+    return comment.setUserShowName(user.getUsername()).setUserType(user.getUserType());
   }
 
   @Override
@@ -165,7 +190,10 @@ public class CommentServiceImpl implements CommentService {
     if (Objects.isNull(productId) || productId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("productId"));
     }
-    return asyncIterable(() -> commentRepository.getByProductId(productId));
+    return asyncIterable(() -> commentRepository.getByProductId(productId).stream()
+      .map(this::wrapWithUser)
+      .collect(Collectors.toList())
+    );
   }
 
   @Override
@@ -173,7 +201,10 @@ public class CommentServiceImpl implements CommentService {
     if (Objects.isNull(parentId) || parentId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("parentId"));
     }
-    return asyncIterable(() -> commentRepository.getByParentId(parentId));
+    return asyncIterable(() -> commentRepository.getByParentId(parentId).stream()
+      .map(this::wrapWithUser)
+      .collect(Collectors.toList())
+    );
   }
 
   @Override

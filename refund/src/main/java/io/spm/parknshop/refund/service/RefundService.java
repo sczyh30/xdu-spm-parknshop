@@ -13,7 +13,7 @@ public interface RefundService {
 
   Mono<Long> rejectRefundRequest(Long id, String responseComment);
 
-  Mono<RefundRecord> saveRefundCompleteInfo(Long refundId, PaymentRefundResult refundResult);
+  Mono<RefundRecord> startRefundProcess(Long refundId);
 
   Mono<Long> withdrawRefundRequest(Long id);
 }

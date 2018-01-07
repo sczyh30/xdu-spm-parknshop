@@ -3,8 +3,10 @@ package io.spm.parknshop.order.repository;
 import io.spm.parknshop.order.domain.OrderProduct;
 import io.spm.parknshop.order.domain.SubOrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,4 +29,9 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
 
   @Query(value = "SELECT id FROM order_product WHERE id = ?1 AND status = " + SubOrderStatus.ALREADY_REFUND, nativeQuery = true)
   Optional<Long> checkCanRefund(long subOrderId);
+
+  @Query(value = "UPDATE order_product SET status = ?2 WHERE id = ?1", nativeQuery = true)
+  @Modifying
+  @Transactional
+  void updateStatus(long subOrderId, int status);
 }

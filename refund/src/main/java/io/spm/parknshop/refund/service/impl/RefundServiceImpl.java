@@ -4,9 +4,11 @@ import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.domain.OrderProduct;
+import io.spm.parknshop.order.domain.SubOrderStatus;
 import io.spm.parknshop.order.repository.OrderProductRepository;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.payment.domain.PaymentRefundResult;
+import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.refund.domain.RefundRecord;
 import io.spm.parknshop.refund.domain.RefundStatus;
 import io.spm.parknshop.refund.repository.RefundRecordRepository;
@@ -42,8 +44,39 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
   @Autowired
   private OrderProductRepository orderProductRepository;
 
+  @Autowired
+  private PaymentService paymentService;
+
   @Override
-  public Mono<RefundRecord> saveRefundCompleteInfo(Long refundId, PaymentRefundResult refundResult) {
+  public Mono<RefundRecord> startRefundProcess(Long refundId) {
+    if (Objects.isNull(refundId) || refundId <= 0) {
+      return Mono.error(ExceptionUtils.invalidParam("bad refund request"));
+    }
+    return getRefundRecordById(refundId)
+      .flatMap(this::checkProcessRefundStatus)
+      .flatMap(refundRecord -> paymentService.processRefund(refundRecord.getBuyPaymentId(), generateRefundNo(refundRecord),
+        refundRecord.getRefundAmount(), refundRecord.getStoreId()))
+      .flatMap(refundResult -> saveRefundCompleteInfo(refundId, refundResult))
+      .flatMap(this::saveSubOrderRefundStatus);
+  }
+
+  private Mono<RefundRecord> saveSubOrderRefundStatus(RefundRecord refundRecord) {
+    return asyncExecute(() -> orderProductRepository.updateStatus(refundRecord.getSubOrderId(), SubOrderStatus.ALREADY_REFUND))
+      .map(e -> refundRecord);
+  }
+
+  private Mono<RefundRecord> checkProcessRefundStatus(RefundRecord refundRecord) {
+    if (refundRecord.getRefundStatus() != RefundStatus.APPROVED_WAIT_RETURN) {
+      return Mono.error(new ServiceException(REFUND_INVALID_OPERATION, "Invalid refund operation"));
+    }
+    return Mono.just(refundRecord);
+  }
+
+  private String generateRefundNo(RefundRecord refundRecord) {
+    return String.format("RF%10d%08d%08d", System.currentTimeMillis(), refundRecord.getOrderId(), refundRecord.getSubOrderId());
+  }
+
+  private Mono<RefundRecord> saveRefundCompleteInfo(Long refundId, PaymentRefundResult refundResult) {
     if (Objects.isNull(refundId) || refundId <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("bad refund request"));
     }

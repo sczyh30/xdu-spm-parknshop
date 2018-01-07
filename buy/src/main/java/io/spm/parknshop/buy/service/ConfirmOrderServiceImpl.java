@@ -128,7 +128,7 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
       .flatMap(v -> retrieveAndCheckAddress(requestDO.getAddressId()))
       .flatMap(address -> previewOrder(userId)
         .flatMap(orderPreview -> checkOrderPreview(orderPreview)
-          .map(v -> processInventory(orderPreview))
+          .flatMap(v -> processInventory(orderPreview))
           .map(v -> wrapRpcMessage(address, orderPreview, userId))
           .flatMap(tradeService::dispatchAndProcessOrder)
           .flatMap(result -> clearCart(userId).map(e -> result))

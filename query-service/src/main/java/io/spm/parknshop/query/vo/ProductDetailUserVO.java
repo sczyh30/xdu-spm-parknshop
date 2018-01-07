@@ -8,6 +8,16 @@ public class ProductDetailUserVO {
   private boolean inFavorite;
   private boolean commented;
 
+  public ProductDetailUserVO() {
+  }
+
+  public ProductDetailUserVO(Long userId, Long productId, boolean inFavorite, boolean commented) {
+    this.userId = userId;
+    this.productId = productId;
+    this.inFavorite = inFavorite;
+    this.commented = commented;
+  }
+
   public Long getUserId() {
     return userId;
   }

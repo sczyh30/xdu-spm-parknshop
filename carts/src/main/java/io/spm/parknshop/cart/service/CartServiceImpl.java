@@ -96,10 +96,11 @@ public class CartServiceImpl implements CartService {
   private Mono<ShoppingCart> addCart(Long userId, CartEvent cartEvent) {
     return checkParams(userId, cartEvent)
       .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.ADD_CART))
-      .flatMap(v -> checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount()))
       .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.plusAmount(cartEvent.getAmount()).setChecked(true))
-        .switchIfEmpty(newCreated(cartEvent))
+        .flatMap(cartProduct -> checkProductInventory(cartEvent.getProductId(), cartProduct.getAmount()).map(e -> cartProduct))
+        .switchIfEmpty(checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount())
+          .flatMap(v2 -> newCreated(cartEvent)))
         .flatMap(e -> cartRepository.putCartProduct(userId, e))
         .flatMap(e -> getCartForUser(userId))
       );
@@ -165,7 +166,7 @@ public class CartServiceImpl implements CartService {
       .map(product -> new CartProduct().setProductId(simpleProduct.getId())
         .setAmount(simpleProduct.getAmount())
         .setProduct(product)
-        .setChecked(simpleProduct.isChecked())
+        .setChecked(product.getInventory() >= simpleProduct.getAmount() && simpleProduct.isChecked())
       );
   }
 

@@ -6,6 +6,7 @@ import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.payment.domain.PaymentRecord;
+import io.spm.parknshop.payment.domain.PaymentRefundResult;
 import io.spm.parknshop.payment.domain.PaymentStatus;
 import io.spm.parknshop.payment.domain.PaymentMethod;
 import io.spm.parknshop.payment.domain.PaymentType;
@@ -144,7 +145,18 @@ public class PaymentServiceImpl implements PaymentService {
     return async(() -> paymentRecordRepository.save(record.setStatus(PaymentStatus.CANCELED).setGmtModified(new Date())));
   }
 
-  public Mono<?> processRefund(Long paymentId, String outerPaymentId, String refundId) {
-    return Mono.empty();
+  @Override
+  public Mono<PaymentRefundResult> processRefund(String paymentId, String refundTradeNo, double amount, Long storeId) {
+    return getPaymentById(Long.valueOf(paymentId))
+      .flatMap(record -> {
+        switch (record.getPaymentType()) {
+          case PaymentMethod.WECHAT_PAY:
+          case PaymentMethod.ALIPAY:
+            return alipayService.processRefund(paymentId, record.getPaymentId(), amount, "Refund of product",
+              refundTradeNo, storeId.toString());
+          default:
+            return Mono.error(new ServiceException(UNKNOWN_PAYMENT_TYPE, "Unknown payment type"));
+        }
+      });
   }
 }

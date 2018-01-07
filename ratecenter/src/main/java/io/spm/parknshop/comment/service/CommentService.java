@@ -16,6 +16,8 @@ public interface CommentService {
 
   Mono<Comment> addCommentOrReply(Long userId, CommentDTO comment);
 
+  Mono<Boolean> canComment(Long userId, Long productId);
+
   Mono<Comment> getById(Long id);
 
   Flux<Comment> getCommentsByUser(Long userId);
