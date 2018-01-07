@@ -43,6 +43,7 @@
     <module>trade-common</module>
     <module>tradecenter</module>
     <module>payment</module>
+    <module>refund</module>
     <module>admincenter</module>
     <module>order</module>
     <module>favorite</module>

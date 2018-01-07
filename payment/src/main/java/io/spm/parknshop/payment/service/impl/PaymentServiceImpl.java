@@ -2,7 +2,6 @@ package io.spm.parknshop.payment.service.impl;
 
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
-import io.spm.parknshop.notify.service.NotifyService;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.order.service.OrderService;
@@ -10,7 +9,9 @@ import io.spm.parknshop.payment.domain.PaymentRecord;
 import io.spm.parknshop.payment.domain.PaymentStatus;
 import io.spm.parknshop.payment.domain.PaymentMethod;
 import io.spm.parknshop.payment.domain.PaymentType;
+import io.spm.parknshop.payment.domain.TransferTransactionRecord;
 import io.spm.parknshop.payment.repository.PaymentRecordRepository;
+import io.spm.parknshop.payment.repository.TransferTransactionRepository;
 import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.trade.domain.PaymentRedirectData;
 import io.spm.parknshop.trade.domain.PaymentResult;
@@ -25,6 +26,9 @@ import java.util.Optional;
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
 
+/**
+ * @author Eric Zhao
+ */
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -32,18 +36,19 @@ public class PaymentServiceImpl implements PaymentService {
   private PaymentRecordRepository paymentRecordRepository;
   @Autowired
   private OrderRepository orderRepository;
+  @Autowired
+  private TransferTransactionRepository transferTransactionRepository;
 
   @Autowired
   private AlipayService alipayService;
   @Autowired
   private OrderService orderService;
-  @Autowired
-  private NotifyService notifyService;
 
   @Override
   public Mono<PaymentRecord> createPaymentRecord(double totalAmount) {
-    // TODO: check params.
-    // TODO: No default type
+    if (totalAmount < 0) {
+      return Mono.error(ExceptionUtils.invalidParam("fund amount"));
+    }
     PaymentRecord record = new PaymentRecord().setStatus(PaymentStatus.NEW_CREATED)
       .setPaymentType(PaymentMethod.ALIPAY).setTotalAmount(totalAmount);
     return async(() -> paymentRecordRepository.save(record));
@@ -118,6 +123,18 @@ public class PaymentServiceImpl implements PaymentService {
             return Mono.error(new ServiceException(UNKNOWN_PAYMENT_TYPE, "Unknown payment type"));
         }
       });
+  }
+
+  @Override
+  public Mono<TransferTransactionRecord> transferMoney(Long storeId, Long orderId, String alipayAccount, double amount) {
+    String transferBusinessNo = String.format("S-TF-P-%10d%08d%08d", System.currentTimeMillis(), storeId, orderId);
+    return alipayService.processTransfer(transferBusinessNo, alipayAccount, amount)
+      .map(result -> new TransferTransactionRecord().setId(transferBusinessNo).setOrderId(orderId).setStoreId(storeId).setPayeeAccount(alipayAccount).setTransactionNo(result.getTransferTransactionId()).setAmount(amount))
+      .flatMap(this::insertNewTransferRecord);
+  }
+
+  private Mono<TransferTransactionRecord> insertNewTransferRecord(TransferTransactionRecord record) {
+    return async(() -> transferTransactionRepository.save(record));
   }
 
   private Mono<PaymentRecord> cancelStatusInternal(PaymentRecord record) {

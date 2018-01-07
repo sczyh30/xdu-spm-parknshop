@@ -27,6 +27,7 @@ public final class ErrorConstants {
   public static final int STORE_NOT_EXIST = 4043;
   public static final int APPLY_NOT_EXIST = 4045;
   public static final int ORDER_NOT_EXIST = 4046;
+  public static final int SUB_ORDER_NOT_EXIST = 40462;
   public static final int PAYMENT_NOT_EXIST = 4047;
   public static final int AD_NOT_EXIST = 4048;
 
@@ -43,6 +44,13 @@ public final class ErrorConstants {
   public static final int UNKNOWN_PAYMENT_TYPE = 4622;
   public static final int PAYMENT_CANNOT_CALL_PAY_INTERFACE = 4623;
   public static final int PAYMENT_CANCEL_PAY_FAIL = 4624;
+  public static final int PAYMENT_REFUND_FAIL = 4625;
+  public static final int PAYMENT_TRANSFER_TRANSACTION_FAIL = 4626;
+
+  // Refund exception: 4650 - 4659
+  public static final int REFUND_ALREADY_STARTED = 4650;
+  public static final int REFUND_ALREADY_COMPLETED = 4651;
+  public static final int REFUND_NOT_EXIST = 4654;
 
   // Order exception: 47xx
   public static final int ORDER_UNEXPECTED_DATA = 4701;

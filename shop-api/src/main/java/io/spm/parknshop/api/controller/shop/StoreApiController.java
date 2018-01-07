@@ -1,4 +1,4 @@
-package io.spm.parknshop.api.controller;
+package io.spm.parknshop.api.controller.shop;
 
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.domain.ProductVO;
@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+/**
+ * @author Eric Zhao
+ */
 @RestController
 @RequestMapping("/api/v1/")
 public class StoreApiController {

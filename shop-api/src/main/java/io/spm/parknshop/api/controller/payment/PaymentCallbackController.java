@@ -26,7 +26,7 @@ public class PaymentCallbackController {
   @ResponseBody
   @GetMapping("/buy/notify_callback")
   public Mono<?> buyPayNotifyCallback(ServerWebExchange exchange, @RequestParam("trade_no") String outerPaymentId,
-                                   @RequestParam("out_trade_no") String shopPayment) {
+                                      @RequestParam("out_trade_no") String shopPayment) {
     exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/buy/finish_buy?tradeId=" + shopPayment);
     exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
     Long shopPaymentId = Long.valueOf(shopPayment);
@@ -36,11 +36,15 @@ public class PaymentCallbackController {
   @ResponseBody
   @GetMapping("/ad/notify_callback")
   public Mono<?> adPayNotifyCallback(ServerWebExchange exchange, @RequestParam("trade_no") String outerPaymentId,
-                                      @RequestParam("out_trade_no") String adPayment) {
-    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4012/#/ad/finish_pay?tradeId=" + adPayment);
-    exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
+                                     @RequestParam("out_trade_no") String adPayment) {
+
     Long adPaymentId = Long.valueOf(adPayment);
-    return advertisementWorkflowService.finishPay(adPaymentId, outerPaymentId);
+    return advertisementWorkflowService.finishPay(adPaymentId, outerPaymentId)
+      .map(advertisement -> {
+        exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4012/#/ad/finish_pay?tradeId=" + outerPaymentId + "&adId=" + advertisement.getId());
+        exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
+        return advertisement;
+      });
   }
 
   @ResponseBody

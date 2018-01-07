@@ -9,6 +9,8 @@ import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.google.gson.JsonObject;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.payment.config.AlipayConfig;
+import io.spm.parknshop.payment.domain.PaymentRefundResult;
+import io.spm.parknshop.payment.domain.PaymentTransferResult;
 import io.spm.parknshop.trade.domain.PaymentResult;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -91,12 +93,12 @@ public class AlipayService {
       });
   }
 
-  public Mono<PaymentResult> processRefund(Long paymentId, String alipayTradeNo, double refundAmount, String refundReason,
-                                           String outRefundRequestNo, String storeId) {
+  public Mono<PaymentRefundResult> processRefund(String originalPaymentId, String alipayTradeNo, double refundAmount, String refundReason,
+                                                 String outRefundRequestNo, String storeId) {
     AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
 
     JsonObject bizObj = new JsonObject();
-    bizObj.addProperty("out_trade_no", paymentId.toString());
+    bizObj.addProperty("out_trade_no", originalPaymentId);
     bizObj.addProperty("trade_no", alipayTradeNo);
     bizObj.addProperty("refund_amount", refundAmount);
     bizObj.addProperty("refund_reason", refundReason);
@@ -107,14 +109,15 @@ public class AlipayService {
     return async(() -> alipayClient.execute(request))
       .flatMap(response -> {
         if (response.isSuccess()) {
-          return Mono.just(new PaymentResult(ALIPAY_SUCCESS_CODE, response.getMsg()));
+          return Mono.just(new PaymentRefundResult(response.getTradeNo(), response.getOutTradeNo(),
+            outRefundRequestNo, Double.valueOf(response.getRefundFee())).setChanged(response.getFundChange().equals("Y")));
         } else {
-          return Mono.error(new ServiceException(PAYMENT_CANCEL_PAY_FAIL, "Refund fail: " + response.getMsg()));
+          return Mono.error(new ServiceException(PAYMENT_REFUND_FAIL, "Refund fail: " + response.getMsg()));
         }
       });
   }
 
-  public Mono<PaymentResult> processTransfer(String transferBizNo, String alipayAccount, double amount) {
+  public Mono<PaymentTransferResult> processTransfer(String transferBizNo, String alipayAccount, double amount) {
     AlipayFundTransToaccountTransferRequest request = new AlipayFundTransToaccountTransferRequest();
 
     JsonObject bizObj = new JsonObject();
@@ -123,15 +126,15 @@ public class AlipayService {
     bizObj.addProperty("payee_account", alipayAccount);
     bizObj.addProperty("amount", String.valueOf(amount));
     bizObj.addProperty("payer_show_name", "PARKnSHOP.com");
-    bizObj.addProperty("remark", String.format("HK$%.2d sales money from PARKnSHOP.com", amount));
+    bizObj.addProperty("remark", String.format("HK$%.2f sales money from PARKnSHOP.com", amount));
     request.setBizContent(bizObj.toString());
     //请求
     return async(() -> alipayClient.execute(request))
       .flatMap(response -> {
         if (response.isSuccess()) {
-          return Mono.just(new PaymentResult(ALIPAY_SUCCESS_CODE, response.getMsg()));
+          return Mono.just(new PaymentTransferResult().setTransferTransactionId(response.getOrderId()));
         } else {
-          return Mono.error(new ServiceException(PAYMENT_CANCEL_PAY_FAIL, "Refund fail: " + response.getMsg()));
+          return Mono.error(new ServiceException(PAYMENT_TRANSFER_TRANSACTION_FAIL, "Transfer tranaction fail: " + response.getMsg()));
         }
       });
   }
