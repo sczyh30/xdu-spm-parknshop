@@ -163,6 +163,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   }
 
   private Advertisement wrapWithPayment(Advertisement ad, PaymentRecord paymentRecord) {
+    System.out.println(paymentRecord);
     return ad.setPaymentId(paymentRecord.getId());
   }
 
@@ -233,12 +234,10 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
     return ApplyProcessorRoles.checkSellerId(proposerId);
   }
 
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
-
   private Mono<Apply> getAdApplyByPaymentId(long paymentId) {
-    return async(() -> Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM apply_metadata WHERE ad_payment_virtual = ?", Apply.class, new Object[] { paymentId })))
+    return async(() -> applyMetadataRepository.getAdApplyByPaymentId(paymentId))
       .filter(Optional::isPresent)
       .map(Optional::get);
+    //TODO: error handle.
   }
 }

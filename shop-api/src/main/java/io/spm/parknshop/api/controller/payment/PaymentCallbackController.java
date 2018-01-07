@@ -37,7 +37,7 @@ public class PaymentCallbackController {
   @GetMapping("/ad/notify_callback")
   public Mono<?> adPayNotifyCallback(ServerWebExchange exchange, @RequestParam("trade_no") String outerPaymentId,
                                       @RequestParam("out_trade_no") String adPayment) {
-    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/ad/finish_pay?tradeId=" + adPayment);
+    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4012/#/ad/finish_pay?tradeId=" + adPayment);
     exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
     Long adPaymentId = Long.valueOf(adPayment);
     return advertisementWorkflowService.finishPay(adPaymentId, outerPaymentId);
