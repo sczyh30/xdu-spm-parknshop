@@ -25,7 +25,7 @@ public class OrderProduct {
   private Double unitPrice;
   private Double totalPrice;
 
-  private Integer status;
+  private int status;
 
   @Transient
   private Integer productStatus;
@@ -95,11 +95,11 @@ public class OrderProduct {
     return this;
   }
 
-  public Integer getStatus() {
+  public int getStatus() {
     return status;
   }
 
-  public OrderProduct setStatus(Integer status) {
+  public OrderProduct setStatus(int status) {
     this.status = status;
     return this;
   }

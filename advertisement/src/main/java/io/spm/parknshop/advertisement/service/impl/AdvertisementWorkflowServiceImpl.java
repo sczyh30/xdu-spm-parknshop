@@ -163,7 +163,6 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   }
 
   private Advertisement wrapWithPayment(Advertisement ad, PaymentRecord paymentRecord) {
-    System.out.println(paymentRecord);
     return ad.setPaymentId(paymentRecord.getId());
   }
 
@@ -183,7 +182,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   @Override
   public Mono<PaymentRedirectData> startPay(Long applyId) {
     return extractPaymentId(applyId)
-      .flatMap(paymentId -> paymentService.startPayment(paymentId, PaymentMethod.ALIPAY, PaymentType.BUY_PAY));
+      .flatMap(paymentId -> paymentService.startPayment(paymentId, PaymentMethod.ALIPAY, PaymentType.AD_PAY));
   }
 
   @Override
@@ -193,10 +192,6 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
       .flatMap(v -> applyDataService.performApplyTransform(apply.getId(), AdApplyEventType.FINISH_PAY, apply.getProposerId(), new ApplyResult().setMessage("Payment ID: " + outerPaymentId), applyEventAggregator))
           .flatMap(v -> addAdvertisement(apply)
       ));
-    /*return applyDataService.getApplyById(applyId)
-      .flatMap(apply -> applyDataService.performApplyTransform(applyId, AdApplyEventType.FINISH_PAY, apply.getProposerId(), new ApplyResult().setMessage("Payment ID: " + outerPaymentId), applyEventAggregator)
-        .flatMap(v -> addAdvertisement(apply))
-      );*/
   }
 
   private Mono<Advertisement> addAdvertisement(Apply apply) {
@@ -237,7 +232,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   private Mono<Apply> getAdApplyByPaymentId(long paymentId) {
     return async(() -> applyMetadataRepository.getAdApplyByPaymentId(paymentId))
       .filter(Optional::isPresent)
-      .map(Optional::get);
-    //TODO: error handle.
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(UNKNOWN_PAYMENT_TYPE, "Bad payment")));
   }
 }

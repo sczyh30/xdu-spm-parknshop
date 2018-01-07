@@ -127,7 +127,7 @@ public class TradeServiceImpl implements TradeService {
   @Transactional
   protected void recoverInventoryInternal(long orderId) {
     List<OrderProduct> orderProducts = orderProductRepository.getByOrderId(orderId).stream()
-      .filter(e -> e.getStatus().equals(0)) // Filter the available products
+      .filter(e -> e.getProductStatus().equals(0)) // Filter the available products
       .collect(Collectors.toList());
     for (OrderProduct product : orderProducts) {
       inventoryRepository.addAmount(product.getId(), product.getAmount());
