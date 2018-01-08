@@ -26,6 +26,9 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
   @Query(value = "SELECT * FROM advertisement WHERE start_date >= ?1 AND end_date <= ?2", nativeQuery = true)
   List<Advertisement> getBetweenDateRange(Date from, Date to);
 
+  @Query(value = "SELECT * FROM advertisement WHERE advertisement.gmt_modified BETWEEN ?1 AND DATE_ADD(?2, INTERVAL 1 DAY)", nativeQuery = true)
+  List<Advertisement> getBetweenCreateDateRange(Date from, Date to);
+
   @Query(value = "SELECT a.* FROM advertisement a, product b WHERE a.start_date <= now() AND a.end_date >= now() AND a.ad_type = " + AdType.AD_PRODUCT + " AND a.ad_target = b.id AND b.status = 0 LIMIT 10", nativeQuery = true)
   List<Advertisement> getPresentProductAd();
 

@@ -53,6 +53,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Query(value = "SELECT * FROM order_metadata WHERE store_id = ?1 AND order_status = " + OrderStatus.COMPLETED + " AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY) ORDER BY id DESC", nativeQuery = true)
   List<Order> getFinishedByStoreIdBetween(long storeId, Date start, Date end);
 
+  @Query(value = "SELECT * FROM order_metadata WHERE order_status IN (5, 6) ORDER BY id DESC", nativeQuery = true)
+  List<Order> getFinishedAll();
+
+  @Query(value = "SELECT * FROM order_metadata WHERE order_status = " + OrderStatus.COMPLETED + " AND gmt_create BETWEEN ?1 AND DATE_ADD(?2, INTERVAL 1 DAY) ORDER BY id DESC", nativeQuery = true)
+  List<Order> getFinishedAllBetween(Date start, Date end);
+
   List<Order> getByStoreIdAndOrderStatus(long storeId, int status);
 
   List<Order> getByPaymentId(long paymentId);
@@ -62,21 +68,27 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Query(value = "SELECT SUM(final_total_price * commission_snapshot) FROM order_metadata WHERE order_status BETWEEN 1 AND 6", nativeQuery = true)
   Double getAllSaleProfit();
 
-  @Query(value = "SELECT SUM(b.total_price) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status = " + SubOrderStatus.NORMAL, nativeQuery = true)
+  @Query(value = "SELECT SUM(b.total_price) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status  IN (0, 4) ", nativeQuery = true)
   Double getTotalRawSaleIncomeForStore(long storeId);
 
-  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status = " + SubOrderStatus.NORMAL, nativeQuery = true)
+  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status IN (0, 4)", nativeQuery = true)
   Double getTotalProfitForStore(long storeId);
 
-  @Query(value = "SELECT SUM(b.total_price) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status = " + SubOrderStatus.NORMAL + " AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY)", nativeQuery = true)
+  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status IN (0, 4)", nativeQuery = true)
+  Double getTotalProfit();
+
+  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status IN (0, 4) AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY)", nativeQuery = true)
+  Double getTotalProfitBetween(Date from, Date to);
+
+  @Query(value = "SELECT SUM(b.total_price) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status IN (0, 4) AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY)", nativeQuery = true)
   Double getRawSaleIncomeForStoreBetween(long storeId, Date from, Date to);
 
-  @Query(value = "SELECT SUM(b.total_price) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status = " + SubOrderStatus.NORMAL + " AND gmt_create BETWEEN ?2 AND DATE_ADD(?2, INTERVAL 1 DAY)", nativeQuery = true)
+  @Query(value = "SELECT SUM(b.total_price) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status IN (0, 4)  AND gmt_create BETWEEN ?2 AND DATE_ADD(?2, INTERVAL 1 DAY)", nativeQuery = true)
   Double getRawSaleIncomeForStoreAtDate(long storeId, Date date);
 
-  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status = " + SubOrderStatus.NORMAL + " AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY)", nativeQuery = true)
+  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status IN (0, 4) AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY)", nativeQuery = true)
   Double getProfitForStoreBetween(long storeId, Date from, Date to);
 
-  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status = " + SubOrderStatus.NORMAL + " AND gmt_create BETWEEN ?2 AND DATE_ADD(?2, INTERVAL 1 DAY)", nativeQuery = true)
+  @Query(value = "SELECT SUM(b.total_price * (100 - a.commission_snapshot) / 100) FROM order_metadata a, order_product b WHERE a.store_id = ?1 AND a.order_status = " + OrderStatus.COMPLETED + " AND a.id = b.order_id AND b.status  IN (0, 4)  AND gmt_create BETWEEN ?2 AND DATE_ADD(?2, INTERVAL 1 DAY)", nativeQuery = true)
   Double getProfitForStoreAtDate(long storeId, Date date);
 }

@@ -95,6 +95,20 @@ public class OrderQueryRepository {
   }
 
   @Transactional(readOnly = true)
+  public List<OrderVO> queryFinishedOrder() {
+    return orderRepository.getFinishedAll().stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public List<OrderVO> queryFinishedOrderBetween(Date start, Date end) {
+    return orderRepository.getFinishedAllBetween(start, end).stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
   public List<OrderVO> queryFinishedOrderByStore(long storeId) {
     return orderRepository.getFinishedByStoreId(storeId).stream()
       .map(this::buildOrderVO)
