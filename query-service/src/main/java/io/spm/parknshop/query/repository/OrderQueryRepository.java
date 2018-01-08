@@ -81,6 +81,20 @@ public class OrderQueryRepository {
   }
 
   @Transactional(readOnly = true)
+  public List<OrderVO> queryAllOrders() {
+    return orderRepository.getAll().stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public List<OrderVO> queryAllOrderBetween(Date from, Date to) {
+    return orderRepository.getAllBetween(from, to).stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
   public List<OrderVO> queryPaidOrderByStore(long storeId) {
     return orderRepository.getPaidByStoreId(storeId).stream()
       .map(this::buildOrderVO)

@@ -64,10 +64,10 @@ public class AdPageQueryServiceImpl implements AdPageQueryService {
     switch (advertisement.getAdType()) {
       case AdType.AD_PRODUCT:
         return getProductAdvertisement(advertisement.getAdTarget(), advertisement.getAdOwner())
-          .map(e -> e.setAd(advertisement));
+          .map(e -> e.setAd(advertisement).setStoreName(e.getStore().getName()));
       case AdType.AD_STORE:
         return getShopAdvertisement(advertisement.getAdTarget(), advertisement.getAdOwner())
-          .map(e -> e.setAd(advertisement));
+          .map(e -> e.setAd(advertisement).setStoreName(e.getStore().getName()));
       default:
         return Mono.error(new ServiceException(AD_UNKNOWN_TYPE, "Unknown advertisement type"));
     }

@@ -67,29 +67,23 @@ public class AppIncomeService {
     }
     return async(() -> {
       List<Advertisement> advertisements = advertisementRepository.getBetweenCreateDateRange(start, end);
-      double totalOrderProfit = Optional.ofNullable(orderRepository.getTotalProfitBetween(start, end)).orElse(0d);
       List<OrderVO> orderList = orderQueryRepository.queryFinishedOrderBetween(start, end);
-      double totalProfit = totalOrderProfit + advertisements.stream()
-        .mapToDouble(Advertisement::getAdTotalPrice)
-        .sum();
       List<AppIncomeItem> items = new ArrayList<>();
       advertisements.forEach(e -> items.add(wrapToIncome(e)));
       orderList.forEach(e -> items.add(wrapToIncome(e)));
-      return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit);
+      double totalProfit = items.stream().mapToDouble(AppIncomeItem::getProfit).sum();
+      return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit).setStart(start).setEnd(end);
     });
   }
 
   public Mono<AppIncomeVO> getTotalWebsiteIncome() {
     return async(() -> {
       List<Advertisement> advertisements = advertisementRepository.findAll();
-      double totalOrderProfit = Optional.ofNullable(orderRepository.getTotalProfit()).orElse(0d);
       List<OrderVO> orderList = orderQueryRepository.queryFinishedOrder();
-      double totalProfit = totalOrderProfit + advertisements.stream()
-        .mapToDouble(Advertisement::getAdTotalPrice)
-        .sum();
       List<AppIncomeItem> items = new ArrayList<>();
       advertisements.forEach(e -> items.add(wrapToIncome(e)));
       orderList.forEach(e -> items.add(wrapToIncome(e)));
+      double totalProfit = items.stream().mapToDouble(AppIncomeItem::getProfit).sum();
       return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit);
     });
   }
@@ -104,7 +98,7 @@ public class AppIncomeService {
     double totalPrice = orderVO.getProducts().stream()
       .filter(e -> e.getStatus() != SubOrderStatus.ALREADY_REFUND)
       .mapToDouble(OrderProduct::getTotalPrice)
-      .sum() * (100 - orderVO.getOrder().getCommissionSnapshot()) / 100.0;
+      .sum() * orderVO.getOrder().getCommissionSnapshot() / 100.0;
     return new AppIncomeItem().setProfit(totalPrice)
       .setType(BUY).setTargetId(orderVO.getId()).setTargetObj(orderVO)
       .setStore(querySimpleStoreVOBySellerId(orderVO.getStore().getSellerId()));

@@ -1,7 +1,6 @@
 package io.spm.parknshop.query.service.impl;
 
 import io.spm.parknshop.common.auth.AuthRoles;
-import io.spm.parknshop.configcenter.service.GlobalConfigService;
 import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.query.vo.AdminDashboardVO;
 import io.spm.parknshop.user.repository.UserRepository;
@@ -20,16 +19,15 @@ public class AdminDashboardQueryService {
   private OrderRepository orderRepository;
 
   @Autowired
-  private GlobalConfigService globalConfigService;
+  private AppIncomeService appIncomeService;
 
   public Mono<AdminDashboardVO> getDashboardData() {
     return async(() -> {
-      double profit = orderRepository.getAllSaleProfit() / 100.0d;
       long customerCount = userRepository.countByUserType(AuthRoles.CUSTOMER);
       long sellerCount = userRepository.countByUserType(AuthRoles.SELLER);
       long orderCount = orderRepository.count();
-      return new AdminDashboardVO().setTotalProfit(profit).setTotalCustomerAmount(customerCount)
+      return new AdminDashboardVO().setTotalCustomerAmount(customerCount)
         .setTotalSellerAmount(sellerCount).setTotalOrderAmount(orderCount);
-    });
+    }).flatMap(e -> appIncomeService.getTotalWebsiteIncome().map(c -> e.setTotalProfit(c.getTotalProfit())));
   }
 }

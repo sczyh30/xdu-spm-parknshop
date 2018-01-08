@@ -81,4 +81,35 @@ public class OrderQueryApiController {
     return orderQueryService.queryOrderById(id);
   }
 
+  @GetMapping("/order/query/simple/all")
+  public Publisher<OrderVO> apiQueryAllOrders(ServerWebExchange exchange) {
+    return orderQueryService.queryAllOrders();
+  }
+
+  @GetMapping("/order/query/simple/all/range")
+  public Publisher<OrderVO> apiQueryOrdersBetween(@RequestParam(name = "from") Long from, @RequestParam(name = "to") Long to, ServerWebExchange exchange) {
+    return orderQueryService.queryAllOrdersBetween(new Date(from), new Date(to));
+  }
+
+
+  @GetMapping("/order/query/simple/all/daily")
+  public Publisher<OrderVO> apiQueryOrdersDaily(ServerWebExchange exchange) {
+    return orderQueryService.queryAllOrdersDaily();
+  }
+
+  @GetMapping("/order/query/simple/all/weekly")
+  public Publisher<OrderVO> apiQueryOrdersWeekly(ServerWebExchange exchange) {
+    return orderQueryService.queryAllOrdersWeekly();
+  }
+
+  @GetMapping("/order/query/simple/all/monthly")
+  public Publisher<OrderVO> apiQueryAllOrdersMonthly(ServerWebExchange exchange) {
+    return orderQueryService.queryAllOrdersMonthly();
+  }
+
+  @GetMapping("/order/query/simple/all/yearly")
+  public Publisher<OrderVO> apiQueryAllOrdersByYearly(ServerWebExchange exchange) {
+    return orderQueryService.queryAllOrdersYearly();
+  }
+
 }

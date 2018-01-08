@@ -34,7 +34,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   List<Order> getByCreatorIdOrderByIdDesc(long creatorId);
 
-  @Query(value = "SELECT * FROM order_metadata WHERE creator_id = ?1 AND gmt_create BETWEEN ?2 AND DATE_ADD(?3, INTERVAL 1 DAY) ORDER BY id DESC", nativeQuery = true)
+  @Query(value = "SELECT * FROM order_metadata WHERE gmt_create BETWEEN ?1 AND DATE_ADD(?2, INTERVAL 1 DAY) ORDER BY id DESC", nativeQuery = true)
+  List<Order> getAllBetween(Date start, Date end);
+
+  @Query(value = "SELECT * FROM order_metadata ORDER BY id DESC", nativeQuery = true)
+  List<Order> getAll();
+
+  @Query(value = "SELECT * FROM order_metadata ORDER BY id DESC", nativeQuery = true)
   List<Order> getByCreatorIdBetween(long creatorId, Date start, Date end);
 
   List<Order> getByCreatorIdAndOrderStatus(long creatorId, int status);

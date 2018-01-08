@@ -129,4 +129,34 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     return asyncIterable(() -> orderEventRepository.getByOrderId(orderId))
       .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.ORDER_NOT_EXIST, "Order does not exist")));
   }
+
+  @Override
+  public Flux<OrderVO> queryAllOrders() {
+    return asyncIterable(() -> orderQueryRepository.queryAllOrders());
+  }
+
+  @Override
+  public Flux<OrderVO> queryAllOrdersBetween(Date start, Date end) {
+    return asyncIterable(() -> orderQueryRepository.queryAllOrderBetween(start, end));
+  }
+
+  @Override
+  public Flux<OrderVO> queryAllOrdersDaily() {
+    return queryAllOrdersBetween(DateUtils.toDate(LocalDate.now()), DateUtils.toDate(LocalDate.now()));
+  }
+
+  @Override
+  public Flux<OrderVO> queryAllOrdersWeekly() {
+    return queryAllOrdersBetween(DateUtils.toDate(LocalDate.now().minusDays(7)), DateUtils.toDate(LocalDate.now()));
+  }
+
+  @Override
+  public Flux<OrderVO> queryAllOrdersMonthly() {
+    return queryAllOrdersBetween(DateUtils.toDate(LocalDate.now().minusMonths(1)), DateUtils.toDate(LocalDate.now()));
+  }
+
+  @Override
+  public Flux<OrderVO> queryAllOrdersYearly() {
+    return queryAllOrdersBetween(DateUtils.toDate(LocalDate.now().minusYears(1)), DateUtils.toDate(LocalDate.now()));
+  }
 }

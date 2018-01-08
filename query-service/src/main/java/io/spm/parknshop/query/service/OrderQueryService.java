@@ -12,6 +12,18 @@ import java.util.Date;
  */
 public interface OrderQueryService {
 
+  Flux<OrderVO> queryAllOrders();
+
+  Flux<OrderVO> queryAllOrdersBetween(Date start, Date end);
+
+  Flux<OrderVO> queryAllOrdersDaily();
+
+  Flux<OrderVO> queryAllOrdersWeekly();
+
+  Flux<OrderVO> queryAllOrdersMonthly();
+
+  Flux<OrderVO> queryAllOrdersYearly();
+
   Mono<OrderVO> queryOrderById(Long orderId);
 
   Flux<OrderVO> queryOrdersByUser(Long userId);
