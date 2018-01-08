@@ -1,6 +1,7 @@
 package io.spm.parknshop.query.vo;
 
 import io.spm.parknshop.delivery.domain.DeliveryAddress;
+import io.spm.parknshop.delivery.domain.DeliveryTrackRecord;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.domain.OrderProduct;
 import io.spm.parknshop.payment.domain.PaymentRecord;
@@ -17,6 +18,7 @@ public class OrderVO {
   private PaymentRecord payment;
   private DeliveryAddress deliveryAddress;
   private User user;
+  private DeliveryTrackRecord delivery;
 
   private double refundFee;
 
@@ -102,6 +104,15 @@ public class OrderVO {
 
   public OrderVO setRefundFee(double refundFee) {
     this.refundFee = refundFee;
+    return this;
+  }
+
+  public DeliveryTrackRecord getDelivery() {
+    return delivery;
+  }
+
+  public OrderVO setDelivery(DeliveryTrackRecord delivery) {
+    this.delivery = delivery;
     return this;
   }
 }

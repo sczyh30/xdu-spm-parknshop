@@ -9,7 +9,7 @@ public interface OrderStatusService {
 
   Mono<Long> prepareShipping(Long orderId);
 
-  Mono<Long> finishShipping(Long orderId);
+  Mono<Long> finishShipping(Long orderId, String trackNo);
 
   Mono<Long> finishDelivery(Long orderId);
 

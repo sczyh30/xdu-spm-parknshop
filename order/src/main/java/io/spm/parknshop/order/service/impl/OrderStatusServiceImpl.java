@@ -1,5 +1,6 @@
 package io.spm.parknshop.order.service.impl;
 
+import io.spm.parknshop.delivery.service.DeliveryRecordService;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.domain.OrderEvent;
 import io.spm.parknshop.order.domain.OrderEventType;
@@ -24,6 +25,8 @@ public class OrderStatusServiceImpl implements OrderStatusService {
 
   @Autowired
   private OrderService orderService;
+  @Autowired
+  private DeliveryRecordService deliveryRecordService;
 
   @Autowired
   private OrderRepository orderRepository;
@@ -34,8 +37,10 @@ public class OrderStatusServiceImpl implements OrderStatusService {
   }
 
   @Override
-  public Mono<Long> finishShipping(Long orderId) {
-    return orderService.modifyOrderStatus(orderId, new OrderEvent(orderId, OrderEventType.FINISH_SHIPMENT));
+  public Mono<Long> finishShipping(Long orderId, String trackNo) {
+    return deliveryRecordService.addDeliveryRecord(orderId, trackNo)
+      .flatMap(delivery -> asyncExecute(() -> orderRepository.modifyDeliveryId(orderId, delivery.getId())))
+      .flatMap(v -> orderService.modifyOrderStatus(orderId, new OrderEvent(orderId, OrderEventType.FINISH_SHIPMENT)));
   }
 
   @Override

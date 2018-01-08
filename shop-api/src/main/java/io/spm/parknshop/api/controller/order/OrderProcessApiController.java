@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -31,9 +32,9 @@ public class OrderProcessApiController {
   }
 
   @PostMapping("/order/op/finish_shipment/{id}")
-  public Mono<Long> apiFinishShipment(ServerWebExchange exchange, @PathVariable("id") Long id) {
+  public Mono<Long> apiFinishShipment(ServerWebExchange exchange, @PathVariable("id") Long id, @RequestParam("trackNo") String trackNo) {
     return AuthUtils.getSellerId(exchange)
-      .flatMap(sellerId -> orderStatusService.finishShipping(id));
+      .flatMap(sellerId -> orderStatusService.finishShipping(id, trackNo));
   }
 
   @PostMapping("/order/op/finish_delivery/{id}")

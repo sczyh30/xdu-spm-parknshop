@@ -2,7 +2,9 @@ package io.spm.parknshop.query.repository;
 
 import io.spm.parknshop.common.util.JsonUtils;
 import io.spm.parknshop.delivery.domain.DeliveryAddress;
+import io.spm.parknshop.delivery.domain.DeliveryTrackRecord;
 import io.spm.parknshop.delivery.repository.DeliveryAddressRepository;
+import io.spm.parknshop.delivery.repository.DeliveryRecordRepository;
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.domain.OrderProduct;
 import io.spm.parknshop.order.repository.OrderProductRepository;
@@ -48,6 +50,8 @@ public class OrderQueryRepository {
   private UserRepository userRepository;
   @Autowired
   private RefundRecordRepository refundRecordRepository;
+  @Autowired
+  private DeliveryRecordRepository deliveryRecordRepository;
 
   @Transactional(readOnly = true)
   public Optional<OrderVO> queryOrder(long orderId) {
@@ -111,7 +115,9 @@ public class OrderQueryRepository {
     DeliveryAddress address = JsonUtils.parse(order.getAddressSnapshot(), DeliveryAddress.class);
     PaymentRecord payment = paymentRecordRepository.findById(order.getPaymentId()).orElse(null);
     User user = userRepository.findById(order.getCreatorId()).orElse(User.deletedUser(order.getCreatorId()));
-    return new OrderVO(orderId, order, store, retrieveSubOrders(orderId), payment, address, user);
+    DeliveryTrackRecord deliveryTrackRecord = deliveryRecordRepository.getByOrderId(orderId).orElse(null);
+    return new OrderVO(orderId, order, store, retrieveSubOrders(orderId), payment, address, user)
+      .setDelivery(deliveryTrackRecord);
   }
 
   @Transactional(readOnly = true)

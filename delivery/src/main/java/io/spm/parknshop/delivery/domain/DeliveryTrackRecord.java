@@ -21,6 +21,8 @@ public class DeliveryTrackRecord {
   private Date gmtCreate;
   private Date gmtModified;
 
+  private Long orderId;
+
   private Integer deliveryType;
   private String outerDeliveryId;
 
@@ -77,6 +79,15 @@ public class DeliveryTrackRecord {
 
   public DeliveryTrackRecord setDeliveryData(String deliveryData) {
     this.deliveryData = deliveryData;
+    return this;
+  }
+
+  public Long getOrderId() {
+    return orderId;
+  }
+
+  public DeliveryTrackRecord setOrderId(Long orderId) {
+    this.orderId = orderId;
     return this;
   }
 }

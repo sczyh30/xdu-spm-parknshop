@@ -22,6 +22,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @Modifying
   void updateStatus(long id, int status);
 
+  @Query(value = "UPDATE `order_metadata` SET gmt_modified = CURRENT_TIMESTAMP, delivery_id = ?2 WHERE id = ?1", nativeQuery = true)
+  @Transactional
+  @Modifying
+  void modifyDeliveryId(long id, long deliverId);
+
   @Query(value = "SELECT a.* FROM order_metadata a, order_product b WHERE b.product_id = :productId AND a.id = b.order_id AND a.creator_id = :userId", nativeQuery = true)
   List<Order> getOrderForProductAndUser(@Param("userId") long userId, @Param("productId") long productId);
 
