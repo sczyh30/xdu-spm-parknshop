@@ -6,16 +6,16 @@ public class ProductDetailUserVO {
   private Long productId;
 
   private boolean inFavorite;
-  private boolean commented;
+  private boolean canComment;
 
   public ProductDetailUserVO() {
   }
 
-  public ProductDetailUserVO(Long userId, Long productId, boolean inFavorite, boolean commented) {
+  public ProductDetailUserVO(Long userId, Long productId, boolean inFavorite, boolean canComment) {
     this.userId = userId;
     this.productId = productId;
     this.inFavorite = inFavorite;
-    this.commented = commented;
+    this.canComment = canComment;
   }
 
   public Long getUserId() {
@@ -45,12 +45,12 @@ public class ProductDetailUserVO {
     return this;
   }
 
-  public boolean isCommented() {
-    return commented;
+  public boolean isCanComment() {
+    return canComment;
   }
 
-  public ProductDetailUserVO setCommented(boolean commented) {
-    this.commented = commented;
+  public ProductDetailUserVO setCanComment(boolean canComment) {
+    this.canComment = canComment;
     return this;
   }
 }

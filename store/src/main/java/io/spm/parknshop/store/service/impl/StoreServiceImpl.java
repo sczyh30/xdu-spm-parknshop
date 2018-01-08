@@ -33,6 +33,11 @@ public class StoreServiceImpl implements StoreService {
   private DeliveryTemplateRepository deliveryTemplateRepository;
 
   @Override
+  public Flux<Store> findAllNormalStore() {
+    return asyncIterable(() -> storeRepository.getAllNormal());
+  }
+
+  @Override
   public Mono<Store> addStore(Store store) {
     if (!isValidNewStore(store)) {
       return Mono.error(ExceptionUtils.invalidParam("store"));

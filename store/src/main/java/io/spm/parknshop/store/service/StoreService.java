@@ -11,6 +11,8 @@ import java.util.Optional;
  */
 public interface StoreService {
 
+  Flux<Store> findAllNormalStore();
+
   Mono<Store> addStore(Store store);
 
   Mono<Store> modify(Long id, Store store);

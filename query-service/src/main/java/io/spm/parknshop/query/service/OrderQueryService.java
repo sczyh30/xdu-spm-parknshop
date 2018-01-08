@@ -32,7 +32,7 @@ public interface OrderQueryService {
 
   Flux<OrderVO> queryFinishedOrdersBySeller(Long sellerId);
 
-  Flux<OrderVO> queryOrdersByStore(Long userId);
+  Flux<OrderVO> queryOrdersByStore(Long storeId);
 
   Flux<OrderVO> queryFinishedOrdersByStore(Long storeId);
 

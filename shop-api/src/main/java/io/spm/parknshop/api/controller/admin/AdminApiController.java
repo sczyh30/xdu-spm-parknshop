@@ -60,6 +60,11 @@ public class AdminApiController {
     return storeQueryService.getAll();
   }
 
+  @GetMapping("/admin/shop/by_seller/{id}")
+  public Mono<StoreVO> apiShopBySeller(@PathVariable("id") Long id) {
+    return storeQueryService.getStoreBySeller(id);
+  }
+
   @PostMapping("/admin/set_commission")
   public Mono<?> apiSetCommission(@RequestParam("commission") Double commission) {
     return globalConfigService.setCommission(commission);

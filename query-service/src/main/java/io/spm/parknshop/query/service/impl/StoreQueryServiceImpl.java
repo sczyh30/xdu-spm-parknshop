@@ -45,6 +45,14 @@ public class StoreQueryServiceImpl implements StoreQueryService {
   }
 
   @Override
+  public Mono<StoreVO> getStoreBySeller(Long id) {
+    return async(() -> queryStoreBySellerId(id))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.STORE_NOT_EXIST, "The seller does not own a store")));
+  }
+
+  @Override
   public Flux<StoreVO> getAll() {
     return asyncIterable(() -> storeRepository.findAll().stream().map(this::toStoreVO).collect(Collectors.toList()));
 
@@ -56,6 +64,16 @@ public class StoreQueryServiceImpl implements StoreQueryService {
     return new StoreVO(storeId, store, userRepository.getSellerById(store.getSellerId()).get())
       .setOrderAmount(orderRepository.countByStoreId(storeId))
       .setProductAmount(productRepository.countByStoreId(storeId));
+  }
+
+  protected Optional<StoreVO> queryStoreBySellerId(long sellerId) {
+    return storeRepository.getBySellerId(sellerId)
+      .flatMap(store -> userRepository.getSellerById(sellerId)
+        .map(seller -> new StoreVO(store.getId(), store, seller)
+          .setOrderAmount(orderRepository.countByStoreId(store.getId()))
+          .setProductAmount(productRepository.countByStoreId(store.getId()))
+        )
+      );
   }
 
   protected Optional<StoreVO> queryStoreVO(long id) {

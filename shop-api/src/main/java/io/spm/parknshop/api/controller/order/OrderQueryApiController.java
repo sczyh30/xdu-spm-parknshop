@@ -76,6 +76,11 @@ public class OrderQueryApiController {
     }
   }
 
+  @GetMapping("/order/query/simple/store/{id}")
+  public Publisher<OrderVO> apiQueryOrdersByStore(@PathVariable("id") Long id) {
+    return orderQueryService.queryOrdersByStore(id);
+  }
+
   @GetMapping("/order/query/detail/{id}")
   public Mono<OrderVO> apiQueryOrderById(ServerWebExchange exchange, @PathVariable("id") Long id) {
     return orderQueryService.queryOrderById(id);

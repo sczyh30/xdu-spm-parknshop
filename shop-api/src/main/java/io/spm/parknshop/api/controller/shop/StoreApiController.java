@@ -59,6 +59,11 @@ public class StoreApiController {
     return storeService.modify(id, store);
   }
 
+  @GetMapping("/store/query/all")
+  public /*Flux*/ Publisher<Store> apiGetAllNormalStore() {
+    return storeService.findAllNormalStore();
+  }
+
   @DeleteMapping("/store/{id}")
   public Mono<?> apiRemoveStore(@PathVariable("id") Long id) {
     return storeService.remove(id);
