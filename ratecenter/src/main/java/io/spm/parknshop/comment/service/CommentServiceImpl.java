@@ -101,7 +101,7 @@ public class CommentServiceImpl implements CommentService {
     return orderStatusService.getProductBuyStatusForUser(userId, productId)
       .flatMap(status -> {
         if (status == OrderStatus.COMPLETED) {
-          return Mono.empty();
+          return Mono.just(0);
         } else {
           return Mono.error(new ServiceException(COMMENT_NOT_ALLOW_NOT_BUY, "You didn't buy the product or the order has not been completed"));
         }
