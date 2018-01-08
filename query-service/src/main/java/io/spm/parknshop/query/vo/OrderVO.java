@@ -18,6 +18,8 @@ public class OrderVO {
   private DeliveryAddress deliveryAddress;
   private User user;
 
+  private double refundFee;
+
   public OrderVO() {
   }
 
@@ -91,6 +93,15 @@ public class OrderVO {
 
   public OrderVO setUser(User user) {
     this.user = user;
+    return this;
+  }
+
+  public double getRefundFee() {
+    return refundFee;
+  }
+
+  public OrderVO setRefundFee(double refundFee) {
+    this.refundFee = refundFee;
     return this;
   }
 }

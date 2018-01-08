@@ -2,10 +2,12 @@ package io.spm.parknshop.api.controller.shop;
 
 import io.spm.parknshop.api.util.AuthUtils;
 import io.spm.parknshop.query.service.impl.RefundQueryService;
-import io.spm.parknshop.query.vo.RefundApplyVO;
+import io.spm.parknshop.query.vo.RefundVO;
+import io.spm.parknshop.query.vo.apply.RefundApplyVO;
 import io.spm.parknshop.refund.domain.RefundRecord;
 import io.spm.parknshop.refund.service.RefundDataService;
 import io.spm.parknshop.refund.service.RefundService;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,22 @@ public class RefundApiController {
       .flatMap(userId -> refundQueryService.renderRefundApply(subOrderId));
   }
 
+  @GetMapping("/refund/view_refund/{id}")
+  public Mono<RefundVO> apiViewRefund(@PathVariable("id") Long id, ServerWebExchange exchange) {
+    return refundQueryService.renderRefundView(id);
+  }
+
+  @GetMapping("/refund/view_refund_u")
+  public Publisher<RefundVO> apiRefundListByCustomer(ServerWebExchange exchange) {
+    return AuthUtils.getUserId(exchange)
+      .flatMapMany(userId -> refundQueryService.getRefundByCustomer(userId));
+  }
+
+  @GetMapping("/refund/view_refund_store/{storeId}")
+  public Publisher<RefundVO> apiRefundListByCustomer(@PathVariable("storeId") Long storeId, ServerWebExchange exchange) {
+    return refundQueryService.getRefundByShop(storeId);
+  }
+
   @PostMapping("/refund/op/new_refund")
   public Mono<RefundRecord> apiSubmitApplyForRefund(@RequestParam("subOrderId") Long subOrderId, @RequestBody String message, ServerWebExchange exchange) {
     return AuthUtils.getUserId(exchange)
@@ -57,7 +75,7 @@ public class RefundApiController {
 
   @PostMapping("/refund/op/process_refund_tx/{refundId}")
   public Mono<RefundRecord> apiProcessRefundTransaction(@PathVariable("refundId") Long refundId, ServerWebExchange exchange) {
-    return AuthUtils.getUserId(exchange)
+    return AuthUtils.getSellerId(exchange)
       .flatMap(userId -> refundService.startRefundProcess(refundId));
   }
 

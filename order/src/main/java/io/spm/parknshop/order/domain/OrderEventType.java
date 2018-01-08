@@ -12,6 +12,7 @@ public final class OrderEventType {
   public static final int FINISH_DELIVERY = 23;
   public static final int CONFIRM_ORDER = 24;
   public static final int CANCEL_ORDER = 4;
+  public static final int REFUND_COMPLETE = 7;
 
   private OrderEventType() {}
 }

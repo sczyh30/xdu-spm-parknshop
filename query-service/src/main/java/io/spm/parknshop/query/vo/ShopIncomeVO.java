@@ -13,8 +13,8 @@ public class ShopIncomeVO {
 
   private int productSaleAmount;
 
-  private double totalIncome;
-  private double totalIncomeWithoutCommission;
+  private double totalProfit;
+  private double totalRawIncome;
 
   private List<OrderVO> orderList;
 
@@ -45,21 +45,21 @@ public class ShopIncomeVO {
     return this;
   }
 
-  public double getTotalIncome() {
-    return totalIncome;
+  public double getTotalProfit() {
+    return totalProfit;
   }
 
-  public ShopIncomeVO setTotalIncome(double totalIncome) {
-    this.totalIncome = totalIncome;
+  public ShopIncomeVO setTotalProfit(double totalProfit) {
+    this.totalProfit = totalProfit;
     return this;
   }
 
-  public double getTotalIncomeWithoutCommission() {
-    return totalIncomeWithoutCommission;
+  public double getTotalRawIncome() {
+    return totalRawIncome;
   }
 
-  public ShopIncomeVO setTotalIncomeWithoutCommission(double totalIncomeWithoutCommission) {
-    this.totalIncomeWithoutCommission = totalIncomeWithoutCommission;
+  public ShopIncomeVO setTotalRawIncome(double totalRawIncome) {
+    this.totalRawIncome = totalRawIncome;
     return this;
   }
 

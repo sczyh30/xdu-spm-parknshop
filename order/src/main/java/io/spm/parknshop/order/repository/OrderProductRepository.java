@@ -34,4 +34,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
   @Modifying
   @Transactional
   void updateStatus(long subOrderId, int status);
+
+  int countByOrderId(long orderId);
 }

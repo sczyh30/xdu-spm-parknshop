@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
       return Mono.error(ExceptionUtils.invalidParam("user ID should not be provided"));
     }
     return checkDuplicateInfo(user)
-      .switchIfEmpty(async(() -> userRepository.save(encrypt(user))));
+      .switchIfEmpty(async(() -> userRepository.save(encrypt(user).setUserType(0))));
   }
 
   private User encrypt(/*@NonNull*/ User user) {

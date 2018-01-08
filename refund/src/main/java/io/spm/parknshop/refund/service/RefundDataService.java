@@ -13,4 +13,8 @@ public interface RefundDataService {
   Mono<RefundRecord> getCurrentRefundRecordBySubOrderId(Long subOrderId);
 
   Flux<RefundRecord> getRefundRecordByOrderId(Long orderId);
+
+  Flux<RefundRecord> getRefundRecordByStoreId(Long storeId);
+
+  Flux<RefundRecord> getRefundRecordByUserId(Long userId);
 }

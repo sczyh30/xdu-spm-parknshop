@@ -12,6 +12,7 @@ import io.spm.parknshop.payment.repository.PaymentRecordRepository;
 import io.spm.parknshop.product.repository.ProductRepository;
 import io.spm.parknshop.query.vo.OrderVO;
 import io.spm.parknshop.query.vo.SimpleStoreVO;
+import io.spm.parknshop.refund.repository.RefundRecordRepository;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.repository.StoreRepository;
 import io.spm.parknshop.user.domain.User;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +46,8 @@ public class OrderQueryRepository {
   private PaymentRecordRepository paymentRecordRepository;
   @Autowired
   private UserRepository userRepository;
+  @Autowired
+  private RefundRecordRepository refundRecordRepository;
 
   @Transactional(readOnly = true)
   public Optional<OrderVO> queryOrder(long orderId) {
@@ -73,6 +77,13 @@ public class OrderQueryRepository {
   }
 
   @Transactional(readOnly = true)
+  public List<OrderVO> queryFinishedOrderByStoreBetween(long storeId, Date start, Date end) {
+    return orderRepository.getFinishedByStoreIdBetween(storeId, start, end).stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
   protected OrderVO buildOrderVO(final Order order) {
     Long orderId = order.getId();
     SimpleStoreVO store = SimpleStoreVO.fromStore(storeRepository.findById(order.getStoreId()).orElse(Store.deletedStore(order.getStoreId())));
@@ -82,10 +93,14 @@ public class OrderQueryRepository {
     return new OrderVO(orderId, order, store, retrieveSubOrders(orderId), payment, address, user);
   }
 
-  private List<OrderProduct> retrieveSubOrders(long orderId) {
+  @Transactional(readOnly = true)
+  protected List<OrderProduct> retrieveSubOrders(long orderId) {
     return orderProductRepository.getByOrderId(orderId).stream()
       .map(subOrder -> productRepository.findByIdWithDeleted(subOrder.getProductId()).map(product ->
         subOrder.setProductStatus(product.getStatus()).setPicUri(product.getPicUri())).get())
+      .map(subOrder -> refundRecordRepository.getCurrentRefundBySubOrderId(subOrder.getId())
+        .map(refundRecord -> subOrder.setRefundId(refundRecord.getId())).orElse(subOrder)
+      )
       .collect(Collectors.toList());
   }
 }

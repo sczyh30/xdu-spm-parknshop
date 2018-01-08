@@ -26,4 +26,8 @@ public interface RefundRecordRepository extends JpaRepository<RefundRecord, Long
   @Modifying
   @Transactional
   void updateStatus(int status, long id);
+
+  List<RefundRecord> getAllByCustomerIdOrderByIdDesc(long customerId);
+
+  List<RefundRecord> getAllByStoreIdOrderByIdDesc(long storeId);
 }

@@ -3,10 +3,13 @@ package io.spm.parknshop.refund.service.impl;
 import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.order.domain.Order;
+import io.spm.parknshop.order.domain.OrderEvent;
+import io.spm.parknshop.order.domain.OrderEventType;
 import io.spm.parknshop.order.domain.OrderProduct;
 import io.spm.parknshop.order.domain.SubOrderStatus;
 import io.spm.parknshop.order.repository.OrderProductRepository;
 import io.spm.parknshop.order.repository.OrderRepository;
+import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.payment.domain.PaymentRefundResult;
 import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.refund.domain.RefundRecord;
@@ -46,6 +49,8 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
 
   @Autowired
   private PaymentService paymentService;
+  @Autowired
+  private OrderService orderService;
 
   @Override
   public Mono<RefundRecord> startRefundProcess(Long refundId) {
@@ -56,8 +61,7 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
       .flatMap(this::checkProcessRefundStatus)
       .flatMap(refundRecord -> paymentService.processRefund(refundRecord.getBuyPaymentId(), generateRefundNo(refundRecord),
         refundRecord.getRefundAmount(), refundRecord.getStoreId()))
-      .flatMap(refundResult -> saveRefundCompleteInfo(refundId, refundResult))
-      .flatMap(this::saveSubOrderRefundStatus);
+      .flatMap(refundResult -> saveRefundCompleteInfo(refundId, refundResult));
   }
 
   private Mono<RefundRecord> saveSubOrderRefundStatus(RefundRecord refundRecord) {
@@ -82,29 +86,57 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
     }
     return getRefundRecordById(refundId)
       .map(refundRecord -> refundRecord.setRefundStatus(RefundStatus.REFUND_SUCCESSFUL).setRefundTime(new Date()).setRefundTransactionNo(refundResult.getRefundNo()))
-      .flatMap(this::saveInternal);
+      .flatMap(this::tryModifyOrderThenSaveInternal);
+  }
+
+  private Mono<RefundRecord> tryModifyOrderThenSaveInternal(/*@Normal*/ RefundRecord refundRecord) {
+    long orderId = refundRecord.getOrderId();
+    return modifySingleOrderStatus(orderId).then(async(() -> {
+      RefundRecord newRecord = refundRecordRepository.save(refundRecord);
+      orderProductRepository.updateStatus(newRecord.getSubOrderId(), SubOrderStatus.ALREADY_REFUND);
+      return newRecord;
+    }));
   }
 
   @Override
   public Mono<RefundRecord> createRefundRecord(Long subOrderId, String requestComment) {
     return checkIfRefundInProgressOrCompleted(subOrderId)
       .flatMap(v -> async(() -> buildRefundRecord(subOrderId, requestComment)))
-      .flatMap(this::saveInternal);
+      .flatMap(this::saveNewInternal);
   }
 
-  private Mono<RefundRecord> saveInternal(/*@Normal*/ RefundRecord refundRecord) {
-    return async(() -> refundRecordRepository.save(refundRecord));
+  private Mono<RefundRecord> saveNewInternal(/*@Normal*/ RefundRecord refundRecord) {
+    return async(() -> {
+      RefundRecord newRecord = refundRecordRepository.save(refundRecord);
+      orderProductRepository.updateStatus(newRecord.getSubOrderId(), SubOrderStatus.REFUND_IN_PROGRESS);
+      return newRecord;
+    });
   }
 
-  private Mono<RefundRecord> checkIfRefundInProgressOrCompleted(Long subOrderId) {
+  private Mono<?> modifySingleOrderStatus(long orderId) {
+    return async(() -> orderProductRepository.countByOrderId(orderId))
+      .flatMap(count -> {
+        if (count == 1) {
+          return orderService.modifyOrderStatus(orderId, new OrderEvent(orderId, OrderEventType.REFUND_COMPLETE));
+        }
+        return Mono.just(0L);
+      });
+  }
+
+  private Mono<?> checkIfRefundInProgressOrCompleted(Long subOrderId) {
     Set<Integer> set = Stream.of(RefundStatus.APPROVED_WAIT_RETURN, RefundStatus.NEW_CREATED,
       RefundStatus.REFUND_SUCCESSFUL, RefundStatus.PENDING_REFUND_TRANSACTION).collect(Collectors.toSet());
-    return getCurrentRefundRecordBySubOrderId(subOrderId)
-      .flatMap(refundRecord -> {
-        if (set.contains(refundRecord.getRefundStatus())) {
-          return Mono.error(new ServiceException(REFUND_ALREADY_STARTED, "Refund has already started or completed"));
+    return getCurrentRefundRecord(subOrderId)
+      .flatMap(opt -> {
+        if (opt.isPresent()) {
+          RefundRecord refundRecord = opt.get();
+          if (set.contains(refundRecord.getRefundStatus())) {
+            return Mono.error(new ServiceException(REFUND_ALREADY_STARTED, "Refund has already started or completed"));
+          } else {
+            return Mono.just(refundRecord);
+          }
         } else {
-          return Mono.just(refundRecord);
+          return Mono.just(0L);
         }
       });
   }
@@ -137,7 +169,11 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
     if (StringUtils.isEmpty(responseComment)) {
       return Mono.error(ExceptionUtils.invalidParam("response comment"));
     }
-    return asyncExecute(() -> refundRecordRepository.updateWithResponseAndStatus(RefundStatus.REJECTED, responseComment, id));
+    return asyncExecute(() -> {
+      refundRecordRepository.updateWithResponseAndStatus(RefundStatus.REJECTED, responseComment, id);
+      refundRecordRepository.findById(id).ifPresent(record ->
+        orderProductRepository.updateStatus(record.getSubOrderId(), SubOrderStatus.NORMAL));
+    });
   }
 
   @Override
@@ -145,7 +181,11 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("bad refund request"));
     }
-    return asyncExecute(() -> refundRecordRepository.updateWithResponseAndStatus(RefundStatus.CANCELED, null, id));
+    return asyncExecute(() -> {
+      refundRecordRepository.updateWithResponseAndStatus(RefundStatus.CANCELED, null, id);
+      refundRecordRepository.findById(id).ifPresent(record ->
+        orderProductRepository.updateStatus(record.getSubOrderId(), SubOrderStatus.NORMAL));
+    });
   }
 
   @Override
@@ -154,6 +194,10 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
       .filter(Optional::isPresent)
       .map(Optional::get)
       .switchIfEmpty(Mono.error(new ServiceException(REFUND_NOT_EXIST, "The refund record does not exist")));
+  }
+
+  private Mono<Optional<RefundRecord>> getCurrentRefundRecord(Long subOrderId) {
+    return async(() -> refundRecordRepository.getCurrentRefundBySubOrderId(subOrderId));
   }
 
   @Override
@@ -167,5 +211,15 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
   @Override
   public Flux<RefundRecord> getRefundRecordByOrderId(Long orderId) {
     return asyncIterable(() -> refundRecordRepository.getByOrderId(orderId));
+  }
+
+  @Override
+  public Flux<RefundRecord> getRefundRecordByStoreId(Long storeId) {
+    return asyncIterable(() -> refundRecordRepository.getAllByStoreIdOrderByIdDesc(storeId));
+  }
+
+  @Override
+  public Flux<RefundRecord> getRefundRecordByUserId(Long userId) {
+    return asyncIterable(() -> refundRecordRepository.getAllByCustomerIdOrderByIdDesc(userId));
   }
 }

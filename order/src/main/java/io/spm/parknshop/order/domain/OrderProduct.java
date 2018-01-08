@@ -31,6 +31,8 @@ public class OrderProduct {
   private Integer productStatus;
   @Transient
   private String picUri;
+  @Transient
+  private Long refundId;
 
   public Long getId() {
     return id;
@@ -119,6 +121,15 @@ public class OrderProduct {
 
   public OrderProduct setPicUri(String picUri) {
     this.picUri = picUri;
+    return this;
+  }
+
+  public Long getRefundId() {
+    return refundId;
+  }
+
+  public OrderProduct setRefundId(Long refundId) {
+    this.refundId = refundId;
     return this;
   }
 }

@@ -1,7 +1,8 @@
-package io.spm.parknshop.query.vo;
+package io.spm.parknshop.query.vo.apply;
 
 import io.spm.parknshop.order.domain.Order;
 import io.spm.parknshop.order.domain.OrderProduct;
+import io.spm.parknshop.query.vo.SimpleStoreVO;
 
 public class RefundApplyVO {
 
