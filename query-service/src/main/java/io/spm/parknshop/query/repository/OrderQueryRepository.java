@@ -63,8 +63,29 @@ public class OrderQueryRepository {
   }
 
   @Transactional(readOnly = true)
+  public List<OrderVO> queryOrderByUserBetween(long userId, Date from, Date to) {
+    return orderRepository.getByCreatorIdBetween(userId, from, to).stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
   public List<OrderVO> queryOrderByStore(long storeId) {
     return orderRepository.getByStoreIdOrderByIdDesc(storeId).stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public List<OrderVO> queryPaidOrderByStore(long storeId) {
+    return orderRepository.getPaidByStoreId(storeId).stream()
+      .map(this::buildOrderVO)
+      .collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public List<OrderVO> queryPaidOrderByStoreBetween(long storeId, Date start, Date end) {
+    return orderRepository.getPaidByStoreIdBetween(storeId, start, end).stream()
       .map(this::buildOrderVO)
       .collect(Collectors.toList());
   }

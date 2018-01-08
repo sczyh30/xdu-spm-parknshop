@@ -5,6 +5,8 @@ import io.spm.parknshop.query.vo.OrderVO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
+
 /**
  * @author Eric Zhao
  */
@@ -24,4 +26,13 @@ public interface OrderQueryService {
 
   Flux<OrderEvent> queryOrderEventsById(Long orderId);
 
+  Flux<OrderVO> queryOrdersByUserBetween(Long userId, Date start, Date end);
+
+  Flux<OrderVO> queryOrdersByUserDaily(Long userId);
+
+  Flux<OrderVO> queryOrdersByUserWeekly(Long userId);
+
+  Flux<OrderVO> queryOrdersByUserMonthly(Long userId);
+
+  Flux<OrderVO> queryOrdersByUserYearly(Long userId);
 }

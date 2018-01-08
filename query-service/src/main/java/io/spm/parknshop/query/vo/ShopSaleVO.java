@@ -1,25 +1,62 @@
 package io.spm.parknshop.query.vo;
 
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @author Eric Zhao
+ */
 public class ShopSaleVO {
 
-  private double totalSale;
-  private double totalProfit;
+  private Date start;
+  private Date end;
 
-  public double getTotalSale() {
-    return totalSale;
+  private List<OrderVO> orderList;
+
+  private double totalRawSaleIncome;
+
+  public ShopSaleVO() {}
+
+  public ShopSaleVO(Date start, Date end, List<OrderVO> orderList, double totalRawSaleIncome) {
+    this.start = start;
+    this.end = end;
+    this.orderList = orderList;
+    this.totalRawSaleIncome = totalRawSaleIncome;
   }
 
-  public ShopSaleVO setTotalSale(double totalSale) {
-    this.totalSale = totalSale;
+  public Date getStart() {
+    return start;
+  }
+
+  public ShopSaleVO setStart(Date start) {
+    this.start = start;
     return this;
   }
 
-  public double getTotalProfit() {
-    return totalProfit;
+  public Date getEnd() {
+    return end;
   }
 
-  public ShopSaleVO setTotalProfit(double totalProfit) {
-    this.totalProfit = totalProfit;
+  public ShopSaleVO setEnd(Date end) {
+    this.end = end;
+    return this;
+  }
+
+  public List<OrderVO> getOrderList() {
+    return orderList;
+  }
+
+  public ShopSaleVO setOrderList(List<OrderVO> orderList) {
+    this.orderList = orderList;
+    return this;
+  }
+
+  public double getTotalRawSaleIncome() {
+    return totalRawSaleIncome;
+  }
+
+  public ShopSaleVO setTotalRawSaleIncome(double totalRawSaleIncome) {
+    this.totalRawSaleIncome = totalRawSaleIncome;
     return this;
   }
 }
