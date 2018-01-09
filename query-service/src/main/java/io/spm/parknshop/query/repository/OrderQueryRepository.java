@@ -61,7 +61,7 @@ public class OrderQueryRepository {
 
   @Transactional(readOnly = true)
   public List<OrderVO> queryOrderByUser(long userId) {
-    return orderRepository.getByCreatorIdOrderByIdDesc(userId).stream()
+    return orderRepository.getByCreatorId(userId).stream()
       .map(this::buildOrderVO)
       .collect(Collectors.toList());
   }

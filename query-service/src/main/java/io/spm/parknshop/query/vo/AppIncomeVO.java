@@ -9,7 +9,10 @@ public class AppIncomeVO {
   private Date end;
 
   private List<AppIncomeItem> incomeList;
+
   private double totalProfit;
+  private double adProfit;
+  private double shopOrderProfit;
 
   public Date getStart() {
     return start;
@@ -44,6 +47,24 @@ public class AppIncomeVO {
 
   public AppIncomeVO setTotalProfit(double totalProfit) {
     this.totalProfit = totalProfit;
+    return this;
+  }
+
+  public double getAdProfit() {
+    return adProfit;
+  }
+
+  public AppIncomeVO setAdProfit(double adProfit) {
+    this.adProfit = adProfit;
+    return this;
+  }
+
+  public double getShopOrderProfit() {
+    return shopOrderProfit;
+  }
+
+  public AppIncomeVO setShopOrderProfit(double shopOrderProfit) {
+    this.shopOrderProfit = shopOrderProfit;
     return this;
   }
 }

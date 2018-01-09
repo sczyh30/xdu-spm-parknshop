@@ -71,8 +71,11 @@ public class AppIncomeService {
       List<AppIncomeItem> items = new ArrayList<>();
       advertisements.forEach(e -> items.add(wrapToIncome(e)));
       orderList.forEach(e -> items.add(wrapToIncome(e)));
+      double adProfit = items.stream().filter(e -> e.getType() == AD).mapToDouble(AppIncomeItem::getProfit).sum();
+      double shopOrderProfit = items.stream().filter(e -> e.getType() == BUY).mapToDouble(AppIncomeItem::getProfit).sum();
       double totalProfit = items.stream().mapToDouble(AppIncomeItem::getProfit).sum();
-      return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit).setStart(start).setEnd(end);
+      return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit).setStart(start).setEnd(end)
+        .setAdProfit(adProfit).setShopOrderProfit(shopOrderProfit);
     });
   }
 
@@ -83,8 +86,11 @@ public class AppIncomeService {
       List<AppIncomeItem> items = new ArrayList<>();
       advertisements.forEach(e -> items.add(wrapToIncome(e)));
       orderList.forEach(e -> items.add(wrapToIncome(e)));
+      double adProfit = items.stream().filter(e -> e.getType() == AD).mapToDouble(AppIncomeItem::getProfit).sum();
+      double shopOrderProfit = items.stream().filter(e -> e.getType() == BUY).mapToDouble(AppIncomeItem::getProfit).sum();
       double totalProfit = items.stream().mapToDouble(AppIncomeItem::getProfit).sum();
-      return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit);
+      return new AppIncomeVO().setIncomeList(items).setTotalProfit(totalProfit)
+        .setAdProfit(adProfit).setShopOrderProfit(shopOrderProfit);
     });
   }
 

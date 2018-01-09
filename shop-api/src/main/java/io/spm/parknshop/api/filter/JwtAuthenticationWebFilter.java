@@ -142,7 +142,7 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
   }
 
   private boolean testWithoutAuthentication(/*@NonNull*/ String path) {
-    if (path.startsWith("/api/v1/seller/login") || path.startsWith("/api/v1/seller/register") ||path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search") || path.startsWith("/api/v1/store") || path.contains("delivery")
+    if (path.startsWith("/api/v1/seller/login")|| path.startsWith("/api/v1/comment") || path.startsWith("/api/v1/seller/register") || path.startsWith("/api/v1/seller/register") ||path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search") || path.startsWith("/api/v1/store") || path.contains("delivery")
       || path.startsWith("/api/v1/product") || path.startsWith("/api/v1/catalog") || path.startsWith("/api/v1/index") || path.startsWith("/api/v1/admin/login")) {
       return true;
     }

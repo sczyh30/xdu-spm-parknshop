@@ -49,6 +49,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Transactional
   void modifyStatus(int status, long id);
 
+  @Query(value = "UPDATE store SET status=?1, gmt_modified=CURRENT_TIMESTAMP WHERE seller_id=?2", nativeQuery = true)
+  @Modifying
+  @Transactional
+  void modifyStoreStatusBySellerId(int status, long id);
+
   @Query(value = "UPDATE user SET password=?1, gmt_modified=CURRENT_TIMESTAMP WHERE id=?2", nativeQuery = true)
   @Modifying
   @Transactional

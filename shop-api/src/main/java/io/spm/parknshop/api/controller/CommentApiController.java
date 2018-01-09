@@ -42,8 +42,7 @@ public class CommentApiController {
 
   @GetMapping("/comment/by_product/{productId}")
   public Publisher<Comment> apiGetByProduct(ServerWebExchange exchange, @PathVariable("productId") Long productId) {
-    return AuthUtils.getUserId(exchange)
-      .flatMapMany(userId -> commentService.getCommentsByProduct(productId));
+    return commentService.getCommentsByProduct(productId);
   }
 
   @GetMapping("/comment/by_parent/{parentId}")
