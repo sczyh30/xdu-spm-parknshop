@@ -58,7 +58,7 @@ public class ApiErrorExceptionHandler extends AbstractErrorWebExceptionHandler {
 
   private void logError(Throwable ex) {
     if (ex instanceof ServiceException) {
-      logger.error("Service error", ex);
+      logger.debug("Service error", ex);
     } else if (ex instanceof ResponseStatusException) {
       logger.debug("Request exception", ex);
     } else {

@@ -35,5 +35,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
   @Transactional
   void updateStatus(long subOrderId, int status);
 
-  int countByOrderId(long orderId);
+  @Query(value = "SELECT count(*) FROM order_product WHERE id = ?1 AND (status = " + SubOrderStatus.NORMAL + " OR status = " + SubOrderStatus.REFUND_IN_PROGRESS + ")", nativeQuery = true)
+  int countByOrderIdWithNonRefunded(long orderId);
 }

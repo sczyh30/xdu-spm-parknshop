@@ -4,6 +4,8 @@
 
 ParkNShop - 2017 XDU SPM Final Assignment
 
+> Note: this repository only contains the backend code.
+
 Technology:
 
 - Spring Boot 2.0 (with Spring 5.0, Spring WebFlux, in asynchronous, reactive pattern)

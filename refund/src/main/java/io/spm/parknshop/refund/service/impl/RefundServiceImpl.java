@@ -91,11 +91,11 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
 
   private Mono<RefundRecord> tryModifyOrderThenSaveInternal(/*@Normal*/ RefundRecord refundRecord) {
     long orderId = refundRecord.getOrderId();
-    return modifySingleOrderStatus(orderId).then(async(() -> {
+    return async(() -> {
       RefundRecord newRecord = refundRecordRepository.save(refundRecord);
       orderProductRepository.updateStatus(newRecord.getSubOrderId(), SubOrderStatus.ALREADY_REFUND);
       return newRecord;
-    }));
+    }).flatMap(record -> modifySingleOrderStatus(orderId).map(e -> record));
   }
 
   @Override
@@ -114,9 +114,9 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
   }
 
   private Mono<?> modifySingleOrderStatus(long orderId) {
-    return async(() -> orderProductRepository.countByOrderId(orderId))
+    return async(() -> orderProductRepository.countByOrderIdWithNonRefunded(orderId))
       .flatMap(count -> {
-        if (count == 1) {
+        if (count <= 0) {
           return orderService.modifyOrderStatus(orderId, new OrderEvent(orderId, OrderEventType.REFUND_COMPLETE));
         }
         return Mono.just(0L);
