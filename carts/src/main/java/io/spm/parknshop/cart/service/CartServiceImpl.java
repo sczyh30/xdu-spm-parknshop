@@ -12,6 +12,7 @@ import io.spm.parknshop.common.exception.ServiceException;
 import io.spm.parknshop.common.util.ExceptionUtils;
 import io.spm.parknshop.inventory.service.InventoryService;
 import io.spm.parknshop.product.domain.ProductStatus;
+import io.spm.parknshop.product.service.ProductQueryService;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class CartServiceImpl implements CartService {
   @Autowired
   private ProductService productService;
   @Autowired
+  private ProductQueryService productQueryService;
+  @Autowired
   private StoreService storeService;
   @Autowired
   private InventoryService inventoryService;
@@ -46,7 +49,7 @@ public class CartServiceImpl implements CartService {
       .filter(e -> !e.isChecked())
       .collectList()
       .flatMap(list -> cartRepository.clearCart(userId)
-        .flatMap(v -> cartRepository.putCart(userId, list))
+        .then(cartRepository.putCart(userId, list))
       );
   }
 
@@ -73,9 +76,9 @@ public class CartServiceImpl implements CartService {
 
   private Mono<ShoppingCart> updateAmount(Long userId, CartEvent cartEvent) {
     return checkParams(userId, cartEvent)
-      .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.UPDATE_AMOUNT))
-      .flatMap(v -> checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount()))
-      .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
+      .then(cartEventShouldBe(cartEvent, CartEventType.UPDATE_AMOUNT))
+      .then(checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount()))
+      .then(cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.setAmount(cartEvent.getAmount()).setChecked(true))
         .switchIfEmpty(newCreated(cartEvent))
         .flatMap(e -> cartRepository.putCartProduct(userId, e))
@@ -85,7 +88,7 @@ public class CartServiceImpl implements CartService {
 
   private Mono<ShoppingCart> markCheckProduct(Long userId, CartEvent cartEvent) {
     return cartEventShouldBe(cartEvent, CartEventType.CHECK)
-      .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
+      .then(cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.setChecked(!e.isChecked()))
         .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST_IN_CART, "Product is not in your cart")))
         .flatMap(e -> cartRepository.putCartProduct(userId, e))
@@ -95,12 +98,12 @@ public class CartServiceImpl implements CartService {
 
   private Mono<ShoppingCart> addCart(Long userId, CartEvent cartEvent) {
     return checkParams(userId, cartEvent)
-      .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.ADD_CART))
-      .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
+      .then(cartEventShouldBe(cartEvent, CartEventType.ADD_CART))
+      .then(cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.plusAmount(cartEvent.getAmount()).setChecked(true))
         .flatMap(cartProduct -> checkProductInventory(cartEvent.getProductId(), cartProduct.getAmount()).map(e -> cartProduct))
         .switchIfEmpty(checkProductInventory(cartEvent.getProductId(), cartEvent.getAmount())
-          .flatMap(v2 -> newCreated(cartEvent)))
+          .then(newCreated(cartEvent)))
         .flatMap(e -> cartRepository.putCartProduct(userId, e))
         .flatMap(e -> getCartForUser(userId))
       );
@@ -108,16 +111,16 @@ public class CartServiceImpl implements CartService {
 
   private Mono<ShoppingCart> removeFromCart(Long userId, CartEvent cartEvent) {
     return cartEventShouldBe(cartEvent, CartEventType.REMOVE)
-      .flatMap(v -> checkProductExists(cartEvent.getProductId()))
-      .flatMap(v -> cartRepository.deleteCartProduct(userId, cartEvent.getProductId()))
-      .flatMap(v -> getCartForUser(userId));
+      .then(checkProductExists(cartEvent.getProductId()))
+      .then(cartRepository.deleteCartProduct(userId, cartEvent.getProductId()))
+      .then(getCartForUser(userId));
   }
 
   private Mono<ShoppingCart> decreaseCart(Long userId, CartEvent cartEvent) {
     return checkParams(userId, cartEvent)
-      .flatMap(v -> cartEventShouldBe(cartEvent, CartEventType.DECREASE_CART))
-      .flatMap(v -> checkProductExists(cartEvent.getProductId()))
-      .flatMap(v -> cartRepository.getCartProduct(userId, cartEvent.getProductId())
+      .then(cartEventShouldBe(cartEvent, CartEventType.DECREASE_CART))
+      .then(checkProductExists(cartEvent.getProductId()))
+      .then(cartRepository.getCartProduct(userId, cartEvent.getProductId())
         .map(e -> e.decreaseAmount(cartEvent.getAmount()))
         .switchIfEmpty(Mono.error(new ServiceException(ErrorConstants.PRODUCT_NOT_EXIST_IN_CART, "Product is not in your cart")))
         .flatMap(e -> doDelete(userId, e))
@@ -159,7 +162,7 @@ public class CartServiceImpl implements CartService {
   }
 
   private Mono<CartProduct> aggregateCartProduct(SimpleCartProduct simpleProduct) {
-    return productService.getProductVO(simpleProduct.getId())
+    return productQueryService.getProduct(simpleProduct.getId())
       .filter(Optional::isPresent)
       .map(Optional::get)
       .filter(e -> ProductStatus.isAvailable(e.getProduct().getStatus()))
@@ -210,7 +213,7 @@ public class CartServiceImpl implements CartService {
 
   private Mono<?> checkParams(Long userId, CartEvent cartEvent) {
     return checkUserId(userId)
-      .flatMap(v -> checkCartEvent(cartEvent));
+      .then(checkCartEvent(cartEvent));
   }
 
   private Mono<?> checkCartEvent(CartEvent cartEvent) {
@@ -219,7 +222,7 @@ public class CartServiceImpl implements CartService {
       .map(e -> cartEvent.getAmount())
       .map(Mono::just)
       .orElse(Mono.error(ExceptionUtils.invalidParam("cart operation")))
-      .flatMap(v -> checkAmount(cartEvent));
+      .then(checkAmount(cartEvent));
   }
 
   private Mono<?> cartEventShouldBe(CartEvent event, int type) {

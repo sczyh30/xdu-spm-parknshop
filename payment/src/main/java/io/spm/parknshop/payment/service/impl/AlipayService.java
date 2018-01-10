@@ -24,9 +24,9 @@ public class AlipayService {
   private final AlipayClient alipayClient;
 
   public AlipayService() {
-    this.alipayClient = new DefaultAlipayClient(AlipayConfig.gatewayUrl, AlipayConfig.app_id,
-      AlipayConfig.merchant_private_key, "json", AlipayConfig.charset,
-      AlipayConfig.alipay_public_key, AlipayConfig.sign_type);
+    this.alipayClient = new DefaultAlipayClient(AlipayConfig.GATEWAY_URL, AlipayConfig.APP_ID,
+      AlipayConfig.MERCHANT_PRIVATE_KEY, "json", AlipayConfig.CHARSET,
+      AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.SIGN_TYPE);
   }
 
   public Mono<String> invokeBuyPayment(Long paymentId, String payOrderName, double totalAmount) {

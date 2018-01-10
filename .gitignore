@@ -6,6 +6,10 @@
 out
 gen
 libs
+
+# Avoid ignoring AliPay SDK jar file
+!payment/libs
+
 ### Maven template
 target/
 pom.xml.tag

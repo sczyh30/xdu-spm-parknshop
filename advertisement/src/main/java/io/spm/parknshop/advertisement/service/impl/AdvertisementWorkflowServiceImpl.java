@@ -77,9 +77,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
       .flatMap(sellerId -> wrapAdvertisement(advertisement, sellerId))
       .flatMap(ad -> checkTargetExists(ad)
         .flatMap(v -> submitNewApply(proposerId, ad))
-        .flatMap(t -> eventNotifier.doNotify(t.r2, t.r1)
-          .map(v -> t.r1.getId()) // Return the apply id.
-        )
+        .map(t -> t.r1.getId())
       );
   }
 

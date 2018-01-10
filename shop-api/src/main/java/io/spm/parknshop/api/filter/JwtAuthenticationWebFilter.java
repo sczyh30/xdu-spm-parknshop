@@ -65,14 +65,14 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
       return extractFromHeader(exchange.getRequest().getHeaders())
         .flatMap(this::verifyAndExtractPrincipal)
         .flatMap(principal -> verifyRole(principal, exchange, path))
-        .flatMap(v -> chain.filter(exchange))
+        .then(chain.filter(exchange))
         .onErrorResume(v -> chain.filter(exchange));
     }
     return extractFromHeader(exchange.getRequest().getHeaders())
       .flatMap(this::verifyAndExtractPrincipal)
       .flatMap(principal -> verifyRole(principal, exchange, path))
       .onErrorResume(ex -> handleAuthException(ex, exchange).map(e -> 0L))
-      .flatMap(v -> chain.filter(exchange));
+      .then(chain.filter(exchange));
   }
 
   private boolean isAuthException(ServiceException ex) {

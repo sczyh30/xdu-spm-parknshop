@@ -64,11 +64,6 @@ public class RefundServiceImpl implements RefundService, RefundDataService {
       .flatMap(refundResult -> saveRefundCompleteInfo(refundId, refundResult));
   }
 
-  private Mono<RefundRecord> saveSubOrderRefundStatus(RefundRecord refundRecord) {
-    return asyncExecute(() -> orderProductRepository.updateStatus(refundRecord.getSubOrderId(), SubOrderStatus.ALREADY_REFUND))
-      .map(e -> refundRecord);
-  }
-
   private Mono<RefundRecord> checkProcessRefundStatus(RefundRecord refundRecord) {
     if (refundRecord.getRefundStatus() != RefundStatus.APPROVED_WAIT_RETURN) {
       return Mono.error(new ServiceException(REFUND_INVALID_OPERATION, "Invalid refund operation"));

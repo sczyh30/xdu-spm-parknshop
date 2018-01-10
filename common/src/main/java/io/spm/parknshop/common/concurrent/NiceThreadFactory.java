@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Wrapped thread factory for better use.
  *
- * @author Eric Zhao 14130140389
+ * @author Eric Zhao
  * @date 2017/12/01
  */
 public class NiceThreadFactory implements ThreadFactory {

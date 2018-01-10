@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
   public Mono<Boolean> canComment(Long userId, Long productId) {
     return orderStatusService.getProductBuyStatusForUser(userId, productId)
       .filter(s -> s == OrderStatus.COMPLETED)
-      .flatMap(v -> async(() -> commentRepository.findCommentByUserForProduct(userId, productId)))
+      .then(async(() -> commentRepository.findCommentByUserForProduct(userId, productId)))
       .filter(opt -> !opt.isPresent())
       .map(v -> true)
       .switchIfEmpty(Mono.just(false));
@@ -124,7 +124,7 @@ public class CommentServiceImpl implements CommentService {
       return Mono.error(ExceptionUtils.invalidParam("Not a valid reply"));
     }
     return checkCommentText(comment.getCommentText())
-      .flatMap(v -> productIdByParent(comment.getParentId()))
+      .then(productIdByParent(comment.getParentId()))
       .flatMap(this::checkProductExists)
       .map(product -> new Comment().setProductId(product.getId())
         .setCommentText(comment.getCommentText())

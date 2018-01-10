@@ -82,6 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
     switch (record.getPaymentType()) {
       case PaymentMethod.WECHAT_PAY:
+        // TODO: not implemented
       case PaymentMethod.ALIPAY:
         if (payType == PaymentType.BUY_PAY) {
           return alipayService.invokeBuyPayment(record.getId(), "PARKnSHOP.com", record.getTotalAmount())

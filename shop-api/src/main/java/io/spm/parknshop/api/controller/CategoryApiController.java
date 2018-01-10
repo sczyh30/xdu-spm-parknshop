@@ -3,6 +3,7 @@ package io.spm.parknshop.api.controller;
 import io.spm.parknshop.category.domain.Category;
 import io.spm.parknshop.category.service.CategoryService;
 import io.spm.parknshop.product.domain.ProductVO;
+import io.spm.parknshop.product.service.ProductQueryService;
 import io.spm.parknshop.product.service.ProductService;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class CategoryApiController {
   @Autowired
   private ProductService productService;
   @Autowired
+  private ProductQueryService productQueryService;
+  @Autowired
   private CategoryService categoryService;
 
   @GetMapping("/catalog/{id}/products")
@@ -31,7 +34,7 @@ public class CategoryApiController {
     return categoryService.getById(id)
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .flatMap(catalog -> productService.getVOByCategoryId(id)
+      .flatMap(catalog -> productQueryService.getByCategoryId(id)
         .collectList()
         .map(products -> wrapCategoryProduct(catalog, products))
       );

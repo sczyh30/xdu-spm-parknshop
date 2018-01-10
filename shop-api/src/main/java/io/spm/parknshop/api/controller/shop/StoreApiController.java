@@ -2,6 +2,7 @@ package io.spm.parknshop.api.controller.shop;
 
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.domain.ProductVO;
+import io.spm.parknshop.product.service.ProductQueryService;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.store.domain.Store;
 import io.spm.parknshop.store.service.StoreService;
@@ -27,11 +28,13 @@ public class StoreApiController {
   @Autowired
   private ProductService productService;
   @Autowired
+  private ProductQueryService productQueryService;
+  @Autowired
   private StoreService storeService;
 
   @GetMapping("/store/{id}/products")
   public /*Flux*/ Publisher<ProductVO> apiGetProductsById(@PathVariable("id") Long id) {
-    return productService.getVOByStoreId(id);
+    return productQueryService.getByStoreId(id);
   }
 
   @PostMapping("/store/{id}/add_product")

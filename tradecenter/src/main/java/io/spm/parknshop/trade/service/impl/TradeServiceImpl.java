@@ -15,7 +15,6 @@ import io.spm.parknshop.payment.domain.PaymentMethod;
 import io.spm.parknshop.payment.domain.PaymentRecord;
 import io.spm.parknshop.payment.domain.PaymentType;
 import io.spm.parknshop.payment.service.PaymentService;
-import io.spm.parknshop.refund.service.RefundService;
 import io.spm.parknshop.trade.domain.ConfirmOrderMessage;
 import io.spm.parknshop.trade.domain.PaymentResult;
 import io.spm.parknshop.trade.domain.SubmitOrderResult;
@@ -49,8 +48,6 @@ public class TradeServiceImpl implements TradeService {
   private PaymentService paymentService;
   @Autowired
   private GlobalConfigService commissionService;
-  @Autowired
-  private RefundService refundService;
 
   @Autowired
   private InventoryRepository inventoryRepository;
@@ -60,9 +57,9 @@ public class TradeServiceImpl implements TradeService {
   @Override
   public Mono<SubmitOrderResult> dispatchAndProcessOrder(ConfirmOrderMessage confirmOrderMessage) {
     return checkRpcMessage(confirmOrderMessage)
-      .flatMap(v -> paymentService.createPaymentRecord(confirmOrderMessage.getOrderPreview().getTotalPrice()))
+      .then(paymentService.createPaymentRecord(confirmOrderMessage.getOrderPreview().getTotalPrice()))
       .flatMap(payment -> splitAndCreateOrders(confirmOrderMessage, payment)
-        .flatMap(v -> startPayInternal(payment.getId()))
+        .then(startPayInternal(payment.getId()))
       );
   }
 
@@ -112,13 +109,13 @@ public class TradeServiceImpl implements TradeService {
       return Mono.error(ExceptionUtils.invalidParam("orderId"));
     }
     return orderService.getOrderMetadataById(orderId)
-      .flatMap(v -> compensateInventory(orderId))
-      .flatMap(v -> orderStatusService.cancelOrder(proposer, orderId))
+      .then(compensateInventory(orderId))
+      .then(orderStatusService.cancelOrder(proposer, orderId))
       .map(e -> new PaymentResult());
     /*return orderService.getOrderMetadataById(orderId)
       .flatMap(order -> paymentService.cancelPay(proposer, order.getPaymentId()))
       .flatMap(result -> compensateInventory(orderId)
-        .flatMap(v -> orderStatusService.cancelOrder(proposer, orderId))
+        .then(orderStatusService.cancelOrder(proposer, orderId))
         .map(e -> result)
       );*/
   }

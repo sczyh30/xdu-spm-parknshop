@@ -14,7 +14,9 @@ import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 @Service
 public class DbBackupServiceImpl implements DbBackupService {
 
-  private static final String BACKUP_PATH_PREFIX = "~/db_backup/";
+  private static final String BACKUP_PATH = System.getProperty("user.home") + "/db_backup";
+  private static final String BACKUP_PATH_PREFIX = System.getProperty("user.home") + "/db_backup/";
+
   private static final String BACKUP_FILE_PREFIX = "db_backup_";
   private static final String BACKUP_FILE_POSTFIX = ".sql";
 
@@ -44,7 +46,10 @@ public class DbBackupServiceImpl implements DbBackupService {
 
   @Override
   public Mono<String> backupDB() {
-    // TODO: create DB dir.
+    File backupDir = new File(BACKUP_PATH);
+    if (!backupDir.exists()) {
+      backupDir.mkdirs();
+    }
     String commandPrefix = "mysqldump -uroot parknshop > ";
     String filename = generateBackupFilename();
     String command = commandPrefix + BACKUP_PATH_PREFIX + filename;
@@ -55,8 +60,10 @@ public class DbBackupServiceImpl implements DbBackupService {
 
   @Override
   public Flux<Long> getBackups() {
-    // TODO: Adapt `home` dir.
-    File backupDir = new File("/Users/sczyh30/db_backup");
+    File backupDir = new File(BACKUP_PATH);
+    if (!backupDir.exists()) {
+      backupDir.mkdirs();
+    }
     if (backupDir.isDirectory()) {
       return Flux.fromArray(backupDir.list((d, name) -> name.startsWith(BACKUP_FILE_PREFIX)))
         .map(this::extractTimestamp);

@@ -125,10 +125,10 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
   @Override
   public Mono<SubmitOrderResult> submitOrder(Long userId, ConfirmOrderDO requestDO) {
     return checkConfirmRequest(userId, requestDO)
-      .flatMap(v -> retrieveAndCheckAddress(requestDO.getAddressId()))
+      .then(retrieveAndCheckAddress(requestDO.getAddressId()))
       .flatMap(address -> previewOrder(userId)
         .flatMap(orderPreview -> checkOrderPreview(orderPreview)
-          .flatMap(v -> processInventory(orderPreview))
+          .then(processInventory(orderPreview))
           .map(v -> wrapRpcMessage(address, orderPreview, userId))
           .flatMap(tradeService::dispatchAndProcessOrder)
           .flatMap(result -> clearCart(userId).map(e -> result))

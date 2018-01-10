@@ -1,4 +1,4 @@
-package io.spm.parknshop.product.service;
+package io.spm.parknshop.product.service.impl;
 
 import io.spm.parknshop.common.exception.ErrorConstants;
 import io.spm.parknshop.common.exception.ServiceException;
@@ -7,9 +7,8 @@ import io.spm.parknshop.inventory.domain.Inventory;
 import io.spm.parknshop.inventory.repository.InventoryRepository;
 import io.spm.parknshop.product.domain.Product;
 import io.spm.parknshop.product.domain.ProductStatus;
-import io.spm.parknshop.product.domain.ProductVO;
 import io.spm.parknshop.product.repository.ProductRepository;
-import io.spm.parknshop.product.repository.ProductQueryRepository;
+import io.spm.parknshop.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +27,6 @@ public class ProductServiceImpl implements ProductService {
 
   @Autowired
   private ProductRepository productRepository;
-  @Autowired
-  private ProductQueryRepository productQueryRepository;
 
   @Autowired
   private InventoryRepository inventoryRepository;
@@ -91,14 +88,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Mono<Optional<ProductVO>> getProductVO(Long id) {
-    if (Objects.isNull(id) || id <= 0) {
-      return Mono.error(ExceptionUtils.invalidParam("id"));
-    }
-    return async(() -> productQueryRepository.getProductVOWithDeleted(id));
-  }
-
-  @Override
   public Flux<Product> getByStoreId(Long storeId) {
     if (Objects.isNull(storeId) || storeId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("storeId"));
@@ -107,35 +96,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public Flux<ProductVO> getVOByStoreId(Long storeId) {
-    if (Objects.isNull(storeId) || storeId <= 0) {
-      return Flux.error(ExceptionUtils.invalidParam("storeId"));
-    }
-    return asyncIterable(() -> productQueryRepository.getByStoreId(storeId));
-  }
-
-  @Override
   public Flux<Product> getByCatalogId(Long catalogId) {
     if (Objects.isNull(catalogId) || catalogId <= 0) {
       return Flux.error(ExceptionUtils.invalidParam("catalogId"));
     }
     return asyncIterable(() -> productRepository.getByCatalogId(catalogId));
-  }
-
-  @Override
-  public Flux<ProductVO> getVOByCategoryId(Long catalogId) {
-    if (Objects.isNull(catalogId) || catalogId <= 0) {
-      return Flux.error(ExceptionUtils.invalidParam("catalogId"));
-    }
-    return asyncIterable(() -> productQueryRepository.searchProductVOByCatalog(catalogId));
-  }
-
-  @Override
-  public Flux<ProductVO> getRecentProducts(int number) {
-    if (number <= 0) {
-      return Flux.error(ExceptionUtils.invalidParam("number"));
-    }
-    return asyncIterable(() -> productQueryRepository.getNRecentProductVO(number));
   }
 
   @Override
@@ -150,14 +115,6 @@ public class ProductServiceImpl implements ProductService {
   protected void removeInternal(long id) {
     productRepository.deleteById(id);
     inventoryRepository.deleteById(id);
-  }
-
-  @Override
-  public Flux<ProductVO> searchProductByKeyword(String keyword) {
-    if(Objects.isNull(keyword) || "".equals(keyword)) {
-      return Flux.error(ExceptionUtils.invalidParam("keyword"));
-    }
-    return asyncIterable(() -> productQueryRepository.searchProductVOByKeyword(keyword));
   }
 
   @Override

@@ -27,9 +27,6 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
   @Query(value = "SELECT order_id FROM order_product WHERE id = ?1", nativeQuery = true)
   Optional<Long> getOrderId(long subOrderId);
 
-  @Query(value = "SELECT id FROM order_product WHERE id = ?1 AND status = " + SubOrderStatus.ALREADY_REFUND, nativeQuery = true)
-  Optional<Long> checkCanRefund(long subOrderId);
-
   @Query(value = "UPDATE order_product SET status = ?2 WHERE id = ?1", nativeQuery = true)
   @Modifying
   @Transactional

@@ -7,52 +7,52 @@
   <parent>
     <groupId>io.xdu.0x5f3759df</groupId>
     <artifactId>xdu-spm-parknshop</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
 
   <artifactId>tradecenter</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
 
   <dependencies>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>common</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>trade-common</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>order</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>payment</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>delivery</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>inventory</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>refund</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>io.xdu.0x5f3759df</groupId>
       <artifactId>config-center</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0</version>
     </dependency>
 
     <dependency>

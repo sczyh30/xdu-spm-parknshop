@@ -15,7 +15,6 @@ import io.spm.parknshop.store.domain.StoreApplyEventType;
 import io.spm.parknshop.store.domain.StoreDTO;
 import io.spm.parknshop.store.domain.StoreStatus;
 import io.spm.parknshop.store.event.StoreApplyEventAggregator;
-import io.spm.parknshop.store.event.StoreApplyEventNotifier;
 import io.spm.parknshop.store.service.StoreService;
 import io.spm.parknshop.store.service.StoreWorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +43,6 @@ public class StoreWorkflowServiceImpl implements StoreWorkflowService {
 
   @Autowired
   private StoreApplyEventAggregator applyEventAggregator;
-  @Autowired
-  private StoreApplyEventNotifier applyEventNotifier;
 
   @Override
   public Mono<Long> applyFor(String proposerId, StoreDTO store) {

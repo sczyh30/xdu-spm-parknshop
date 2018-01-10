@@ -1,5 +1,8 @@
 package io.spm.parknshop.user.domain;
 
+/**
+ * @author Eric Zhao
+ */
 public class PrincipalModifyDO {
 
   private Long id;
