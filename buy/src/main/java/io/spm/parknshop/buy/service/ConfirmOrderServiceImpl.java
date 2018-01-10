@@ -4,7 +4,7 @@ import io.spm.parknshop.buy.domain.ConfirmOrderDO;
 import io.spm.parknshop.common.functional.Tuple2;
 import io.spm.parknshop.inventory.repository.InventoryRepository;
 import io.spm.parknshop.trade.domain.ConfirmOrderMessage;
-import io.spm.parknshop.trade.domain.ConfirmOrderResult;
+import io.spm.parknshop.trade.domain.SubmitOrderResult;
 import io.spm.parknshop.trade.domain.OrderPreview;
 import io.spm.parknshop.trade.domain.OrderProductUnit;
 import io.spm.parknshop.trade.domain.OrderStoreGroupUnit;
@@ -123,12 +123,12 @@ public class ConfirmOrderServiceImpl implements ConfirmOrderService {
   }
 
   @Override
-  public Mono<ConfirmOrderResult> confirmOrder(Long userId, ConfirmOrderDO requestDO) {
+  public Mono<SubmitOrderResult> submitOrder(Long userId, ConfirmOrderDO requestDO) {
     return checkConfirmRequest(userId, requestDO)
-      .flatMap(v -> retrieveAndCheckAddress(requestDO.getAddressId()))
+      .then(retrieveAndCheckAddress(requestDO.getAddressId()))
       .flatMap(address -> previewOrder(userId)
         .flatMap(orderPreview -> checkOrderPreview(orderPreview)
-          .map(v -> processInventory(orderPreview))
+          .then(processInventory(orderPreview))
           .map(v -> wrapRpcMessage(address, orderPreview, userId))
           .flatMap(tradeService::dispatchAndProcessOrder)
           .flatMap(result -> clearCart(userId).map(e -> result))

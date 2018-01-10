@@ -1,6 +1,7 @@
 package io.spm.parknshop.store.repository;
 
 import io.spm.parknshop.store.domain.Store;
+import io.spm.parknshop.store.domain.StoreStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,9 @@ import java.util.Optional;
  */
 public interface StoreRepository extends JpaRepository<Store, Long> {
 
+  @Query(value = "SELECT * FROM store WHERE status = " + StoreStatus.NORMAL + " ORDER BY id DESC", nativeQuery = true)
+  List<Store> getAllNormal();
+
   Optional<Store> getBySellerId(Long sellerId);
 
   @Query(value = "SELECT * FROM store WHERE store.name LIKE CONCAT('%',:keyword,'%')", nativeQuery = true)
@@ -24,4 +28,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
   @Modifying
   @Transactional
   void modifyStatus(int status, long id);
+
+  @Transactional
+  @Modifying
+  void deleteBySellerId(long sellerId);
 }

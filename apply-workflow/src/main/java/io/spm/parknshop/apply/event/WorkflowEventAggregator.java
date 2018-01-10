@@ -1,6 +1,7 @@
 package io.spm.parknshop.apply.event;
 
 import io.spm.parknshop.apply.domain.ApplyEvent;
+import io.spm.parknshop.common.state.Transformer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -11,8 +12,7 @@ import reactor.core.publisher.Mono;
  *
  * @param <S> final status of an target
  */
-@FunctionalInterface
-public interface WorkflowEventAggregator<S> {
+public interface WorkflowEventAggregator<S, E> extends Transformer<S, E> {
 
   Mono<S> aggregate(Flux<ApplyEvent> eventStream);
 

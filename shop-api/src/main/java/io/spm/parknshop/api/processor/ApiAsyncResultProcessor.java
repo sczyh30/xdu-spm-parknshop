@@ -99,7 +99,7 @@ public class ApiAsyncResultProcessor {
 
   private void logError(Throwable ex) {
     if (ex instanceof ServiceException) {
-      logger.error("Service error", ex);
+      logger.debug("Service error", ex);
     } else {
       logger.error("Unexpected error", ex);
     }

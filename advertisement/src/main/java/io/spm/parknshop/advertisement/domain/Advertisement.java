@@ -22,17 +22,19 @@ public class Advertisement {
   private Long applyId;
 
   private int adType;
-  private String adOwner;
+  private Long adOwner;
   private Long adTarget;
 
   private String description;
-  private String adUrl;
-  private int adTotalPrice;
+  private String adPicUrl;
+  private double adTotalPrice;
 
   private Date startDate;
   private Date endDate;
 
   private int status;
+
+  private String paymentId;
 
   public Long getId() {
     return id;
@@ -70,11 +72,11 @@ public class Advertisement {
     return this;
   }
 
-  public String getAdOwner() {
+  public Long getAdOwner() {
     return adOwner;
   }
 
-  public Advertisement setAdOwner(String adOwner) {
+  public Advertisement setAdOwner(Long adOwner) {
     this.adOwner = adOwner;
     return this;
   }
@@ -97,20 +99,20 @@ public class Advertisement {
     return this;
   }
 
-  public String getAdUrl() {
-    return adUrl;
+  public String getAdPicUrl() {
+    return adPicUrl;
   }
 
-  public Advertisement setAdUrl(String adUrl) {
-    this.adUrl = adUrl;
+  public Advertisement setAdPicUrl(String adPicUrl) {
+    this.adPicUrl = adPicUrl;
     return this;
   }
 
-  public int getAdTotalPrice() {
+  public double getAdTotalPrice() {
     return adTotalPrice;
   }
 
-  public Advertisement setAdTotalPrice(int adTotalPrice) {
+  public Advertisement setAdTotalPrice(double adTotalPrice) {
     this.adTotalPrice = adTotalPrice;
     return this;
   }
@@ -151,6 +153,15 @@ public class Advertisement {
     return this;
   }
 
+  public String getPaymentId() {
+    return paymentId;
+  }
+
+  public Advertisement setPaymentId(String paymentId) {
+    this.paymentId = paymentId;
+    return this;
+  }
+
   @Override
   public String toString() {
     return "Advertisement{" +
@@ -159,14 +170,15 @@ public class Advertisement {
       ", gmtModified=" + gmtModified +
       ", applyId=" + applyId +
       ", adType=" + adType +
-      ", adOwner='" + adOwner + '\'' +
+      ", adOwner=" + adOwner +
       ", adTarget=" + adTarget +
       ", description='" + description + '\'' +
-      ", adUrl='" + adUrl + '\'' +
+      ", adPicUrl='" + adPicUrl + '\'' +
       ", adTotalPrice=" + adTotalPrice +
       ", startDate=" + startDate +
       ", endDate=" + endDate +
       ", status=" + status +
+      ", paymentId=" + paymentId +
       '}';
   }
 }

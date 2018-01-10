@@ -13,7 +13,8 @@ public final class OrderStatus {
   public static final int SHIPPED = 3;
   public static final int DELIVERED = 4;
   public static final int COMPLETED = 5;
-  public static final int COMMENTED = 6;
+  // public static final int COMMENTED = 6;
+  public static final int REFUNDED = 7;
   public static final int CANCELED = 9;
 
   private OrderStatus() {}

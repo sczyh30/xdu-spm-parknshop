@@ -29,7 +29,11 @@ public class Store {
   private String telephone;
   private String email;
 
-  private int status;
+  private Integer status;
+
+  public static Store deletedStore(Long id) {
+    return new Store().setId(id).setName("(Deleted Shop)").setStatus(StoreStatus.DELETED);
+  }
 
   public Long getId() {
     return id;
@@ -103,11 +107,11 @@ public class Store {
     return this;
   }
 
-  public int getStatus() {
+  public Integer getStatus() {
     return status;
   }
 
-  public Store setStatus(int status) {
+  public Store setStatus(Integer status) {
     this.status = status;
     return this;
   }

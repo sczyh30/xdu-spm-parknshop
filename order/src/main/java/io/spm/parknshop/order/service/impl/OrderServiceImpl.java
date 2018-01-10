@@ -15,6 +15,7 @@ import io.spm.parknshop.order.repository.OrderRepository;
 import io.spm.parknshop.order.service.OrderService;
 import io.spm.parknshop.trade.domain.OrderProductUnit;
 import io.spm.parknshop.trade.domain.OrderStoreGroupUnit;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -124,8 +125,8 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public Mono<Long> finishPay(List<Long> orders, Long paymentId) {
-    if (Objects.isNull(paymentId) || paymentId <= 0) {
+  public Mono<Long> finishPay(List<Long> orders, String paymentId) {
+    if (StringUtils.isEmpty(paymentId)) {
       return Mono.error(ExceptionUtils.invalidParam("paymentId"));
     }
     return Flux.fromIterable(orders)

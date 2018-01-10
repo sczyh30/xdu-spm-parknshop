@@ -1,5 +1,6 @@
 package io.spm.parknshop.api.controller.payment;
 
+import io.spm.parknshop.advertisement.service.AdvertisementWorkflowService;
 import io.spm.parknshop.payment.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -19,16 +20,29 @@ public class PaymentCallbackController {
 
   @Autowired
   private PaymentService paymentService;
+  @Autowired
+  private AdvertisementWorkflowService advertisementWorkflowService;
 
   @ResponseBody
-  @GetMapping("/notify_callback")
-  public Mono<?> payNotifyCallback(ServerWebExchange exchange,@RequestParam("trade_no") String outerPaymentId,
-                                   @RequestParam("out_trade_no") String shopPayment) {
-    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/buy/finish_buy?tradeId=" + shopPayment);
+  @GetMapping("/buy/notify_callback")
+  public Mono<?> buyPayNotifyCallback(ServerWebExchange exchange, @RequestParam("trade_no") String outerPaymentId,
+                                      @RequestParam("out_trade_no") String shopPaymentId) {
+    exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4010/#/buy/finish_buy?tradeId=" + shopPaymentId);
     exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
-    Long shopPaymentId = Long.valueOf(shopPayment);
     return paymentService.finishPay(shopPaymentId, outerPaymentId);
+  }
 
+  @ResponseBody
+  @GetMapping("/ad/notify_callback")
+  public Mono<?> adPayNotifyCallback(ServerWebExchange exchange, @RequestParam("trade_no") String outerPaymentId,
+                                     @RequestParam("out_trade_no") String adPaymentId) {
+
+    return advertisementWorkflowService.finishPay(adPaymentId, outerPaymentId)
+      .map(advertisement -> {
+        exchange.getResponse().getHeaders().add(HttpHeaders.LOCATION, "http://localhost:4012/#/ad/finish_pay?tradeId=" + outerPaymentId + "&adId=" + advertisement.getId());
+        exchange.getResponse().setStatusCode(HttpStatus.valueOf(302));
+        return advertisement;
+      });
   }
 
   @ResponseBody

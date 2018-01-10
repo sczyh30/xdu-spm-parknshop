@@ -92,4 +92,17 @@ public class Apply {
     this.status = status;
     return this;
   }
+
+  @Override
+  public String toString() {
+    return "Apply{" +
+      "id=" + id +
+      ", gmtCreate=" + gmtCreate +
+      ", gmtModified=" + gmtModified +
+      ", proposerId='" + proposerId + '\'' +
+      ", applyType=" + applyType +
+      ", status=" + status +
+      ", applyData='" + applyData + '\'' +
+      '}';
+  }
 }

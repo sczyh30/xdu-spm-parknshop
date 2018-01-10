@@ -1,6 +1,7 @@
 package io.spm.parknshop.api.controller;
 
 import io.spm.parknshop.common.util.ExceptionUtils;
+import io.spm.parknshop.product.service.ProductQueryService;
 import io.spm.parknshop.product.service.ProductService;
 import io.spm.parknshop.seller.service.SellerUserService;
 import io.spm.parknshop.store.service.StoreService;
@@ -25,7 +26,7 @@ public class SearchApiController {
   @Autowired
   private SellerUserService sellerService;
   @Autowired
-  private ProductService productService;
+  private ProductQueryService productQueryService;
   @Autowired
   private StoreService storeService;
 
@@ -43,7 +44,7 @@ public class SearchApiController {
       return sellerService.searchSellerByKeyword(keyword);
     }
     if ("item".equals(type)) {
-      return productService.searchProductByKeyword(keyword);
+      return productQueryService.searchProductByKeyword(keyword);
     }
     if ("store".equals(type)) {
       return storeService.searchStoreByKeyword(keyword);

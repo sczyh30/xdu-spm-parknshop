@@ -21,6 +21,6 @@ public interface OrderService {
 
   Mono<Long> modifyOrderStatus(Long orderId, OrderEvent orderEvent);
 
-  Mono<Long> finishPay(List<Long> orders, Long paymentId);
+  Mono<Long> finishPay(List<Long> orders, String paymentId);
 
 }

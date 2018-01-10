@@ -1,11 +1,8 @@
 package io.spm.parknshop.product.service;
 
 import io.spm.parknshop.product.domain.Product;
-import io.spm.parknshop.product.domain.ProductVO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Optional;
 
 /**
  * Interface of product service.
@@ -18,21 +15,15 @@ public interface ProductService {
 
   Mono<Product> modify(Long productId, Product product);
 
-  Mono<Optional<Product>> getById(Long id);
+  Mono<Product> getById(Long id);
 
-  Flux<ProductVO> getByStoreId(Long storeId);
+  Mono<Product> filterNormal(Product product);
+
+  Flux<Product> getByStoreId(Long storeId);
 
   Flux<Product> getByCatalogId(Long catalogId);
 
-  Flux<ProductVO> getVOByCategoryId(Long catalogId);
-
-  Flux<ProductVO> getRecentProducts(int number);
-
   Mono<Long> remove(Long id);
-
-  Flux<ProductVO> searchProductByKeyword(String keyword);
-
-  Mono<Optional<ProductVO>> getProductVO(Long id);
 
   Mono<String> modifyPicUrl(String url, Long id);
 }

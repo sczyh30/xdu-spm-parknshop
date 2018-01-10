@@ -23,4 +23,6 @@ public interface SellerUserService {
   Mono<User> register(User user);
 
   Mono<LoginVO> login(String username, String password);
+
+  Mono<Long> deleteSeller(Long sellerId);
 }

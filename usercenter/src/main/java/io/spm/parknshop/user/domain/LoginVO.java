@@ -1,6 +1,10 @@
 package io.spm.parknshop.user.domain;
 
+/**
+ * @author Eric Zhao
+ */
 public class LoginVO {
+  
   private String token;
   private String username;
   private Long id;

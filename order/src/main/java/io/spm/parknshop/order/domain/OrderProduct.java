@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * @author Eric Zhao
@@ -23,6 +24,15 @@ public class OrderProduct {
 
   private Double unitPrice;
   private Double totalPrice;
+
+  private int status;
+
+  @Transient
+  private Integer productStatus;
+  @Transient
+  private String picUri;
+  @Transient
+  private Long refundId;
 
   public Long getId() {
     return id;
@@ -84,6 +94,42 @@ public class OrderProduct {
 
   public OrderProduct setProductName(String productName) {
     this.productName = productName;
+    return this;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
+  public OrderProduct setStatus(int status) {
+    this.status = status;
+    return this;
+  }
+
+  public Integer getProductStatus() {
+    return productStatus;
+  }
+
+  public OrderProduct setProductStatus(Integer productStatus) {
+    this.productStatus = productStatus;
+    return this;
+  }
+
+  public String getPicUri() {
+    return picUri;
+  }
+
+  public OrderProduct setPicUri(String picUri) {
+    this.picUri = picUri;
+    return this;
+  }
+
+  public Long getRefundId() {
+    return refundId;
+  }
+
+  public OrderProduct setRefundId(Long refundId) {
+    this.refundId = refundId;
     return this;
   }
 }

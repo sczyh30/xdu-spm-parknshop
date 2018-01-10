@@ -1,6 +1,5 @@
 package io.spm.parknshop.order.service;
 
-import io.spm.parknshop.order.domain.Order;
 import reactor.core.publisher.Mono;
 
 /**
@@ -10,7 +9,7 @@ public interface OrderStatusService {
 
   Mono<Long> prepareShipping(Long orderId);
 
-  Mono<Long> finishShipping(Long orderId);
+  Mono<Long> finishShipping(Long orderId, String trackNo);
 
   Mono<Long> finishDelivery(Long orderId);
 
@@ -18,4 +17,5 @@ public interface OrderStatusService {
 
   Mono<Long> cancelOrder(String proposer, Long orderId);
 
+  Mono<Integer> getProductBuyStatusForUser(Long userId, Long productId);
 }

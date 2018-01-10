@@ -65,14 +65,14 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
       return extractFromHeader(exchange.getRequest().getHeaders())
         .flatMap(this::verifyAndExtractPrincipal)
         .flatMap(principal -> verifyRole(principal, exchange, path))
-        .flatMap(v -> chain.filter(exchange))
+        .then(chain.filter(exchange))
         .onErrorResume(v -> chain.filter(exchange));
     }
     return extractFromHeader(exchange.getRequest().getHeaders())
       .flatMap(this::verifyAndExtractPrincipal)
       .flatMap(principal -> verifyRole(principal, exchange, path))
       .onErrorResume(ex -> handleAuthException(ex, exchange).map(e -> 0L))
-      .flatMap(v -> chain.filter(exchange));
+      .then(chain.filter(exchange));
   }
 
   private boolean isAuthException(ServiceException ex) {
@@ -142,7 +142,7 @@ public class JwtAuthenticationWebFilter extends WritableResponseSupport implemen
   }
 
   private boolean testWithoutAuthentication(/*@NonNull*/ String path) {
-    if (path.startsWith("/api/v1/seller/login") || path.startsWith("/api/v1/seller/register") ||path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search") || path.startsWith("/api/v1/store") || path.contains("delivery")
+    if (path.startsWith("/api/v1/seller/login")|| path.startsWith("/api/v1/comment") || path.startsWith("/api/v1/seller/register") || path.startsWith("/api/v1/seller/register") ||path.startsWith("/api/v1/user/login") || path.startsWith("/api/v1/user/register") || path.startsWith("/api/v1/search") || path.startsWith("/api/v1/store") || path.contains("delivery")
       || path.startsWith("/api/v1/product") || path.startsWith("/api/v1/catalog") || path.startsWith("/api/v1/index") || path.startsWith("/api/v1/admin/login")) {
       return true;
     }

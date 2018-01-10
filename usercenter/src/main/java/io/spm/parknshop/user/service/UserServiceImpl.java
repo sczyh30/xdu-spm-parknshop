@@ -152,7 +152,10 @@ public class UserServiceImpl implements UserService {
     if (Objects.isNull(id) || id <= 0) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
-    return asyncExecute(() -> userRepository.modifyStatus(UserStatus.BLACKLIST, id));
+    return asyncExecute(() -> {
+      userRepository.modifyStatus(UserStatus.BLACKLIST, id);
+      userRepository.modifyStoreStatusBySellerId(2, id);
+    });
   }
 
   @Override
@@ -178,7 +181,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Flux<User> getAllCustomers() {
-    return asyncIterable(() -> userRepository.getAllByUserType(AuthRoles.CUSTOMER));
+    return asyncIterable(() -> userRepository.getByUserType(AuthRoles.CUSTOMER));
   }
 
   private boolean isValidUser(User user) {

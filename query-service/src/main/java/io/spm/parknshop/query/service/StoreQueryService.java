@@ -11,5 +11,7 @@ public interface StoreQueryService {
 
   Mono<StoreVO> getStoreById(Long id);
 
+  Mono<StoreVO> getStoreBySeller(Long id);
+
   Flux<StoreVO> getAll();
 }

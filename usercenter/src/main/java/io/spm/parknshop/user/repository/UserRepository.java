@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Query(value = "SELECT * FROM user WHERE id = ?1 AND user_type = 1", nativeQuery = true)
   Optional<User> getSellerById(long sellerId);
 
-  List<User> getAllByUserType(int status);
+  List<User> getByUserType(int userType);
 
   @Query(value = "SELECT id FROM user WHERE username = ?1", nativeQuery = true)
   Long getIdByUsername(String username);
@@ -48,6 +48,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
   @Modifying
   @Transactional
   void modifyStatus(int status, long id);
+
+  @Query(value = "UPDATE store SET status=?1, gmt_modified=CURRENT_TIMESTAMP WHERE seller_id=?2", nativeQuery = true)
+  @Modifying
+  @Transactional
+  void modifyStoreStatusBySellerId(int status, long id);
 
   @Query(value = "UPDATE user SET password=?1, gmt_modified=CURRENT_TIMESTAMP WHERE id=?2", nativeQuery = true)
   @Modifying

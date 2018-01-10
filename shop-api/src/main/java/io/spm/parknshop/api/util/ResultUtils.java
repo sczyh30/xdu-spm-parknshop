@@ -24,6 +24,7 @@ public final class ResultUtils {
     if (ex instanceof ServiceException) {
       return Result.failureWithResult(((ServiceException) ex).getErrorCode(), ex, (R) ((ServiceException) ex).getAttach());
     } else if (ex instanceof ServerWebInputException) {
+      ex.printStackTrace();
       return Result.failure(ErrorConstants.BAD_REQUEST, "Invalid input");
     }  else if (ex instanceof ResponseStatusException) {
       if (((ResponseStatusException) ex).getStatus().value() == 404) {

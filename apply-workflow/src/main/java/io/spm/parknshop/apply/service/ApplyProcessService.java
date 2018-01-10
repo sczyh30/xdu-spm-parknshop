@@ -9,5 +9,5 @@ public interface ApplyProcessService {
 
   Mono<Long> approveApply(Long applyId, String processorId, ApplyResult applyResult);
 
-  Mono<Long> cancelApply(Long applyId, String processorId);
+  Mono<Long> cancelApply(Long applyId, String processorId, ApplyResult applyResult);
 }

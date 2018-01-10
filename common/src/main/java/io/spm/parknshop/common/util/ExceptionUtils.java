@@ -7,7 +7,7 @@ import static io.spm.parknshop.common.exception.ErrorConstants.*;
 /**
  * Util class for creating service exception instances.
  *
- * @author Eric Zhao 14130140389
+ * @author Eric Zhao
  */
 public final class ExceptionUtils {
 

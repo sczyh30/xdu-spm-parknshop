@@ -2,16 +2,16 @@ package io.spm.parknshop.trade.domain;
 
 public class PaymentRedirectData {
 
-  private Long paymentId;
+  private String paymentId;
   private Integer paymentType;
   private String redirectUrl;
   private String renderForm;
 
-  public Long getPaymentId() {
+  public String getPaymentId() {
     return paymentId;
   }
 
-  public PaymentRedirectData setPaymentId(Long paymentId) {
+  public PaymentRedirectData setPaymentId(String paymentId) {
     this.paymentId = paymentId;
     return this;
   }
