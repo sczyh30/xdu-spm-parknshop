@@ -172,7 +172,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
     return applyDataService.performApplyTransform(applyId, AdApplyEventType.WITHDRAW_APPLY, processorId, applyResult, applyEventAggregator);
   }
 
-  private Mono<Long> extractPaymentId(long applyId) {
+  private Mono<String> extractPaymentId(long applyId) {
     return applyDataService.getApplyById(applyId)
       .map(e -> parseAdvertisement(e).getPaymentId());
   }
@@ -184,7 +184,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
   }
 
   @Override
-  public Mono<Advertisement> finishPay(Long paymentId, String outerPaymentId) {
+  public Mono<Advertisement> finishPay(String paymentId, String outerPaymentId) {
     return getAdApplyByPaymentId(paymentId)
       .flatMap(apply -> paymentService.finishPay(paymentId, outerPaymentId)
       .flatMap(v -> applyDataService.performApplyTransform(apply.getId(), AdApplyEventType.FINISH_PAY, apply.getProposerId(), new ApplyResult().setMessage("Payment ID: " + outerPaymentId), applyEventAggregator))
@@ -227,7 +227,7 @@ public class AdvertisementWorkflowServiceImpl implements AdvertisementWorkflowSe
     return ApplyProcessorRoles.checkSellerId(proposerId);
   }
 
-  private Mono<Apply> getAdApplyByPaymentId(long paymentId) {
+  private Mono<Apply> getAdApplyByPaymentId(String paymentId) {
     return async(() -> applyMetadataRepository.getAdApplyByPaymentId(paymentId))
       .filter(Optional::isPresent)
       .map(Optional::get)

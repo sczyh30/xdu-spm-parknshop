@@ -16,6 +16,7 @@ import io.spm.parknshop.payment.repository.TransferTransactionRepository;
 import io.spm.parknshop.payment.service.PaymentService;
 import io.spm.parknshop.trade.domain.PaymentRedirectData;
 import io.spm.parknshop.trade.domain.PaymentResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -23,6 +24,7 @@ import reactor.core.publisher.Mono;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.spm.parknshop.common.async.ReactorAsyncWrapper.*;
 import static io.spm.parknshop.common.exception.ErrorConstants.*;
@@ -51,13 +53,18 @@ public class PaymentServiceImpl implements PaymentService {
       return Mono.error(ExceptionUtils.invalidParam("fund amount"));
     }
     PaymentRecord record = new PaymentRecord().setStatus(PaymentStatus.NEW_CREATED)
-      .setPaymentType(PaymentMethod.ALIPAY).setTotalAmount(totalAmount);
+      .setPaymentType(PaymentMethod.ALIPAY).setTotalAmount(totalAmount).setId(generatePaymentId());
     return async(() -> paymentRecordRepository.save(record));
   }
 
+  private String generatePaymentId() {
+    // TODO: May conflict! Use business code to avoid conflict or fast-fail!
+    return String.format("SP%10d%04d", System.currentTimeMillis(), ThreadLocalRandom.current().nextInt(0, 9999));
+  }
+
   @Override
-  public Mono<PaymentRecord> getPaymentById(Long id) {
-    if (Objects.isNull(id) || id <= 0) {
+  public Mono<PaymentRecord> getPaymentById(String id) {
+    if (StringUtils.isEmpty(id)) {
       return Mono.error(ExceptionUtils.invalidParam("id"));
     }
     return async(() -> paymentRecordRepository.findById(id))
@@ -67,7 +74,7 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  public Mono<PaymentRedirectData> startPayment(Long paymentId, int payMethod, int payType) {
+  public Mono<PaymentRedirectData> startPayment(String paymentId, int payMethod, int payType) {
     return getPaymentById(paymentId)
       .flatMap(e -> async(() -> paymentRecordRepository.save(e.setPaymentType(payMethod))))
       .flatMap(payment -> doStartPayment(payment, payType));
@@ -97,7 +104,7 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  public Mono<PaymentRecord> finishPay(Long paymentId, String outerPaymentId) {
+  public Mono<PaymentRecord> finishPay(String paymentId, String outerPaymentId) {
     return getPaymentById(paymentId)
       .map(e -> e.setPaymentId(outerPaymentId).setStatus(PaymentStatus.PAYED).setGmtModified(new Date()))
       .flatMap(e -> async(() -> paymentRecordRepository.save(e)))
@@ -105,7 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
         .map(e -> payment));
   }
 
-  private Mono<?> doOrderPayed(Long paymentId) {
+  private Mono<?> doOrderPayed(String paymentId) {
     return asyncIterable(() -> orderRepository.getByPaymentId(paymentId))
       .map(Order::getId)
       .collectList()
@@ -113,7 +120,7 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  public Mono<PaymentResult> cancelPay(String proposer, Long paymentId) {
+  public Mono<PaymentResult> cancelPay(String proposer, String paymentId) {
     return getPaymentById(paymentId)
       .flatMap(record -> {
         switch (record.getPaymentType()) {
@@ -148,7 +155,7 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   public Mono<PaymentRefundResult> processRefund(String paymentId, String refundTradeNo, double amount, Long storeId) {
-    return getPaymentById(Long.valueOf(paymentId))
+    return getPaymentById(paymentId)
       .flatMap(record -> {
         switch (record.getPaymentType()) {
           case PaymentMethod.WECHAT_PAY:

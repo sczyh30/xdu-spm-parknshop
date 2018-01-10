@@ -13,8 +13,7 @@ import java.util.Date;
 public class PaymentRecord {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private String id;
 
   private Date gmtCreate;
   private Date gmtModified;
@@ -26,11 +25,11 @@ public class PaymentRecord {
 
   private Integer status;
 
-  public Long getId() {
+  public String getId() {
     return id;
   }
 
-  public PaymentRecord setId(Long id) {
+  public PaymentRecord setId(String id) {
     this.id = id;
     return this;
   }

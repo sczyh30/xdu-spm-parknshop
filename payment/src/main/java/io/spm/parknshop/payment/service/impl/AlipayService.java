@@ -29,7 +29,7 @@ public class AlipayService {
       AlipayConfig.ALIPAY_PUBLIC_KEY, AlipayConfig.SIGN_TYPE);
   }
 
-  public Mono<String> invokeBuyPayment(Long paymentId, String payOrderName, double totalAmount) {
+  public Mono<String> invokeBuyPayment(String paymentId, String payOrderName, double totalAmount) {
     //设置请求参数
     AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
     alipayRequest.setReturnUrl(AlipayConfig.BUY_PAY_RETURN_URL);
@@ -54,18 +54,18 @@ public class AlipayService {
     return async(() -> alipayClient.pageExecute(alipayRequest).getBody());
   }
 
-  public Mono<String> invokeAdPayment(Long paymentId, double totalAmount) {
+  public Mono<String> invokeAdPayment(String paymentId, double t) {
     AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
     alipayRequest.setReturnUrl(AlipayConfig.AD_PAY_RETURN_URL);
     alipayRequest.setNotifyUrl(AlipayConfig.AD_PAY_NOTIFY_URL);
 
-    String out_trade_no = paymentId.toString();
-    String total_amount = String.valueOf(totalAmount);
+    String outTradeNo = paymentId;
+    String totalAmount = String.valueOf(t);
     String subject = "PARKnSHOP.com";
     String body = "Advertisement payment from PARKnSHOP.com";
 
-    alipayRequest.setBizContent("{\"out_trade_no\":\""+ out_trade_no +"\","
-      + "\"total_amount\":\""+ total_amount +"\","
+    alipayRequest.setBizContent("{\"out_trade_no\":\""+ outTradeNo +"\","
+      + "\"total_amount\":\""+ totalAmount +"\","
       + "\"subject\":\""+ subject +"\","
       + "\"body\":\""+ body +"\","
       + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}");
@@ -74,7 +74,7 @@ public class AlipayService {
     return async(() -> alipayClient.pageExecute(alipayRequest).getBody());
   }
 
-  public Mono<PaymentResult> cancelPayment(Long paymentId, String alipayTradeNo, String operator) {
+  public Mono<PaymentResult> cancelPayment(String paymentId, String alipayTradeNo, String operator) {
     AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
     String outTradeNo = paymentId.toString();
     request.setBizContent("{" +

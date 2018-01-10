@@ -24,7 +24,7 @@ public class Order {
   private Long creatorId;
 
   private Long storeId;
-  private Long paymentId;
+  private String paymentId;
   private String addressSnapshot;
   private Long deliveryId;
 
@@ -80,11 +80,11 @@ public class Order {
     return this;
   }
 
-  public Long getPaymentId() {
+  public String getPaymentId() {
     return paymentId;
   }
 
-  public Order setPaymentId(Long paymentId) {
+  public Order setPaymentId(String paymentId) {
     this.paymentId = paymentId;
     return this;
   }

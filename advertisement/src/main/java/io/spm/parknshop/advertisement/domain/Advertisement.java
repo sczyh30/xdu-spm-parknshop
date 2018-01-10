@@ -34,7 +34,7 @@ public class Advertisement {
 
   private int status;
 
-  private Long paymentId;
+  private String paymentId;
 
   public Long getId() {
     return id;
@@ -153,11 +153,11 @@ public class Advertisement {
     return this;
   }
 
-  public Long getPaymentId() {
+  public String getPaymentId() {
     return paymentId;
   }
 
-  public Advertisement setPaymentId(Long paymentId) {
+  public Advertisement setPaymentId(String paymentId) {
     this.paymentId = paymentId;
     return this;
   }

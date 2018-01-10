@@ -11,13 +11,13 @@ public interface PaymentService {
 
   Mono<PaymentRecord> createPaymentRecord(double totalAmount);
 
-  Mono<PaymentRecord> getPaymentById(Long id);
+  Mono<PaymentRecord> getPaymentById(String id);
 
-  Mono<PaymentRedirectData> startPayment(Long paymentId, int payMethod, int payType);
+  Mono<PaymentRedirectData> startPayment(String paymentId, int payMethod, int payType);
 
-  Mono<PaymentRecord> finishPay(Long paymentId, String outerPaymentId);
+  Mono<PaymentRecord> finishPay(String paymentId, String outerPaymentId);
 
-  Mono<PaymentResult> cancelPay(String proposer, Long paymentId);
+  Mono<PaymentResult> cancelPay(String proposer, String paymentId);
 
   Mono<TransferTransactionRecord> transferMoney(Long storeId, Long orderId, String alipayAccount, double amount);
 

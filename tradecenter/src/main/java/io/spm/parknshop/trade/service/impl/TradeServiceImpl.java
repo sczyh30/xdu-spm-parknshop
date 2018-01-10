@@ -89,7 +89,7 @@ public class TradeServiceImpl implements TradeService {
       .orElse(Mono.error(ExceptionUtils.invalidParam("Invalid trade")));
   }
 
-  private Mono<SubmitOrderResult> startPayInternal(/*@NonNull*/ Long paymentId) {
+  private Mono<SubmitOrderResult> startPayInternal(/*@NonNull*/ String paymentId) {
     return paymentService.startPayment(paymentId, PaymentMethod.ALIPAY, PaymentType.BUY_PAY)
       .map(e -> new SubmitOrderResult().setPaymentData(e));
   }

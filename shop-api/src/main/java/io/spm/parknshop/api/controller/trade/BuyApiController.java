@@ -38,7 +38,7 @@ public class BuyApiController {
   }
 
   @PostMapping("/buy/order_pay")
-  public Mono<SubmitOrderResult> apiContinuePayForOrder(ServerWebExchange exchange, @RequestParam("order") Long id) {
+  public Mono<? extends SubmitOrderResult> apiContinuePayForOrder(ServerWebExchange exchange, @RequestParam("order") Long id) {
     return AuthUtils.getUserId(exchange)
       .flatMap(userId -> tradeService.startPayForOrder(id));
   }

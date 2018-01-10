@@ -20,8 +20,7 @@ public class PayQueryApiController {
   private PaymentService paymentService;
 
   @GetMapping("/payment/record/{id}")
-  public Mono<PaymentRecord> apiGetById(@PathVariable("id") Long id) {
+  public Mono<PaymentRecord> apiGetById(@PathVariable("id") String id) {
     return paymentService.getPaymentById(id);
   }
-
 }

@@ -14,5 +14,5 @@ public interface AdvertisementWorkflowService extends ApplyService<Advertisement
 
   Mono<PaymentRedirectData> startPay(Long applyId);
 
-  Mono<Advertisement> finishPay(Long paymentId, String outerPaymentId);
+  Mono<Advertisement> finishPay(String paymentId, String outerPaymentId);
 }

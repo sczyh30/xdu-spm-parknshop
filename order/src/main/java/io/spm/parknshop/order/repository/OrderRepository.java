@@ -68,7 +68,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   List<Order> getByStoreIdAndOrderStatus(long storeId, int status);
 
-  List<Order> getByPaymentId(long paymentId);
+  List<Order> getByPaymentId(String paymentId);
 
   // Sales metrics query.
 

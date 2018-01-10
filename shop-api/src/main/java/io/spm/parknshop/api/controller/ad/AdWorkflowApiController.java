@@ -23,7 +23,7 @@ public class AdWorkflowApiController {
   private AdvertisementWorkflowService advertisementWorkflowService;
 
   @PostMapping("/ad/workflow/start_pay/{id}")
-  public Mono<PaymentRedirectData> apiStartPay(@PathVariable("id") Long id, ServerWebExchange exchange) {
+  public Mono<? extends PaymentRedirectData> apiStartPay(@PathVariable("id") Long id, ServerWebExchange exchange) {
     return advertisementWorkflowService.startPay(id);
     //return AuthUtils.getSellerId(exchange)
      // .flatMap(sellerId -> advertisementWorkflowService.startPay(id));
