@@ -6,4 +6,4 @@ dist: trusty
 jdk:
   - oraclejdk8
 
-before_script: ./before-build.sh
+before_install: ./before-build.sh
