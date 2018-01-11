@@ -1,0 +1,1 @@
+INSERT INTO `parknshop`.`admin`(`username`, `password`) VALUES ('admin','$2a$10$VPNzRsoBjbWytCdtxp5WZ.x989JQNi8kSLhgCsO36Ldrf1aLYCddG');

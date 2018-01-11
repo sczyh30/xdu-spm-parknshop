@@ -20,8 +20,8 @@ public interface ApplyMetadataRepository extends JpaRepository<Apply, Long> {
   @Transactional
   void updateStatus(long id, int status);
 
-  @Query(value = "SELECT * FROM apply_metadata WHERE ad_payment_virtual = ?1 LIMIT 1", nativeQuery = true)
-  Optional<Apply> getAdApplyByPaymentId(String paymentId);
+  @Query(value = "SELECT * FROM apply_metadata WHERE ad_payment_virtual LIKE CONCAT('%', :paymentId, '%') LIMIT 1", nativeQuery = true)
+  Optional<Apply> getAdApplyByPaymentId(@Param("paymentId") String paymentId);
 
   @Override
   @Query(value = "SELECT * FROM apply_metadata ORDER BY id DESC", nativeQuery = true)
